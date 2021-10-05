@@ -1,2 +1,2 @@
 # RuneLite Plugins
-* Ruins of Camdozaal
+* [Ruins of Camdozaal](./tree/plugin-camdozaal)
