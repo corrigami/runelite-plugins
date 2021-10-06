@@ -1,4 +1,4 @@
-package tictac7x.TODO_PLUGIN_NAME;
+package tictac7x.steps;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -11,31 +11,41 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
-	name = "TODO_PLUGIN_NAME",
-	description = "TODO_PLUGIN_DESCRIPTION",
+	name = "Steps Measurements",
+	description = "Measure how many steps were made and how much time did it take",
 	tags = {
-		"TODO_PLUGIN_TAGS",
-		"TODO_PLUGIN_TAGS"
+		"steps",
+		"measure",
+		"track",
+		"time",
+		"distance"
 	}
 )
-public class TODO_PLUGIN_NAME_Plugin extends Plugin {
+public class StepsPlugin extends Plugin {
 	@Inject
 	private Client client;
 
 	@Inject
-	private TODO_PLUGIN_NAME_Config config;
+	private OverlayManager overlays;
+
+	@Inject
+	private StepsConfig config;
+
+	@Inject
+	private StepsOverlay overlay;
 
 	@Override
-	protected void startUp() throws Exception {
-		log.info("Example started!");
+	protected void startUp() {
+		overlays.add(overlay);
 	}
 
 	@Override
-	protected void shutDown() throws Exception {
-		log.info("Example stopped!");
+	protected void shutDown() {
+		overlays.remove(overlay);
 	}
 
 	@Subscribe
@@ -46,7 +56,7 @@ public class TODO_PLUGIN_NAME_Plugin extends Plugin {
 	}
 
 	@Provides
-	TODO_PLUGIN_NAME_Config provideConfig(ConfigManager configManager) {
-		return configManager.getConfig(TODO_PLUGIN_NAME_Config.class);
+	StepsConfig provideConfig(ConfigManager configManager) {
+		return configManager.getConfig(StepsConfig.class);
 	}
 }
