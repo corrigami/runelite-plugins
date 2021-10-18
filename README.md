@@ -1,18 +1,19 @@
-# TODO_PLUGIN_NAME
-TODO_PLUGIN_DESCRIPTION
+# Balloon Transport System
+Show how many logs are stored in the ball transport system storage.
 
-## How to start writing a new plugin
-### Replace `TODO` variables in code
-* `TODO_PLUGIN_NAME`
-* `TODO_PLUGIN_DESCRIPTION`
-* `TODO_PLUGIN_TAGS`
+## Style
+### Horizontal
+![](./img/horizontal.png)
 
-### Edit test run configuration
-* Right click on `PluginTest`
-* Select `Modify Run Configuration...`
-* `Modify options` -> `Add VM options`
-  * `VM options:`: `-ea`
-  * `Program arguments`: `--debug --developer-mode`
+### Vertical
+![](./img/vertical.png)
 
-### Start RuneLite
-Start RuneLite by running the modified test file
+### Infoboxes
+![](./img/infoboxes.png)
+
+
+## Config
+* Option to only show the logs that have been recently used.
+* Option to choose the active duration in minutes.
+
+![](./img/config.png)
