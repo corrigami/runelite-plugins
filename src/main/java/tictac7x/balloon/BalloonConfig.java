@@ -3,6 +3,7 @@ package tictac7x.balloon;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Units;
 
 @ConfigGroup(BalloonConfig.group)
 public interface BalloonConfig extends Config {
@@ -26,12 +27,13 @@ public interface BalloonConfig extends Config {
 		description = "Show only recently used logs."
 	) default boolean showRecentOnly() { return true; }
 
+	@Units(" min")
 	@ConfigItem(
 		position = 3,
 		keyName = "duration",
-		name = "Active duration",
+		name = "Show duration",
 		description = "Choose for how many minutes the information about logs is shown after using the balloon."
-	) default int getDuration() { return 5; }
+	) default int getDuration() { return 10; }
 
 	String key_storage = "storage";
 	@ConfigItem(
