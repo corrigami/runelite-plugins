@@ -1,9 +1,9 @@
 package tictac7x.balloon;
 
-import lombok.SneakyThrows;
 import tictac7x.Overlay;
-
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.awt.Dimension;
@@ -16,6 +16,8 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.client.game.ItemManager;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ComponentOrientation;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
@@ -23,12 +25,19 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 public class BalloonOverlayLogs extends Overlay {
     private static final int WIDGET_STORAGE = 229;
     private static final int WIDGET_STORAGE_MESSAGE = 1;
+    private static final int WIDGET_STORAGE_STORE = 193;
+    private static final int WIDGET_STORAGE_STORE_MESSAGE = 2;
     private static final int STORAGE_LOGS_TYPES = 5;
     public static final int STORAGE_INDEX_LOGS = 0;
     public static final int STORAGE_INDEX_LOGS_OAK = 1;
     public static final int STORAGE_INDEX_LOGS_WILLOW = 2;
     public static final int STORAGE_INDEX_LOGS_YEW = 3;
     public static final int STORAGE_INDEX_LOGS_MAGIC = 4;
+
+    private final Pattern regex_store = Pattern.compile("You put the (.*) in the crate\\. You now have (\\d+).*");
+    private final Pattern regex_fly = Pattern.compile("You board the balloon and fly to (the )?(.*)\\.");
+    private final Pattern regex_check = Pattern.compile(".*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?(\\d+).*?");
+    private final SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     private final BalloonConfig config;
     private final Client client;
@@ -37,7 +46,6 @@ public class BalloonOverlayLogs extends Overlay {
 
     private final PanelComponent panel = new PanelComponent();
     private final int[] storage = new int[STORAGE_LOGS_TYPES];
-    private final SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
     public BalloonOverlayLogs(final BalloonConfig config, final Client client, final ConfigManager configs, final ItemManager items) {
         this.config = config;
@@ -45,52 +53,42 @@ public class BalloonOverlayLogs extends Overlay {
         this.configs = configs;
         this.items = items;
 
-        updateStorage(config.getStorage(), false);
+        updateStorageFromCheck(config.getStorage(), false);
+
+        setPreferredPosition(OverlayPosition.BOTTOM_LEFT);
+        setLayer(OverlayLayer.ABOVE_WIDGETS);
     }
 
     public void onChatMessage(final ChatMessage message) {
-        if (message.getType() == ChatMessageType.GAMEMESSAGE) {
-            final String msg = message.getMessage();
+        final Matcher matches;
+        if (message.getType() == ChatMessageType.GAMEMESSAGE && (matches = regex_fly.matcher(message.getMessage())).matches()) {
+            final String location = matches.group(2);
             final int index;
 
-            switch (msg) {
-                case "You board the balloon and fly to Taverley.":
-                case "You board the balloon and fly to Entrana.":
-                    index = STORAGE_INDEX_LOGS;
-                    break;
-                case "You board the balloon and fly to the Crafting Guild.":
-                    index = STORAGE_INDEX_LOGS_OAK;
-                    break;
-                case "You board the balloon and fly to Varrock.":
-                    index = STORAGE_INDEX_LOGS_WILLOW;
-                    break;
-                case "You board the balloon and fly to Castle Wars.":
-                    index = STORAGE_INDEX_LOGS_YEW;
-                    break;
-                case "You board the balloon and fly to the Gnome Stronghold.":
-                    index = STORAGE_INDEX_LOGS_MAGIC;
-                    break;
-                default:
-                    return;
+            switch (location) {
+                case "Taverley":
+                case "Entrana":          index = STORAGE_INDEX_LOGS;        break;
+                case "Crafting Guild":   index = STORAGE_INDEX_LOGS_OAK;    break;
+                case "Varrock":          index = STORAGE_INDEX_LOGS_WILLOW; break;
+                case "Castle Wars":      index = STORAGE_INDEX_LOGS_YEW;    break;
+                case "Gnome Stronghold": index = STORAGE_INDEX_LOGS_MAGIC;  break;
+                default: return;
             }
 
-            // Deduct 1 log from storage.
-            storage[index] -= 1;
-
-            // Save storage state to config.
-            updateStorage();
-
-            // Update used log date.
-            updateStorageDate(new int[]{index});
+            updateStorageLogs(index, storage[index] - 1);
         }
     }
 
     public void onWidgetLoaded(final WidgetLoaded event) {
         if (event.getGroupId() == WIDGET_STORAGE) {
-
             final Widget storage = client.getWidget(WIDGET_STORAGE, WIDGET_STORAGE_MESSAGE);
             if (storage != null) {
-                updateStorage(storage.getText(), true);
+                updateStorageFromCheck(storage.getText(), true);
+            }
+        } else if (event.getGroupId() == WIDGET_STORAGE_STORE) {
+            final Widget store = client.getWidget(WIDGET_STORAGE_STORE, WIDGET_STORAGE_STORE_MESSAGE);
+            if (store != null) {
+                updateStorageStore(store.getText());
             }
         }
     }
@@ -103,13 +101,13 @@ public class BalloonOverlayLogs extends Overlay {
         }
     }
 
-    @SneakyThrows
     @Override
     public Dimension render(Graphics2D graphics) {
         final BalloonConfig.style style = config.getStyle();
 
         if (style == BalloonConfig.style.HORIZONTAL || style == BalloonConfig.style.VERTICAL) {
-            final Date now = date_format.parse(date_format.format(new Date()));
+            final Date now;
+            try { now = date_format.parse(date_format.format(new Date())); } catch (final Exception ignored) { return null; }
             final int duration = config.getDuration() * 60 * 1000;
 
             panel.getChildren().clear();
@@ -150,22 +148,51 @@ public class BalloonOverlayLogs extends Overlay {
         return null;
     }
 
-    private void updateStorage(String message, final boolean update_dates) {
-        message = message.replaceAll("[^0-9]+", ",");
-        message = message.startsWith(",") ? message.substring(1) : message;
-        String[] logs = message.split(",");
+    private void updateStorageStore(final String message) {
+        final Matcher store = regex_store.matcher(message);
 
-        // Update all logs counts.
-        for (int i = 0; i < STORAGE_LOGS_TYPES; i++) {
-            storage[i] = Integer.parseInt(logs[i]);
+        if (store.matches()) {
+            final int index;
+            final String logs = store.group(1);
+            final int amount = Integer.parseInt(store.group(2));
+
+            switch (logs) {
+                case "Logs":        index = STORAGE_INDEX_LOGS;        break;
+                case "Oak logs":    index = STORAGE_INDEX_LOGS_OAK;    break;
+                case "Willow logs": index = STORAGE_INDEX_LOGS_WILLOW; break;
+                case "Yew logs":    index = STORAGE_INDEX_LOGS_YEW;    break;
+                case "Magic logs":  index = STORAGE_INDEX_LOGS_MAGIC;  break;
+                default: return;
+            }
+
+            updateStorageLogs(index, amount);
+        }
+    }
+
+    private void updateStorageLogs(final int index, final int amount) {
+        storage[index] = amount;
+        saveStorageDateToConfig(new int[]{index});
+        saveStorageToConfig();
+    }
+
+    private void updateStorageFromCheck(final String message, final boolean update_dates) {
+        final Matcher check = regex_check.matcher(message);
+
+        // Extract logs amounts from the string.
+        if (check.matches()) {
+            storage[STORAGE_INDEX_LOGS]        = Integer.parseInt(check.group(1));
+            storage[STORAGE_INDEX_LOGS_OAK]    = Integer.parseInt(check.group(2));
+            storage[STORAGE_INDEX_LOGS_WILLOW] = Integer.parseInt(check.group(3));
+            storage[STORAGE_INDEX_LOGS_YEW]    = Integer.parseInt(check.group(4));
+            storage[STORAGE_INDEX_LOGS_MAGIC]  = Integer.parseInt(check.group(5));
         }
 
         // Save all logs counts into the config.
-        updateStorage();
+        saveStorageToConfig();
 
         // Update all logs dates.
         if (update_dates) {
-            updateStorageDate(new int[]{
+            saveStorageDateToConfig(new int[]{
                 STORAGE_INDEX_LOGS,
                 STORAGE_INDEX_LOGS_OAK,
                 STORAGE_INDEX_LOGS_WILLOW,
@@ -175,7 +202,7 @@ public class BalloonOverlayLogs extends Overlay {
         }
     }
 
-    private void updateStorageDate(final int[] index) {
+    private void saveStorageDateToConfig(final int[] index) {
         final Date now = new Date();
 
         for (final int i : index) {
@@ -205,7 +232,7 @@ public class BalloonOverlayLogs extends Overlay {
         }
     }
 
-    private void updateStorage() {
+    private void saveStorageToConfig() {
         StringBuilder storage = new StringBuilder();
         for (int i = 0; i < STORAGE_LOGS_TYPES; i++) {
             storage.append(this.storage[i]).append(i == STORAGE_LOGS_TYPES - 1 ? "" : ",");
