@@ -1,10 +1,10 @@
 package tictac7x.balloon;
 
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import com.google.inject.Provides;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
+import lombok.extern.slf4j.Slf4j;
+import com.google.inject.Provides;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.WidgetLoaded;
@@ -19,7 +19,7 @@ import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 @Slf4j
 @PluginDescriptor(
 	name = "Balloon Transport System",
-	description = "Show amount of logs stashed in the balloon storage.",
+	description = "Show amount of logs stored in the balloon transport system storages.",
 	tags = { "balloon", "transport", "logs", "storage" }
 )
 public class BalloonPlugin extends Plugin {
@@ -44,6 +44,7 @@ public class BalloonPlugin extends Plugin {
 	@Inject
 	private BalloonConfig config;
 
+	private Storage storage;
 	private BalloonOverlayLogs overlay_logs;
 	private BalloonInfoboxLogs infobox_logs;
 	private BalloonInfoboxLogs infobox_logs_oak;
@@ -54,13 +55,14 @@ public class BalloonPlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		if (overlay_logs == null) {
-			overlay_logs = new BalloonOverlayLogs(config, client, configs, items);
+			storage = new Storage(config, client, configs);
+			overlay_logs = new BalloonOverlayLogs(config, configs, items, storage);
 
 			infobox_logs = new BalloonInfoboxLogs(
 				"logs",
 				items.getImage(ItemID.LOGS),
-				() -> config.getStyle() == BalloonConfig.style.INFOBOXES,
-				() -> overlay_logs.getLogsCount(BalloonOverlayLogs.STORAGE_INDEX_LOGS),
+				() -> showInfobox(Storage.Logs.LOGS),
+				() -> storage.getLogsCount(Storage.Logs.LOGS),
 				"Entrana / Taverley",
 				this
 			);
@@ -68,32 +70,32 @@ public class BalloonPlugin extends Plugin {
 			infobox_logs_oak = new BalloonInfoboxLogs(
 				"logs_oak",
 				items.getImage(ItemID.OAK_LOGS),
-				() -> config.getStyle() == BalloonConfig.style.INFOBOXES,
-				() -> overlay_logs.getLogsCount(BalloonOverlayLogs.STORAGE_INDEX_LOGS_OAK),
+				() -> showInfobox(Storage.Logs.LOGS_OAK),
+				() -> storage.getLogsCount(Storage.Logs.LOGS_OAK),
 				"Crafting Guild",
 				this);
 
 			infobox_logs_willow = new BalloonInfoboxLogs(
 				"logs_willow",
 				items.getImage(ItemID.WILLOW_LOGS),
-				() -> config.getStyle() == BalloonConfig.style.INFOBOXES,
-				() -> overlay_logs.getLogsCount(BalloonOverlayLogs.STORAGE_INDEX_LOGS_WILLOW),
+				() -> showInfobox(Storage.Logs.LOGS_WILLOW),
+				() -> storage.getLogsCount(Storage.Logs.LOGS_WILLOW),
 				"Varrock",
 				this);
 
 			infobox_logs_yew = new BalloonInfoboxLogs(
 				"logs_yew",
 				items.getImage(ItemID.YEW_LOGS),
-				() -> config.getStyle() == BalloonConfig.style.INFOBOXES,
-				() -> overlay_logs.getLogsCount(BalloonOverlayLogs.STORAGE_INDEX_LOGS_YEW),
+				() -> showInfobox(Storage.Logs.LOGS_YEW),
+				() -> storage.getLogsCount(Storage.Logs.LOGS_YEW),
 				"Castle Wars",
 				this);
 
 			infobox_logs_magic = new BalloonInfoboxLogs(
 				"logs_magic",
 				items.getImage(ItemID.MAGIC_LOGS),
-				() -> config.getStyle() == BalloonConfig.style.INFOBOXES,
-				() -> overlay_logs.getLogsCount(BalloonOverlayLogs.STORAGE_INDEX_LOGS_MAGIC),
+				() -> showInfobox(Storage.Logs.LOGS_MAGIC),
+				() -> storage.getLogsCount(Storage.Logs.LOGS_MAGIC),
 				"Grand Tree",
 				this);
 		}
@@ -118,16 +120,20 @@ public class BalloonPlugin extends Plugin {
 
 	@Subscribe
 	public void onChatMessage(final ChatMessage event) {
-		overlay_logs.onChatMessage(event);
+		storage.onChatMessage(event);
 	}
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
-		client_thread.invokeLater(() -> overlay_logs.onWidgetLoaded(event));
+		client_thread.invokeLater(() -> storage.onWidgetLoaded(event));
 	}
 
 	@Provides
 	BalloonConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(BalloonConfig.class);
+	}
+
+	private boolean showInfobox(final Storage.Logs logs) {
+		return config.getStyle() == BalloonConfig.style.INFOBOXES && storage.showLogs(logs);
 	}
 }

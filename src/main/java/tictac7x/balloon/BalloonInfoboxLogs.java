@@ -1,7 +1,7 @@
 package tictac7x.balloon;
 
-import java.util.function.Supplier;
 import java.awt.Color;
+import java.util.function.Supplier;
 import java.awt.image.BufferedImage;
 import net.runelite.client.ui.overlay.infobox.InfoBox;
 

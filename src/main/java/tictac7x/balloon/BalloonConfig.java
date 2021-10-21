@@ -1,38 +1,39 @@
 package tictac7x.balloon;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Units;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigGroup;
 
 @ConfigGroup(BalloonConfig.group)
 public interface BalloonConfig extends Config {
 	String group = "tictac7x.balloon";
-	enum style { HORIZONTAL, VERTICAL, INFOBOXES }
+	enum style { WIDGET, INFOBOXES }
+	enum Show { RECENTLY_USED, ALL, INDEFINITELY }
 
 	@ConfigItem(
 		position = 1,
 		keyName = "style",
 		name = "Style",
 		description = "Choose how the logs of the storages are displayed."
-	) default style getStyle()
-	{
-		return style.HORIZONTAL;
+	) default style getStyle() {
+		return style.WIDGET;
 	}
 
 	@ConfigItem(
 		position = 2,
-		keyName = "recent",
-		name = "Show only recent",
-		description = "Show only recently used logs."
-	) default boolean showRecentOnly() { return true; }
+		keyName = "show",
+		name = "Show",
+		description = "Show storage logs amounts all the time."
+	) default Show show() { return Show.RECENTLY_USED; }
+
 
 	@Units(" min")
 	@ConfigItem(
 		position = 3,
 		keyName = "duration",
-		name = "Show duration",
-		description = "Choose for how many minutes the information about logs is shown after using the balloon."
+		name = "Display duration",
+		description = "Choose for how many minutes the information about recently used logs is visible."
 	) default int getDuration() { return 10; }
 
 	String key_storage = "storage";
@@ -42,6 +43,14 @@ public interface BalloonConfig extends Config {
 		description = key_storage,
 		hidden = true
 	) default String getStorage() { return "0,0,0,0,0"; }
+
+	String key_storage_date_general = "storage_date_general";
+	@ConfigItem(
+		keyName = key_storage_date_general,
+		name = key_storage_date_general,
+		description = key_storage_date_general,
+		hidden = true
+	) default String getStorageDateGeneral() { return ""; }
 
 	String key_storage_date_logs = "storage_date_logs";
 	@ConfigItem(
