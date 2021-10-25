@@ -1,4 +1,4 @@
-# Balloon Transport System
+# Balloon Transport System - v0.3.1
 Show how many logs are stored in the balloon transport system storage.
 
 ## Config
