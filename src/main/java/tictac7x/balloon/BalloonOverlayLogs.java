@@ -30,8 +30,8 @@ public class BalloonOverlayLogs extends OverlayPanel {
 
         panel.setWrap(true);
         panel.setOrientation(ComponentOrientation.HORIZONTAL);
+        panel.setBackgroundColor(null);
 
-        panelComponent.setBackgroundColor(null);
         panelComponent.setOrientation(ComponentOrientation.VERTICAL);
         panelComponent.setBorder(new Rectangle(0,0,0,0));
     }
