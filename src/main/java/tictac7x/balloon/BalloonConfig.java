@@ -7,7 +7,7 @@ import net.runelite.client.config.ConfigGroup;
 
 @ConfigGroup(BalloonConfig.group)
 public interface BalloonConfig extends Config {
-	String group = "tictac7x.balloon";
+	String group = "tictac7x-balloon";
 	enum style { WIDGET, INFOBOXES }
 	enum Show { RECENTLY_USED, ALL, INDEFINITELY }
 
