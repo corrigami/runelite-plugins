@@ -16,9 +16,7 @@ public interface BalloonConfig extends Config {
 		keyName = "style",
 		name = "Style",
 		description = "Choose how the logs of the storages are displayed."
-	) default style getStyle() {
-		return style.WIDGET;
-	}
+	) default style getStyle() { return style.WIDGET; }
 
 	@ConfigItem(
 		position = 2,

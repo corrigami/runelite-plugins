@@ -120,7 +120,7 @@ public class BalloonPlugin extends Plugin {
 
 	@Subscribe
 	public void onChatMessage(final ChatMessage event) {
-		storage.onChatMessage(event);
+		client_thread.invokeLater(() -> storage.onChatMessage(event));
 	}
 
 	@Subscribe
