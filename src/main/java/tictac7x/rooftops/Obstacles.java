@@ -129,6 +129,47 @@ public class Obstacles {
         //
     );
 
+    private static final Set<Integer> CANIFIS_OBSTACLES = ImmutableSet.of(
+        14843,
+        14844,
+        14845,
+        14848,
+        14846,
+        14894,
+        14847,
+        14897
+    );
+    private static final Set<Integer> CANIFIS_ANIMATIONS = ImmutableSet.of(
+        1765,
+        1995, 2586, 2588,
+        2586, 2588,
+        2585,
+        2586, 2588,
+        1955, 7132, 2588,
+        2586, 2588,
+        2586, 2588
+    );
+    private static final Set<Integer> CANIFIS_POSES = ImmutableSet.of(
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+    );
+    private static final Set<Integer> CANIFIS_IDLES = ImmutableSet.of(
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+    );
+
     private static final Set<Integer> SEERS_OBSTACLES = ImmutableSet.of(14927, 14928, 14929, 14930, 14931, 14932);
     private static final Set<Integer> SEERS_ANIMATIONS = ImmutableSet.of(737, 1118, 2585, 2586, 2588);
     private static final Set<Integer> SEERS_POSES = ImmutableSet.of(762);
