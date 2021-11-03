@@ -11,6 +11,7 @@ import net.runelite.api.events.ItemDespawned;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GroundObjectSpawned;
@@ -99,6 +100,11 @@ public class RooftopsPlugin extends Plugin {
 	@Subscribe
 	public void onItemDespawned(final ItemDespawned event) {
 		overlay_marks.onItemDespawned(event);
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(final MenuOptionClicked menu_option_clicked) {
+		overlay_obstacles.onMenuOptionClicked(menu_option_clicked);
 	}
 
 	@Subscribe

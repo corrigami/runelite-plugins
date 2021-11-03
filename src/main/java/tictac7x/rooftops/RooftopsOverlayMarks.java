@@ -39,7 +39,7 @@ public class RooftopsOverlayMarks extends Overlay {
     @Override
     public Dimension render(Graphics2D graphics) {
         if (mark_of_grace != null) {
-            renderItem(graphics, mark_of_grace, config.getMarkOfGrace(), 2, 25);
+            renderItem(graphics, mark_of_grace, config.getMarkOfGrace(), clickbox_stroke_width, 25);
         }
 
         return null;

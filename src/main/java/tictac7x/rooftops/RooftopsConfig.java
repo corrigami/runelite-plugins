@@ -14,7 +14,7 @@ public interface RooftopsConfig extends Config {
 		name = "Next obstacle",
 		description = "Color of next obstacle.",
 		position = 1
-	) default Color geObstacleNext() { return Overlay.color_green; }
+	) default Color getObstacleNext() { return Overlay.color_green; }
 
 	@ConfigItem(
 		keyName = "obstacles_unavailable",

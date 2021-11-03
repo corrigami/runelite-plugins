@@ -1,2 +1,2 @@
-# Rooftops v0.2.6
+# Rooftops v0.3
 Improved clickboxes for rooftop agility courses.
