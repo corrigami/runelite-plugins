@@ -170,17 +170,109 @@ public class Obstacles {
         //
     );
 
-    private static final Set<Integer> SEERS_OBSTACLES = ImmutableSet.of(14927, 14928, 14929, 14930, 14931, 14932);
-    private static final Set<Integer> SEERS_ANIMATIONS = ImmutableSet.of(737, 1118, 2585, 2586, 2588);
-    private static final Set<Integer> SEERS_POSES = ImmutableSet.of(762);
+    private static final Set<Integer> FALADOR_OBSTACLES = ImmutableSet.of(
+        14898,
+        14899,
+        14901,
+        14903,
+        14904,
+        14905,
+        14911,
+        14919,
+        14920,
+        14921,
+        14922,
+        14924,
+        14925
+    );
+    private static final Set<Integer> FALADOR_ANIMATIONS = ImmutableSet.of(
+        828,
+        //
+        1118, 1120,
+        741,
+        741,
+        //
+        7134,
+        1603,
+        1603,
+        1603,
+        1603,
+        1603,
+        1603, 2586, 2588
+    );
+    private static final Set<Integer> FALADOR_POSES = ImmutableSet.of(
+        //
+        762,
+        //
+        //
+        //
+        762,
+        763
+        //
+        //
+        //
+        //
+        //
+        //
+    );
+    private static final Set<Integer> FALADOR_IDLES = ImmutableSet.of(
+        //
+        763,
+        //
+        //
+        //
+        763,
+        763
+        //
+        //
+        //
+        //
+        //
+        //
+    );
+
+    private static final Set<Integer> SEERS_OBSTACLES = ImmutableSet.of(
+        14927,
+        14928,
+        14929,
+        14930,
+        14931,
+        14932
+    );
+    private static final Set<Integer> SEERS_ANIMATIONS = ImmutableSet.of(
+        737, 1118,
+        2586, 2588, 2586, 2588,
+        //
+        2585,
+        2586, 2588,
+        2586, 2588
+    );
+    private static final Set<Integer> SEERS_POSES = ImmutableSet.of(
+        //
+        //
+        762
+        //
+        //
+        //
+    );
+    private static final Set<Integer> SEERS_IDLES = ImmutableSet.of(
+        //
+        //
+        763
+        //
+        //
+        //
+    );
 
     public static boolean isObstacle(final TileObject tile) {
         final int obstacle = tile.getId();
         return (false
             || DRAYNOR_OBSTACLES.contains(obstacle)
             || ALKHARID_OBSTACLES.contains(obstacle)
-            || SEERS_OBSTACLES.contains(obstacle)
             || VARROCK_OBSTACLES.contains(obstacle)
+            || CANIFIS_OBSTACLES.contains(obstacle)
+            || FALADOR_OBSTACLES.contains(obstacle)
+            || SEERS_OBSTACLES.contains(obstacle)
         );
     }
 
@@ -200,8 +292,15 @@ public class Obstacles {
                 || VARROCK_ANIMATIONS.contains(animation)
                 || VARROCK_POSES.contains(pose)
                 || VARROCK_IDLES.contains(idle)
-                || SEERS_ANIMATIONS.contains(player.getAnimation())
-                || SEERS_POSES.contains(player.getPoseAnimation())
+                || CANIFIS_ANIMATIONS.contains(animation)
+                || CANIFIS_POSES.contains(pose)
+                || CANIFIS_IDLES.contains(idle)
+                || FALADOR_ANIMATIONS.contains(animation)
+                || FALADOR_POSES.contains(pose)
+                || FALADOR_IDLES.contains(idle)
+                || SEERS_ANIMATIONS.contains(animation)
+                || SEERS_POSES.contains(pose)
+                || SEERS_IDLES.contains(idle)
             );
         }
 
