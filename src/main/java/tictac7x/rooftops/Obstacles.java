@@ -33,7 +33,7 @@ public class Obstacles {
         //
         //
     );
-    private static final Set<Integer> DRAYNOR_IDLE = ImmutableSet.of(
+    private static final Set<Integer> DRAYNOR_IDLES = ImmutableSet.of(
         //
         763,
         763,
@@ -73,7 +73,7 @@ public class Obstacles {
         762
         //
     );
-    private static final Set<Integer> ALKHARID_IDLE = ImmutableSet.of(
+    private static final Set<Integer> ALKHARID_IDLES = ImmutableSet.of(
         //
         763,
         //
@@ -81,6 +81,51 @@ public class Obstacles {
         //
         //
         763
+        //
+    );
+
+    private static final Set<Integer> VARROCK_OBSTACLES = ImmutableSet.of(
+        14412,
+        14413,
+        14414,
+        14832,
+        14833,
+        14834,
+        14835,
+        14836,
+        14841
+    );
+    private static final Set<Integer> VARROCK_ANIMATIONS = ImmutableSet.of(
+        828, 2585,
+        741, 741,
+        2586, 2588,
+        1995, 1122, 1124, 753,
+        2585,
+        1995, 4789, 2585,
+        2586, 2588,
+        1603,
+        741, 2586, 2588
+    );
+    private static final Set<Integer> VARROCK_POSES = ImmutableSet.of(
+        //
+        //
+        //
+        757, 756
+        //
+        //
+        //
+        //
+        //
+    );
+    private static final Set<Integer> VARROCK_IDLES = ImmutableSet.of(
+        //
+        //
+        //
+        757, 757
+        //
+        //
+        //
+        //
         //
     );
 
@@ -94,6 +139,7 @@ public class Obstacles {
             || DRAYNOR_OBSTACLES.contains(obstacle)
             || ALKHARID_OBSTACLES.contains(obstacle)
             || SEERS_OBSTACLES.contains(obstacle)
+            || VARROCK_OBSTACLES.contains(obstacle)
         );
     }
 
@@ -106,10 +152,13 @@ public class Obstacles {
             return (false
                 || DRAYNOR_ANIMATIONS.contains(animation)
                 || DRAYNOR_POSES.contains(pose)
-                || DRAYNOR_IDLE.contains(idle)
+                || DRAYNOR_IDLES.contains(idle)
                 || ALKHARID_ANIMATIONS.contains(animation)
                 || ALKHARID_POSES.contains(pose)
-                || ALKHARID_IDLE.contains(idle)
+                || ALKHARID_IDLES.contains(idle)
+                || VARROCK_ANIMATIONS.contains(animation)
+                || VARROCK_POSES.contains(pose)
+                || VARROCK_IDLES.contains(idle)
                 || SEERS_ANIMATIONS.contains(player.getAnimation())
                 || SEERS_POSES.contains(player.getPoseAnimation())
             );

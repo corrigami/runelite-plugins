@@ -102,7 +102,7 @@ public class RooftopsOverlayObstacles extends Overlay {
             final Color color;
             if (obstacle == obstacle_closest_mark) {
                 color = config.getObstacleStop();
-            } else if (doing_obstacle) {
+            } else if (doing_obstacle || obstacle.getPlane() != client.getPlane()) {
                 color = config.getObstacleUnavailable();
             } else if (obstacle == obstacle_closest_player) {
                 color = config.geObstacleNext();
