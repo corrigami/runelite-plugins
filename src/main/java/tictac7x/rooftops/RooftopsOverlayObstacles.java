@@ -19,13 +19,15 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
 public class RooftopsOverlayObstacles extends Overlay {
+    private final RooftopsConfig config;
     private final Client client;
     private final RooftopsOverlayMarks overlay_marks;
 
     private final List<TileObject> obstacles = new ArrayList<>();
 
 
-    public RooftopsOverlayObstacles(final Client client, final RooftopsOverlayMarks overlay_marks) {
+    public RooftopsOverlayObstacles(final RooftopsConfig config, final Client client, final RooftopsOverlayMarks overlay_marks) {
+        this.config = config;
         this.client = client;
         this.overlay_marks = overlay_marks;
 
@@ -83,13 +85,13 @@ public class RooftopsOverlayObstacles extends Overlay {
         for (final TileObject obstacle : obstacles) {
             final Color color;
             if (obstacle == obstacle_closest_mark) {
-                color = color_red;
+                color = config.getObstacleStop();
             } else if (doing_obstacle) {
-                color = color_yellow;
+                color = config.getObstacleUnavailable();
             } else if (obstacle == obstacle_closest_player) {
-                color = color_green;
+                color = config.geObstacleNext();
             } else {
-                color = color_yellow;
+                color = config.getObstacleUnavailable();
             }
 
             // Custom getClickbox to render obstacles correctly on different planes.

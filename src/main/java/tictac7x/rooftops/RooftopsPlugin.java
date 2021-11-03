@@ -47,8 +47,8 @@ public class RooftopsPlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		if (overlay_obstacles == null) {
-			overlay_marks = new RooftopsOverlayMarks();
-			overlay_obstacles = new RooftopsOverlayObstacles(client, overlay_marks);
+			overlay_marks = new RooftopsOverlayMarks(config);
+			overlay_obstacles = new RooftopsOverlayObstacles(config, client, overlay_marks);
 		}
 
 		overlays.add(overlay_obstacles);

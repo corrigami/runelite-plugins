@@ -13,10 +13,13 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 public class RooftopsOverlayMarks extends Overlay {
     private static final int MARK_OF_GRACE = 11849;
 
+    private final RooftopsConfig config;
+
     @Nullable
     private Tile mark_of_grace = null;
 
-    public RooftopsOverlayMarks() {
+    public RooftopsOverlayMarks(final RooftopsConfig config) {
+        this.config = config;
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
@@ -36,7 +39,7 @@ public class RooftopsOverlayMarks extends Overlay {
     @Override
     public Dimension render(Graphics2D graphics) {
         if (mark_of_grace != null) {
-            renderItem(graphics, mark_of_grace, color_green, 2, 25);
+            renderItem(graphics, mark_of_grace, config.getMarkOfGrace(), 2, 25);
         }
 
         return null;
