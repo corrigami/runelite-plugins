@@ -1,16 +1,24 @@
 package tictac7x.rooftops;
 
-import com.google.inject.Provides;
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
-import net.runelite.api.events.*;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
+import com.google.inject.Provides;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.api.events.ItemSpawned;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.api.events.GroundObjectDespawned;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.api.events.DecorativeObjectSpawned;
+import net.runelite.api.events.DecorativeObjectDespawned;
 
 @Slf4j
 @PluginDescriptor(
@@ -71,16 +79,6 @@ public class RooftopsPlugin extends Plugin {
 	@Subscribe
 	public void onGroundObjectDespawned(final GroundObjectDespawned event) {
 		overlay_obstacles.onTileObjectDespawned(event.getGroundObject());
-	}
-
-	@Subscribe
-	public void onWallObjectSpawned(final WallObjectSpawned event) {
-		overlay_obstacles.onTileObjectSpawned(event.getWallObject());
-	}
-
-	@Subscribe
-	public void onWallObjectDespawned(final WallObjectDespawned event) {
-		overlay_obstacles.onTileObjectDespawned(event.getWallObject());
 	}
 
 	@Subscribe

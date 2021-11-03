@@ -1,11 +1,9 @@
 package tictac7x.rooftops;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 import net.runelite.api.Player;
 import net.runelite.api.TileObject;
-
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 public class Obstacles {
     public static final Set<Integer> OBSTACLES_ANIMATIONS = ImmutableSet.of(737, 1118, 2585, 2586, 2588);

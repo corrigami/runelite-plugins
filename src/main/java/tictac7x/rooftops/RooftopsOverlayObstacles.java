@@ -1,23 +1,29 @@
 package tictac7x.rooftops;
 
-import com.google.common.collect.ImmutableSet;
-import net.runelite.api.*;
-import net.runelite.api.events.GameObjectSpawned;
+import tictac7x.Overlay;
+import java.awt.Shape;
+import java.awt.Color;
+import java.util.List;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
+import net.runelite.api.Tile;
+import net.runelite.api.Model;
+import net.runelite.api.Client;
+import net.runelite.api.Player;
+import net.runelite.api.TileObject;
+import net.runelite.api.GameObject;
+import net.runelite.api.GroundObject;
+import net.runelite.api.DecorativeObject;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import tictac7x.Overlay;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 public class RooftopsOverlayObstacles extends Overlay {
     private final Client client;
     private final RooftopsOverlayMarks overlay_marks;
 
     private final List<TileObject> obstacles = new ArrayList<>();
+
 
     public RooftopsOverlayObstacles(final Client client, final RooftopsOverlayMarks overlay_marks) {
         this.client = client;
@@ -27,21 +33,18 @@ public class RooftopsOverlayObstacles extends Overlay {
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
 
-    public void onTileObjectSpawned(final TileObject tile_object) {
-        if (Obstacles.isObstacle(tile_object)) {
-            obstacles.add(tile_object);
-        }
-    }
-
-    public void onTileObjectDespawned(final TileObject tile_object) {
-        if (Obstacles.isObstacle(tile_object)) {
-            obstacles.remove(tile_object);
-        }
-    }
-
     public void clear() {
         obstacles.clear();
     }
+
+    public void onTileObjectSpawned(final TileObject object) {
+        if (Obstacles.isObstacle(object)) obstacles.add(object);
+    }
+
+    public void onTileObjectDespawned(final TileObject object) {
+        if (Obstacles.isObstacle(object)) obstacles.remove(object);
+    }
+
 
     @Override
     public Dimension render(Graphics2D graphics) {
@@ -76,19 +79,33 @@ public class RooftopsOverlayObstacles extends Overlay {
             }
         }
 
+        // Render obstacles clickboxes.
         for (final TileObject obstacle : obstacles) {
-            if (obstacle.getPlane() == client.getPlane()) {
-                final Color color;
-                if (obstacle == obstacle_closest_mark) {
-                    color = color_red;
-                } else if (doing_obstacle) {
-                    color = color_yellow;
-                } else if (obstacle == obstacle_closest_player) {
-                    color = color_green;
-                } else {
-                    color = color_yellow;
-                }
-                renderClickbox(graphics, obstacle, color, 1);
+            final Color color;
+            if (obstacle == obstacle_closest_mark) {
+                color = color_red;
+            } else if (doing_obstacle) {
+                color = color_yellow;
+            } else if (obstacle == obstacle_closest_player) {
+                color = color_green;
+            } else {
+                color = color_yellow;
+            }
+
+            // Custom getClickbox to render obstacles correctly on different planes.
+            final Shape clickbox = Perspective.getClickbox(client,
+                obstacle instanceof GameObject
+                    ? (Model) ((GameObject) obstacle).getRenderable() :
+                obstacle instanceof GroundObject
+                    ? (Model) ((GroundObject) obstacle).getRenderable() :
+                obstacle instanceof DecorativeObject
+                    ? (Model) ((DecorativeObject) obstacle).getRenderable() :
+                null, 0, obstacle.getLocalLocation(), obstacle.getPlane() - client.getPlane()
+            );
+
+
+            if (clickbox != null) {
+                renderShape(graphics, clickbox, color);
             }
         }
 
