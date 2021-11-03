@@ -47,12 +47,28 @@ public class RooftopsOverlayObstacles extends Overlay {
         if (Obstacles.isObstacle(object)) obstacles.remove(object);
     }
 
+    static int animation;
+    static int pose;
+    static int idle;
 
     @Override
     public Dimension render(Graphics2D graphics) {
         final Player player = client.getLocalPlayer();
         if (player == null) return null;
         final boolean doing_obstacle = Obstacles.isDoingObstacle(player);
+
+        if (player.getAnimation() != animation) {
+            animation = player.getAnimation();
+            System.out.println("Animation: " + animation);
+        }
+        if (player.getPoseAnimation() != pose) {
+            pose = player.getPoseAnimation();
+            System.out.println("Pose: " + pose);
+        }
+        if (player.getIdlePoseAnimation() != idle) {
+            idle = player.getIdlePoseAnimation();
+            System.out.println("Idle: " + idle);
+        }
 
         final Tile mark_of_grace = overlay_marks.getMarkOfGrace();
         int distance_min_player = Integer.MAX_VALUE;

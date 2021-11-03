@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'tictac7x-rooftops'
-version = '0.2.1'
+version = '0.2.2'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
