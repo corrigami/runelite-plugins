@@ -32,7 +32,6 @@ public class RooftopsOverlayObstacles extends Overlay {
     private final List<TileObject> obstacles_clicked = new ArrayList<>();
     private boolean doing_obstacle = false;
 
-
     public RooftopsOverlayObstacles(final RooftopsConfig config, final Client client, final RooftopsOverlayMarks overlay_marks) {
         this.config = config;
         this.client = client;
@@ -67,9 +66,10 @@ public class RooftopsOverlayObstacles extends Overlay {
         }
     }
 
-    static int animation;
-    static int pose;
-    static int idle;
+//    // For debugging and finding out course animations.
+//    static int animation;
+//    static int pose;
+//    static int idle;
 
     @Override
     public Dimension render(Graphics2D graphics) {
@@ -93,18 +93,19 @@ public class RooftopsOverlayObstacles extends Overlay {
             this.doing_obstacle = false;
         }
 
-        if (player.getAnimation() != animation) {
-            animation = player.getAnimation();
-            System.out.println("Animation: " + animation);
-        }
-        if (player.getPoseAnimation() != pose) {
-            pose = player.getPoseAnimation();
-            System.out.println("Pose: " + pose);
-        }
-        if (player.getIdlePoseAnimation() != idle) {
-            idle = player.getIdlePoseAnimation();
-            System.out.println("Idle: " + idle);
-        }
+//        // For debugging and finding out course animations.
+//        if (player.getAnimation() != animation) {
+//            animation = player.getAnimation();
+//            System.out.println("Animation: " + animation);
+//        }
+//        if (player.getPoseAnimation() != pose) {
+//            pose = player.getPoseAnimation();
+//            System.out.println("Pose: " + pose);
+//        }
+//        if (player.getIdlePoseAnimation() != idle) {
+//            idle = player.getIdlePoseAnimation();
+//            System.out.println("Idle: " + idle);
+//        }
 
         final Tile mark_of_grace = overlay_marks.getMarkOfGrace();
         int distance_min_player = Integer.MAX_VALUE;
@@ -123,7 +124,12 @@ public class RooftopsOverlayObstacles extends Overlay {
             }
 
             // Find the closest obstacle to mark of grace.
-            if (mark_of_grace != null && obstacle.getPlane() == mark_of_grace.getPlane()) {
+            if (
+                config.showObstacleStop() &&
+                mark_of_grace != null &&
+                obstacle.getPlane() == mark_of_grace.getPlane() &&
+                !obstacles_clicked.contains(obstacle)
+            ) {
                 final int distance1 = obstacle.getWorldLocation().distanceTo(mark_of_grace.getWorldLocation());
                 if (distance1 < distance_min_mark) {
                     distance_min_mark = distance1;
@@ -134,12 +140,16 @@ public class RooftopsOverlayObstacles extends Overlay {
 
         // Render obstacles clickboxes.
         for (final TileObject obstacle : obstacles) {
+            // Show only current plane obstacles.
+            if (!config.highlightAllObstacles() && obstacle.getPlane() != client.getPlane()) continue;
+
             final Color color =
                 obstacle == obstacle_closest_mark
-                    ? color_red
+                    ? config.getObstacleStopColor()
                 : !doing_obstacle && obstacle == obstacle_closest_player
-                    ? color_green
-                    : color_yellow;
+                || !config.showObstaclesUnavailable()
+                    ? config.getObstacleNextColor()
+                    : config.getObstacleUnavailableColor();
 
             // Custom getClickbox to render obstacles correctly on different planes.
             final Shape clickbox = Perspective.getClickbox(client,
@@ -151,7 +161,6 @@ public class RooftopsOverlayObstacles extends Overlay {
                     ? (Model) ((DecorativeObject) obstacle).getRenderable() :
                 null, 0, obstacle.getLocalLocation(), obstacle.getPlane() - client.getPlane()
             );
-
 
             if (clickbox != null) {
                 renderShape(graphics, clickbox, color);
