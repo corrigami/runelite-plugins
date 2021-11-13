@@ -48,7 +48,7 @@ public class RooftopCourseSeers extends Course {
             ImmutableSet.of(
                 //
                 new MarkOfGrace(2727, 3493, 14928),
-                new MarkOfGrace(2706, 3493, 14932), new MarkOfGrace(2709, 3493, 13932),
+                new MarkOfGrace(2706, 3493, 14932), new MarkOfGrace(2709, 3493, 14932),
                 new MarkOfGrace(2712, 3481, 14929),
                 //
                 new MarkOfGrace(2698, 3465, 14931)
