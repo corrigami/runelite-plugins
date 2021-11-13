@@ -154,9 +154,7 @@ public class Courses extends Overlay {
                 mark_of_grace ->
                     mark_of_grace.x == item.getTile().getWorldLocation().getX() &&
                     mark_of_grace.y == item.getTile().getWorldLocation().getY()
-            ).forEach(
-                mark_of_graces::remove
-            );
+            ).findFirst().ifPresent(mark_of_graces::remove);
         }
     }
 
