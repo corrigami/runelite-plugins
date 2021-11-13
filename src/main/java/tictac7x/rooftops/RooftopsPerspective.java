@@ -15,9 +15,11 @@ import java.util.List;
 
 /**
  * Custom Perspective class to modify clickbox plane dynamically. Copied methods were private inside the original Perspective class.
- * @param plane_modifier - How much to change the clickbox plane.
  */
-public class Perspective {
+public class RooftopsPerspective {
+    /**
+     * @param plane_modifier - How much to change the clickbox plane.
+     */
     public static Shape getClickbox(@Nonnull Client client, Model model, int orientation, LocalPoint point, final int plane_modifier)
     {
         if (model == null)

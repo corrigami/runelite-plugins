@@ -1,4 +1,4 @@
-# Improved Rooftops - v0.3
+# Rooftop Agility Improved - v0.4
 Improved clickboxes for rooftop agility courses.
 
 <br>
@@ -19,7 +19,7 @@ Improved clickboxes for rooftop agility courses.
 - [x] Canifis
 - [x] Falador
 - [x] Seers
-- [ ] Pollnivneach
+- [x] Pollnivneach
 - [ ] Rellekka
 - [ ] Ardougne
 
