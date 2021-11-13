@@ -1,15 +1,14 @@
 package tictac7x.rooftops.courses;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
 import tictac7x.rooftops.MarkOfGrace;
-
-import java.util.List;
+import com.google.common.collect.ImmutableSet;
 
 public class RooftopCourseSeers extends Course {
     public RooftopCourseSeers() {
         super(
             // Obstacles.
-            List.of(
+            Arrays.asList(
                 14927,
                 14928,
                 14932,

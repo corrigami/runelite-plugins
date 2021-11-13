@@ -1,14 +1,13 @@
 package tictac7x.rooftops.courses;
 
+import java.util.Arrays;
 import com.google.common.collect.ImmutableSet;
-
-import java.util.List;
 
 public class RooftopCourseVarrock extends Course {
     public RooftopCourseVarrock() {
         super(
             // Obstacles.
-            List.of(
+            Arrays.asList(
                 14412,
                 14413,
                 14414,
