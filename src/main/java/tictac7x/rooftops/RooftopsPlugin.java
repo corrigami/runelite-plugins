@@ -39,9 +39,9 @@ public class RooftopsPlugin extends Plugin {
 
 	private RooftopsOverlay overlay;
 
-//	private RooftopsOverylayDebug debug;
+	private RooftopsOverylayDebug overlay_debug;
 
-	private Courses course_manager;
+	private Courses courses;
 
 	@Provides
 	RooftopsConfig provideConfig(ConfigManager configManager) {
@@ -51,63 +51,64 @@ public class RooftopsPlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		if (overlay == null) {
-			course_manager = new Courses(config, client);
-			overlay = new RooftopsOverlay(course_manager, config, client);
-//			debug = new RooftopsOverylayDebug(client, course_manager);
+			courses = new Courses(config, client);
+			overlay = new RooftopsOverlay(config, client, courses);
+			if (config.debugging()) overlay_debug = new RooftopsOverylayDebug(client, courses);
 		}
 
 		overlays.add(overlay);
-//		overlays.add(debug);
+		if (config.debugging()) overlays.add(overlay_debug);
 	}
 
 	@Override
 	protected void shutDown() {
 		overlays.remove(overlay);
-//		overlays.remove(debug);
+		if (config.debugging()) overlays.remove(overlay_debug);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
 		overlay.onTileObjectSpawned(event.getGameObject());
-		course_manager.onTileObjectSpawned(event.getGameObject());
+		courses.onTileObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onGroundObjectSpawned(final GroundObjectSpawned event) {
 		overlay.onTileObjectSpawned(event.getGroundObject());
-		course_manager.onTileObjectSpawned(event.getGroundObject());
+		courses.onTileObjectSpawned(event.getGroundObject());
 	}
 
 	@Subscribe
 	public void onDecorativeObjectSpawned(final DecorativeObjectSpawned event) {
 		overlay.onTileObjectSpawned(event.getDecorativeObject());
-		course_manager.onTileObjectSpawned(event.getDecorativeObject());
+		courses.onTileObjectSpawned(event.getDecorativeObject());
 	}
 
 	@Subscribe
 	public void onItemSpawned(final ItemSpawned event) {
 		overlay.onItemSpawned(event);
-		course_manager.onItemSpawned(event);
+		courses.onItemSpawned(event);
 	}
 
 	@Subscribe
 	public void onItemDespawned(final ItemDespawned event) {
 		overlay.onItemDespawned(event);
-		course_manager.onItemDespawned(event);
+		courses.onItemDespawned(event);
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(final MenuOptionClicked event) {
-		course_manager.onMenuOptionClicked(event);
+		courses.onMenuOptionClicked(event);
 	}
 
 	@Subscribe
 	public void onStatChanged(final StatChanged event) {
-		course_manager.onStatChanged(event);
+		courses.onStatChanged(event);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		overlay.onGameStateChanged(event);
+		courses.onGameStateChanged(event);
 	}
 }

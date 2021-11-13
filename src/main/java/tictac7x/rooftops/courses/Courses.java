@@ -6,8 +6,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
@@ -15,6 +16,7 @@ import net.runelite.api.Skill;
 import net.runelite.api.ItemID;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
+import net.runelite.api.GameState;
 import net.runelite.api.TileObject;
 import net.runelite.api.MenuAction;
 import tictac7x.rooftops.MarkOfGrace;
@@ -22,6 +24,7 @@ import tictac7x.rooftops.RooftopsConfig;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuOptionClicked;
 
 public class Courses extends Overlay {
@@ -109,16 +112,20 @@ public class Courses extends Overlay {
 
     public void onItemSpawned(final ItemSpawned item) {
         if (item.getItem().getId() == ItemID.MARK_OF_GRACE && course != null) {
-            course.getMarkOfGraces().stream().filter(
-                mark_of_grace ->
-                    mark_of_grace.x == item.getTile().getWorldLocation().getX() &&
-                    mark_of_grace.y == item.getTile().getWorldLocation().getY()
+            final Optional<MarkOfGrace> mark_of_grace = course.getMarkOfGraces().stream().filter(
+                    m ->
+                            m.x == item.getTile().getWorldLocation().getX() &&
+                                    m.y == item.getTile().getWorldLocation().getY()
 
-            // Mark of grace hardcoded.
-            ).findAny().ifPresentOrElse(mark_of_graces::add,
+                    // Mark of grace hardcoded.
+            ).findFirst();
 
-            // Find mark of grace obstacle based on distances from obstacles.
-            () -> {
+            // Mark of grace predefined.
+            if (mark_of_grace.isPresent()) {
+                mark_of_graces.add(mark_of_grace.get());
+
+            // Create mark of grace dynamically.
+            } else {
                 int distance_min = Integer.MAX_VALUE;
                 TileObject mark_of_grace_obstacle = null;
 
@@ -140,7 +147,7 @@ public class Courses extends Overlay {
                         mark_of_grace_obstacle.getId()
                     ));
                 }
-            });
+            }
         }
     }
 
@@ -182,6 +189,13 @@ public class Courses extends Overlay {
     public void onStatChanged(final StatChanged stat_changed) {
         if (stat_changed.getSkill() == Skill.AGILITY) {
             xp_drop = true;
+        }
+    }
+
+    public void onGameStateChanged(final GameStateChanged event) {
+        if (event.getGameState() == GameState.LOADING) {
+            obstacles.clear();
+            mark_of_graces.clear();
         }
     }
 
@@ -329,6 +343,14 @@ public class Courses extends Overlay {
 
     public List<MarkOfGrace> getMarkOfGraces() {
         return mark_of_graces;
+    }
+
+    public List<MarkOfGrace> getMarkOfGracesPredefined() {
+        if (course != null) {
+            return new ArrayList<>(course.getMarkOfGraces());
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override

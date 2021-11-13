@@ -4,9 +4,11 @@ import tictac7x.Overlay;
 import tictac7x.rooftops.courses.Courses;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
 import java.awt.Shape;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 
@@ -27,15 +29,15 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
 public class RooftopsOverlay extends Overlay {
-    private final Courses course_manager;
+    private final Courses courses;
     private final RooftopsConfig config;
     private final Client client;
 
     private final List<TileObject> obstacles = new ArrayList<>();
     private final List<Tile> mark_of_graces = new ArrayList<>();
 
-    public RooftopsOverlay(final Courses course_manager, final RooftopsConfig config, final Client client) {
-        this.course_manager = course_manager;
+    public RooftopsOverlay(final RooftopsConfig config, final Client client, final Courses courses) {
+        this.courses = courses;
         this.config = config;
         this.client = client;
 
@@ -51,7 +53,7 @@ public class RooftopsOverlay extends Overlay {
     }
 
     public void onTileObjectSpawned(final TileObject object) {
-        if (course_manager.getCourseBasedOnObstacle(object) != null) {
+        if (courses.getCourseBasedOnObstacle(object) != null) {
             obstacles.add(object);
         }
     }
@@ -74,12 +76,25 @@ public class RooftopsOverlay extends Overlay {
         if (player == null) return null;
 
         // Main cycle to observe for obstacle changes.
-        course_manager.cycle(player);
+        courses.cycle(player);
 
         // Mark of graces.
         if (config.showMarkOfGrace()) {
             for (final Tile mark_of_grace : mark_of_graces) {
-                renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor(), clickbox_stroke_width, 25);
+                // Debug - highlight undefined mark of graces.
+                if (config.debugging()) {
+                    final Optional<MarkOfGrace> mark = courses.getMarkOfGracesPredefined().stream().filter(m -> m.x == mark_of_grace.getWorldLocation().getX() && m.y == mark_of_grace.getWorldLocation().getY()).findFirst();
+
+                    if (mark.isPresent()) {
+                        renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor(), config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
+                    } else {
+                        renderItem(graphics, mark_of_grace, Color.MAGENTA, config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
+                    }
+
+                // Production.
+                } else {
+                    renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor(), config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
+                }
             }
         }
 
@@ -99,7 +114,7 @@ public class RooftopsOverlay extends Overlay {
             );
 
             if (clickbox != null) {
-                renderShape(graphics, clickbox, course_manager.getObstacleColor(obstacle));
+                renderShape(graphics, clickbox, courses.getObstacleColor(obstacle), config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
             }
         }
 

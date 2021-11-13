@@ -1,9 +1,10 @@
 package tictac7x.rooftops.courses;
 
-import com.google.common.collect.ImmutableSet;
 import tictac7x.rooftops.MarkOfGrace;
 
 import java.util.List;
+
+import com.google.common.collect.ImmutableSet;
 
 public class RooftopCoursePollnivneach extends Course {
     public RooftopCoursePollnivneach() {
@@ -59,13 +60,13 @@ public class RooftopCoursePollnivneach extends Course {
 
             ImmutableSet.of(
                 //
+                new MarkOfGrace(3346, 2968, 14936),
+                new MarkOfGrace(3353, 2975, 14937),
                 //
                 //
                 //
-                //
-                //
-                new MarkOfGrace(3359, 2983, 13941),
-                //
+                new MarkOfGrace(3359, 2983, 14941),
+                new MarkOfGrace(3362, 2993, 14944),
                 new MarkOfGrace(3357, 3002, 14945)
             )
         );

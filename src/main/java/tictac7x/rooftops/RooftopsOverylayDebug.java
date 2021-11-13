@@ -3,10 +3,11 @@ package tictac7x.rooftops;
 import tictac7x.Overlay;
 import tictac7x.rooftops.courses.Courses;
 
+import java.util.Objects;
+
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Dimension;
-import java.awt.Color;
-import java.util.Objects;
 
 import net.runelite.api.Client;
 import net.runelite.api.Player;
@@ -16,7 +17,7 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class RooftopsOverylayDebug extends Overlay {
     private final Client client;
-    private final Courses course_manager;
+    private final Courses courses;
     private final PanelComponent panel = new PanelComponent();
 
     // For debugging and finding out course animations.
@@ -27,7 +28,7 @@ public class RooftopsOverylayDebug extends Overlay {
 
     public RooftopsOverylayDebug(final Client client, final Courses course_manager) {
         this.client = client;
-        this.course_manager = course_manager;
+        this.courses = course_manager;
         setPosition(OverlayPosition.TOP_LEFT);
     }
 
@@ -38,7 +39,7 @@ public class RooftopsOverylayDebug extends Overlay {
         String visited = "";
         String mark = "";
 
-        for (final int v : course_manager.getObstaclesVisited()) {
+        for (final int v : courses.getObstaclesVisited()) {
             visited += v + ", ";
         }
         if (visited.length() > 0) {
@@ -46,7 +47,7 @@ public class RooftopsOverylayDebug extends Overlay {
         } else {
             visited = "-";
         }
-        for (final MarkOfGrace m : course_manager.getMarkOfGraces()) {
+        for (final MarkOfGrace m : courses.getMarkOfGraces()) {
             mark += m.x + "_" + m.y + ", ";
         }
         if (mark.length() > 0) {
@@ -55,18 +56,18 @@ public class RooftopsOverylayDebug extends Overlay {
             mark = "-";
         }
 
-        panel.getChildren().add(LineComponent.builder().left("XP:").right(course_manager.isXpDrop() ? "true" : "false").rightColor(course_manager.isXpDrop() ? Color.green : color_red).build());
-        panel.getChildren().add(LineComponent.builder().left("ANIMATING:").right(course_manager.isDoingObstacle() ? "true" : "false").rightColor(course_manager.isDoingObstacle() ? color_green : color_red).build());
-        panel.getChildren().add(LineComponent.builder().left("CLICKED:").right(course_manager.getObstacleClicked() != null ? course_manager.getObstacleClicked() + "" : "-").build());
-        panel.getChildren().add(LineComponent.builder().left("NEXT").right(course_manager.getObstacleNext() != null ? course_manager.getObstacleNext() + "" : "-").build());
+        panel.getChildren().add(LineComponent.builder().left("XP:").right(courses.isXpDrop() ? "true" : "false").rightColor(courses.isXpDrop() ? Color.green : color_red).build());
+        panel.getChildren().add(LineComponent.builder().left("ANIMATING:").right(courses.isDoingObstacle() ? "true" : "false").rightColor(courses.isDoingObstacle() ? color_green : color_red).build());
+        panel.getChildren().add(LineComponent.builder().left("CLICKED:").right(courses.getObstacleClicked() != null ? courses.getObstacleClicked() + "" : "-").build());
+        panel.getChildren().add(LineComponent.builder().left("NEXT").right(courses.getObstacleNext() != null ? courses.getObstacleNext() + "" : "-").build());
         panel.getChildren().add(LineComponent.builder().left("VISITED").right(visited).build());
         panel.getChildren().add(LineComponent.builder().left("MARK").right(mark).build());
 
         final Player player = client.getLocalPlayer();
         if (player != null) {
             // For debugging and finding out course animations.
-            if (!Objects.equals(obstacle, course_manager.getObstacleClicked())) {
-                obstacle = course_manager.getObstacleClicked();
+            if (!Objects.equals(obstacle, courses.getObstacleClicked())) {
+                obstacle = courses.getObstacleClicked();
                 if (obstacle != null) {
                     System.out.println();
                     System.out.println("OBSTACLE: " + obstacle);
