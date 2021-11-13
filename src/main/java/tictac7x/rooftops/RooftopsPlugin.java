@@ -39,7 +39,7 @@ public class RooftopsPlugin extends Plugin {
 
 	private RooftopsOverlay overlay;
 
-	private RooftopsOverylayDebug debug;
+//	private RooftopsOverylayDebug debug;
 
 	private Courses course_manager;
 
@@ -53,17 +53,17 @@ public class RooftopsPlugin extends Plugin {
 		if (overlay == null) {
 			course_manager = new Courses(config, client);
 			overlay = new RooftopsOverlay(course_manager, config, client);
-			debug = new RooftopsOverylayDebug(course_manager);
+//			debug = new RooftopsOverylayDebug(client, course_manager);
 		}
 
 		overlays.add(overlay);
-		overlays.add(debug);
+//		overlays.add(debug);
 	}
 
 	@Override
 	protected void shutDown() {
 		overlays.remove(overlay);
-		overlays.remove(debug);
+//		overlays.remove(debug);
 	}
 
 	@Subscribe
