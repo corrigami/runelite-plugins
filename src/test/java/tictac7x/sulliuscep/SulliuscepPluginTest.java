@@ -1,11 +1,11 @@
-package tictac7x.TODO_PLUGIN_NAME;
+package tictac7x.sulliuscep;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class TODO_PLUGIN_NAMEPluginTest {
+public class SulliuscepPluginTest {
 	public static void main(String[] args) throws Exception {
-		ExternalPluginManager.loadBuiltin(TODO_PLUGIN_NAMEPlugin.class);
+		ExternalPluginManager.loadBuiltin(SulliuscepPlugin.class);
 		RuneLite.main(args);
 	}
 }
