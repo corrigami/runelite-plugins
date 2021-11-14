@@ -71,20 +71,4 @@ public interface RooftopsConfig extends Config {
 		description = "Color of mark of grace highlight.",
 		position = 8
 	) default Color getMarkOfGraceColor() { return Overlay.color_green; }
-
-	@Units(" px")
-	@ConfigItem(
-			keyName = "highlight_stroke",
-			name = "Highlight stroke",
-			description = "Choose the width of highlight strokes.",
-			position = 9
-	) default int getHighlightStroke() { return Overlay.clickbox_stroke_width; }
-
-	@Units(" %")
-	@ConfigItem(
-			keyName = "highlight_fill",
-			name = "Highlight fill",
-			description = "Choose the opacity of highlight fills.",
-			position = 10
-	) default int getHighlightFill() { return Overlay.clickbox_fill_alpha; }
 }

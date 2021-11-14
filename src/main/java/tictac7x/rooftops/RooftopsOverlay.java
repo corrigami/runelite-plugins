@@ -86,14 +86,14 @@ public class RooftopsOverlay extends Overlay {
                     final Optional<MarkOfGrace> mark = courses.getMarkOfGracesPredefined().stream().filter(m -> m.x == mark_of_grace.getWorldLocation().getX() && m.y == mark_of_grace.getWorldLocation().getY()).findFirst();
 
                     if (mark.isPresent()) {
-                        renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor(), config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
+                        renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor());
                     } else {
-                        renderItem(graphics, mark_of_grace, Color.MAGENTA, config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
+                        renderItem(graphics, mark_of_grace, Color.MAGENTA);
                     }
 
                 // Production.
                 } else {
-                    renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor(), config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
+                    renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor());
                 }
             }
         }
@@ -114,7 +114,7 @@ public class RooftopsOverlay extends Overlay {
             );
 
             if (clickbox != null) {
-                renderShape(graphics, clickbox, courses.getObstacleColor(obstacle), config.getHighlightStroke(), getAlphaFromPercentage(config.getHighlightFill()));
+                renderShape(graphics, clickbox, courses.getObstacleColor(obstacle));
             }
         }
 

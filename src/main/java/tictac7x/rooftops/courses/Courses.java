@@ -314,7 +314,7 @@ public class Courses extends Overlay {
 
             return (
                 obstacle_clicked != null && distance_world == Integer.MAX_VALUE && idle == POSE_IDLE && animation != ANIMATION_IDLE
-                || course.getAnimations().contains(animation) || course.getPoses().contains(pose) || course.getIdles().contains(idle)
+                || course != null && (course.getAnimations().contains(animation) || course.getPoses().contains(pose) || course.getIdles().contains(idle))
             );
         }
 
