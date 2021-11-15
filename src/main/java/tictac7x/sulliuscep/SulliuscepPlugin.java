@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 
 import net.runelite.api.Client;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.eventbus.Subscribe;
@@ -26,12 +27,17 @@ public class SulliuscepPlugin extends Plugin {
 	private Client client;
 
 	@Inject
+	private ClientThread client_thread;
+
+	@Inject
 	private SulliuscepConfig config;
 
 	@Inject
 	private OverlayManager overlays;
 
-	private SulliuscepOverlay sulliuscep_overlay;
+	private TarSwamp tar_swamp;
+	private TarSwampOverlay tar_swamp_overlay;
+	private TarSwampWidget tar_swamp_widget;
 
 	@Provides
 	SulliuscepConfig provideConfig(ConfigManager configManager) {
@@ -40,35 +46,40 @@ public class SulliuscepPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		if (sulliuscep_overlay == null) {
-			sulliuscep_overlay = new SulliuscepOverlay(client, config);
+		if (tar_swamp == null) {
+			tar_swamp = new TarSwamp(client);
+			tar_swamp_overlay = new TarSwampOverlay(config, tar_swamp);
+			tar_swamp_widget = new TarSwampWidget(config, tar_swamp);
 		}
 
-		overlays.add(sulliuscep_overlay);
+		overlays.add(tar_swamp_overlay);
+		overlays.add(tar_swamp_widget);
 	}
 
 	@Override
 	protected void shutDown() {
-		overlays.remove(sulliuscep_overlay);
+		overlays.remove(tar_swamp_overlay);
+		overlays.remove(tar_swamp_widget);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		sulliuscep_overlay.onGameObjectSpawned(event.getGameObject());
+		tar_swamp_overlay.onGameObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(final GameObjectDespawned event) {
-		sulliuscep_overlay.onGameObjectDespawned(event.getGameObject());
+		tar_swamp_overlay.onGameObjectDespawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onVarbitChanged(final VarbitChanged event) {
-		sulliuscep_overlay.onVarbitChanged(event);
+		tar_swamp.onVarbitChanged();
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		sulliuscep_overlay.onGameStateChanged(event);
+		tar_swamp.onGameStateChanged(event);
+		tar_swamp_overlay.onGameStateChanged(event);
 	}
 }

@@ -24,12 +24,18 @@ public interface SulliuscepConfig extends Config {
 		position = 2
 	) default Color getSulliuscepColor() { return Overlay.color_green; }
 
+	enum Obstacles {
+		ALL,
+		NEXT,
+		NONE
+	}
+
 	@ConfigItem(
 		keyName = "obstacles",
 		name = "Highlight obstacles",
 		description = "Highlight obstacles that need to be cleared.",
 		position = 3
-	) default boolean highlightObstacles() { return true; }
+	) default Obstacles highlightObstacles() { return Obstacles.ALL; }
 
 	@ConfigItem(
 		keyName = "obstacles_color",
@@ -51,4 +57,11 @@ public interface SulliuscepConfig extends Config {
 		description = "Choose the color of the mud pit.",
 		position = 6
 	) default Color getMudPitColor() { return Overlay.color_red; }
+
+	@ConfigItem(
+		keyName = "mud_pit_widget",
+		name = "Show mud pit widget",
+		description = "Show warning if the mud pit is empty and needs to be filled with mushrooms.",
+		position = 7
+	) default boolean showMudPitWidget() { return true; }
 }
