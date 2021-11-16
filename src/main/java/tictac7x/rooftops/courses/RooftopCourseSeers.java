@@ -27,6 +27,7 @@ public class RooftopCourseSeers extends Course {
                 2586, 2588
             ),
 
+            // Poses.
             ImmutableSet.of(
                 //
                 //
@@ -35,6 +36,8 @@ public class RooftopCourseSeers extends Course {
                 //
                 //
             ),
+
+            // Idles.
             ImmutableSet.of(
                 //
                 //

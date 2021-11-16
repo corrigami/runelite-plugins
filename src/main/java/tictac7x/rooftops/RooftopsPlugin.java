@@ -50,20 +50,23 @@ public class RooftopsPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		if (overlay == null) {
-			courses = new Courses(config, client);
-			overlay = new RooftopsOverlay(config, client, courses);
-			if (config.debugging()) overlay_debug = new RooftopsOverylayDebug(client, courses);
-		}
-
+		courses = new Courses(config, client);
+		overlay = new RooftopsOverlay(config, client, courses);
 		overlays.add(overlay);
-		if (config.debugging()) overlays.add(overlay_debug);
+
+		if (config.debugging()) {
+			overlay_debug = new RooftopsOverylayDebug(client, courses);
+			overlays.add(overlay_debug);
+		}
 	}
 
 	@Override
 	protected void shutDown() {
 		overlays.remove(overlay);
-		if (config.debugging()) overlays.remove(overlay_debug);
+
+		if (config.debugging()) {
+			overlays.remove(overlay_debug);
+		}
 	}
 
 	@Subscribe

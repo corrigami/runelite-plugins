@@ -30,6 +30,7 @@ public class RooftopCourseAlKharid extends Course {
                 2586
             ),
 
+            // Poses.
             ImmutableSet.of(
                 //
                 762,
@@ -40,6 +41,8 @@ public class RooftopCourseAlKharid extends Course {
                 762
                 //
             ),
+
+            // Idles.
             ImmutableSet.of(
                 //
                 763,

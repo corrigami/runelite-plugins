@@ -40,6 +40,7 @@ public class RooftopCourseFalador extends Course {
                 1603, 2586, 2588
             ),
 
+            // Poses.
             ImmutableSet.of(
                 //
                 762,
@@ -55,6 +56,8 @@ public class RooftopCourseFalador extends Course {
                 //
                 //
             ),
+
+            // Idles.
             ImmutableSet.of(
                 //
                 763,

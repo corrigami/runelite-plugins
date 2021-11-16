@@ -32,7 +32,7 @@ public interface RooftopsConfig extends Config {
 		name = "Next unavailable obstacle",
 		description = "Color of the next obstacle.",
 		position = 2
-	) default Color getObstacleNextUnavailableColor() { return new Color(165, 199, 7, 255); }
+	) default Color getObstacleNextUnavailableColor() { return new Color(200, 255, 0, Overlay.color_alpha); }
 
 	@Alpha
 	@ConfigItem(

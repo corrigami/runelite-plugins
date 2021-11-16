@@ -32,6 +32,7 @@ public class RooftopCourseVarrock extends Course {
                 741, 2586, 2588
             ),
 
+            // Poses.
             ImmutableSet.of(
                 //
                 //
@@ -43,6 +44,8 @@ public class RooftopCourseVarrock extends Course {
                 //
                 //
             ),
+
+            // Idles.
             ImmutableSet.of(
                 //
                 //

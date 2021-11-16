@@ -28,6 +28,7 @@ public class RooftopCourseDraynor extends Course {
                 2586, 2588, 2586, 2588
             ),
 
+            // Poses.
             ImmutableSet.of(
                 //
                 762,
@@ -37,6 +38,8 @@ public class RooftopCourseDraynor extends Course {
                 //
                 //
             ),
+
+            // Idles.
             ImmutableSet.of(
                 //
                 763,

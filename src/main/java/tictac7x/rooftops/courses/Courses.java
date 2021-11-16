@@ -38,6 +38,7 @@ public class Courses extends Overlay {
     private final RooftopCourseFalador rooftop_falador = new RooftopCourseFalador();
     private final RooftopCourseSeers rooftop_seers = new RooftopCourseSeers();
     private final RooftopCoursePollnivneach rooftop_pollnivneach = new RooftopCoursePollnivneach();
+    private final RooftopCourseRellekka rooftop_rellekka = new RooftopCourseRellekka();
 
     private final List<TileObject> obstacles = new ArrayList<>();
     private final List<Integer> obstacles_visited = new ArrayList<>();
@@ -87,6 +88,8 @@ public class Courses extends Overlay {
             return rooftop_seers;
         } else if (rooftop_pollnivneach.getObstacles().contains(obstacle)) {
             return rooftop_pollnivneach;
+        } else if (rooftop_rellekka.getObstacles().contains(obstacle)) {
+            return rooftop_rellekka;
         }
 
         return null;
@@ -223,7 +226,7 @@ public class Courses extends Overlay {
             }
 
         // Find next obstacle based on previous.
-        } else if (course != null) {
+        } else if (course != null && !obstacles_visited.isEmpty()) {
             final int previous_obstacle_id = obstacles_visited.get(obstacles_visited.size() - 1);
             final int obstacle_index = course.getObstacles().indexOf(previous_obstacle_id);
 
@@ -308,16 +311,22 @@ public class Courses extends Overlay {
             final int pose = player.getPoseAnimation();
             final int idle = player.getIdlePoseAnimation();
 
-            final Integer distance_world;
+            Integer distance_world = null;
+            Integer distance_local = null;
+
             if (obstacle_clicked != null) {
                 distance_world = player.getWorldLocation().distanceTo(obstacle_clicked.getWorldLocation());
-            } else {
-                distance_world = null;
+                distance_local = player.getLocalLocation().distanceTo(obstacle_clicked.getLocalLocation());
             }
 
             return (
-                obstacle_clicked != null && distance_world == Integer.MAX_VALUE && idle == POSE_IDLE && animation != ANIMATION_IDLE
-                || course != null && (course.getAnimations().contains(animation) || course.getPoses().contains(pose) || course.getIdles().contains(idle))
+                obstacle_clicked != null && distance_world == Integer.MAX_VALUE && idle == POSE_IDLE && animation != ANIMATION_IDLE ||
+                obstacle_clicked != null && distance_local < 128 && idle == POSE_IDLE && animation != ANIMATION_IDLE ||
+                course != null && (
+                    course.getAnimations().contains(animation) ||
+                    course.getPoses().contains(pose) ||
+                    course.getIdles().contains(idle)
+                )
             );
         }
 

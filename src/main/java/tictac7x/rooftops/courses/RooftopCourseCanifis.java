@@ -30,6 +30,7 @@ public class RooftopCourseCanifis extends Course {
                 2586, 2588
             ),
 
+            // Poses.
             ImmutableSet.of(
                 //
                 //
@@ -40,6 +41,8 @@ public class RooftopCourseCanifis extends Course {
                 //
                 //
             ),
+
+            // Idles.
             ImmutableSet.of(
                 //
                 //
