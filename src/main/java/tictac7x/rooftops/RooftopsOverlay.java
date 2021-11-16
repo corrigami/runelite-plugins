@@ -79,30 +79,25 @@ public class RooftopsOverlay extends Overlay {
         courses.cycle(player);
 
         // Mark of graces.
-        if (config.showMarkOfGrace()) {
-            for (final Tile mark_of_grace : mark_of_graces) {
-                // Debug - highlight undefined mark of graces.
-                if (config.debugging()) {
-                    final Optional<MarkOfGrace> mark = courses.getMarkOfGracesPredefined().stream().filter(m -> m.x == mark_of_grace.getWorldLocation().getX() && m.y == mark_of_grace.getWorldLocation().getY()).findFirst();
+        for (final Tile mark_of_grace : mark_of_graces) {
+            // Debug - highlight undefined mark of graces.
+            if (config.debugging()) {
+                final Optional<MarkOfGrace> mark = courses.getMarkOfGracesPredefined().stream().filter(m -> m.x == mark_of_grace.getWorldLocation().getX() && m.y == mark_of_grace.getWorldLocation().getY()).findFirst();
 
-                    if (mark.isPresent()) {
-                        renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor());
-                    } else {
-                        renderItem(graphics, mark_of_grace, Color.MAGENTA);
-                    }
-
-                // Production.
-                } else {
+                if (mark.isPresent()) {
                     renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor());
+                } else {
+                    renderItem(graphics, mark_of_grace, Color.MAGENTA);
                 }
+
+            // Production.
+            } else {
+                renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor());
             }
         }
 
         // Obstacles.
         for (final TileObject obstacle : obstacles) {
-            // Same plane obstacles check.
-            if (!config.highlightAllObstacles() && obstacle.getPlane() != client.getPlane()) continue;
-
             final Shape clickbox = RooftopsPerspective.getClickbox(client,
                 obstacle instanceof GameObject
                     ? (Model) ((GameObject) obstacle).getRenderable() :

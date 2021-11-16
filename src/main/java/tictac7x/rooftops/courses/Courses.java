@@ -250,12 +250,15 @@ public class Courses extends Overlay {
      * @return color of obstacle.
      */
     public Color getObstacleColor(final TileObject obstacle) {
+        final int id = obstacle.getId();
         final Color color;
 
-        if (config.showObstacleStop() && getMarkOfGracesObstacles().contains(obstacle.getId())) {
+        if (getMarkOfGracesObstacles().contains(id)) {
             color = config.getObstacleStopColor();
-        } else if (!doing_obstacle && xp_drop && obstacle_next != null && obstacle.getId() == obstacle_next || !config.showObstaclesUnavailable()) {
+        } else if (!doing_obstacle && xp_drop && obstacle_next != null && obstacle_next == id) {
             color = config.getObstacleNextColor();
+        } else if (obstacle_next != null && obstacle_next == id) {
+            color = config.getObstacleNextUnavailableColor();
         } else {
             color = config.getObstacleUnavailableColor();
         }

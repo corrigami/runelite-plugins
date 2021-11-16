@@ -1,11 +1,13 @@
 package tictac7x.rooftops;
 
-import net.runelite.client.config.Units;
 import tictac7x.Overlay;
+
 import java.awt.Color;
+
 import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigGroup;
 
 @ConfigGroup("tictac7x-rooftops")
 public interface RooftopsConfig extends Config {
@@ -16,59 +18,43 @@ public interface RooftopsConfig extends Config {
 		hidden = true
 	) default boolean debugging() { return false; }
 
+	@Alpha
 	@ConfigItem(
-		keyName = "highlight_obstacles_all",
-		name = "Highlight all obstacles",
-		description = "Highlight all obstacles that even can't be clicked currently.",
-		position = 1
-	) default boolean highlightAllObstacles() { return true; }
-
-	@ConfigItem(
-		keyName = "obstacle_next_color",
+		keyName = "obstacle_next",
 		name = "Next obstacle",
-		description = "Color of next obstacle.",
-		position = 2
+		description = "Color of the next obstacle.",
+		position = 1
 	) default Color getObstacleNextColor() { return Overlay.color_green; }
 
+	@Alpha
+	@ConfigItem(
+		keyName = "obstacle_next_unavailable",
+		name = "Next unavailable obstacle",
+		description = "Color of the next obstacle.",
+		position = 2
+	) default Color getObstacleNextUnavailableColor() { return new Color(165, 199, 7, 255); }
+
+	@Alpha
 	@ConfigItem(
 		keyName = "obstacle_unavailable",
-		name = "Highlight unavailable obstacles",
-		description = "Highlight unavailable obstacles different from next obstacle.",
-		position = 3
-	) default boolean showObstaclesUnavailable() { return true; }
-
-	@ConfigItem(
-		keyName = "obstacle_unavailable_color",
 		name = "Unavailable obstacles",
 		description = "Color of unavailable obstacles.",
-		position = 4
+		position = 3
 	) default Color getObstacleUnavailableColor() { return Overlay.color_yellow; }
 
+	@Alpha
 	@ConfigItem(
 		keyName = "obstacle_stop",
-		name = "Highlight stopping obstacle",
-		description = "Highlight obstacle that should not be used before picking up Mark of grace.",
-		position = 5
-	) default boolean showObstacleStop() { return true; }
-
-	@ConfigItem(
-		keyName = "obstacle_stop_color",
 		name = "Stopping obstacle",
 		description = "Color of obstacle that should not be used, because Mark of grace is on the ground.",
-		position = 6
+		position = 4
 	) default Color getObstacleStopColor() { return Overlay.color_red; }
 
+	@Alpha
 	@ConfigItem(
 		keyName = "mark_of_grace",
-		name = "Highlight Mark of grace",
-		description = "Color of mark of grace highlight.",
-		position = 7
-	) default boolean showMarkOfGrace() { return true; }
-
-	@ConfigItem(
-		keyName = "mark_of_grace_color",
 		name = "Mark of grace",
-		description = "Color of mark of grace highlight.",
-		position = 8
+		description = "Color of the Mark of grace.",
+		position = 5
 	) default Color getMarkOfGraceColor() { return Overlay.color_green; }
 }
