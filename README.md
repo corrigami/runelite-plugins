@@ -1,18 +1,31 @@
-# TODO_PLUGIN_NAME - v0.1
-TODO_PLUGIN_DESCRIPTION
+# Rooftop Agility Improved - v0.4.3
+Improved clickboxes for rooftop agility courses.
 
-## How to start writing a new plugin
-### Replace `TODO` variables in code
-* `TODO_PLUGIN_NAME`
-* `TODO_PLUGIN_DESCRIPTION`
-* `TODO_PLUGIN_TAGS`
+![](img/seers.png)
 
-### Edit test run configuration
-* Right click on `PluginTest`
-* Select `Modify Run Configuration...`
-* `Modify options` -> `Add VM options`
-  * `VM options:`: `-ea`
-  * `Program arguments`: `--debug --developer-mode`
+<br>
 
-### Start RuneLite
-Start RuneLite by running the modified test file
+## Features
+* Shows all rooftop obstacles clickboxes. Even the ones that are not on the same level as player.
+* Shows which obstacle is the next one.
+* Shows unavailable obstacles and when player should click on next obstacle.
+* Shows which obstacle should not be used before picking up Mark of grace.
+* Highlights Mark of graces.
+
+<br>
+
+## Implemented rooftops
+- [x] Draynor
+- [x] Al Kharid
+- [x] Varrock
+- [x] Canifis
+- [x] Falador
+- [x] Seers
+- [x] Pollnivneach
+- [ ] Rellekka
+- [ ] Ardougne
+
+<br>
+
+## Config
+![](img/config.png)
