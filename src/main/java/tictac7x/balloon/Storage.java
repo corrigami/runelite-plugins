@@ -27,7 +27,7 @@ public class Storage {
     private static final int WIDGET_MAP_CLOSE = 26;
 
     private final SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-    private final Pattern regex_store = Pattern.compile("You put the (.*) in the crate\\. You now have (\\d+)(<br>| )stored\\.");
+    private final Pattern regex_store = Pattern.compile("You put the (.*) in the crate\\. You now have(<br>| )?(\\d+)(<br>| )?stored\\.");
     private final Pattern regex_fly = Pattern.compile("You board the balloon and fly to (the )?(.*)\\.");
     private final Pattern regex_needed = Pattern.compile("You need 1 (.*) to make this trip\\.");
     private final Pattern regex_check = Pattern.compile("This crate currently contains (\\d+) logs, (\\d+) oak logs, (\\d+) willow logs, (\\d+)<br>yew logs and (\\d+) magic logs\\.");
@@ -86,7 +86,7 @@ public class Storage {
     private void updateStorageFromStore(final Matcher matches) {
         final Logs logs_type;
         final String logs = matches.group(1);
-        final int amount = Integer.parseInt(matches.group(2));
+        final int amount = Integer.parseInt(matches.group(3));
 
         switch (logs) {
             case "Logs":        logs_type = Logs.LOGS;        break;
