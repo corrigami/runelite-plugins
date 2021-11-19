@@ -40,21 +40,27 @@ public class StoragePlugin extends Plugin {
 		return configManager.getConfig(StorageConfig.class);
 	}
 
-	private StorageOverlayBank overlay_bank;
+	private StorageOverlay overlay_bank;
+	private StorageOverlay overlay_inventory;
 
 	@Override
 	protected void startUp() {
-		overlay_bank = new StorageOverlayBank(config, configs, items, InventoryID.BANK, "bank");
+		overlay_inventory = new StorageOverlay(config, configs, items, InventoryID.INVENTORY, "inventory", false, true);
+		overlay_bank = new StorageOverlay(config, configs, items, InventoryID.BANK, "bank", true, false);
+
+		overlays.add(overlay_inventory);
 		overlays.add(overlay_bank);
 	}
 
 	@Override
 	protected void shutDown() {
+		overlays.remove(overlay_inventory);
 		overlays.remove(overlay_bank);
 	}
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
+		overlay_inventory.onItemContainerChanged(event);
 		overlay_bank.onItemContainerChanged(event);
 	}
 }

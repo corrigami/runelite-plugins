@@ -20,22 +20,27 @@ import tictac7x.Overlay;
 import java.awt.*;
 import java.util.Map;
 
-public class StorageOverlayBank extends Overlay {
+public class StorageOverlay extends Overlay {
     private final StorageConfig config;
     private final ConfigManager configs;
     private final ItemManager items;
     private final InventoryID item_container;
     private final String storage_key;
-    private JsonObject storage;
+    private final boolean white_list;
+    private final boolean black_list;
 
     private final PanelComponent panel = new PanelComponent();
 
-    public StorageOverlayBank(final StorageConfig config, final ConfigManager configs, final ItemManager items, final InventoryID item_container, final String storage_key) {
+    private JsonObject storage;
+
+    public StorageOverlay(final StorageConfig config, final ConfigManager configs, final ItemManager items, final InventoryID item_container, final String storage_key, final boolean white_list, final boolean black_list) {
         this.config = config;
         this.configs = configs;
         this.items = items;
         this.item_container = item_container;
         this.storage_key = storage_key;
+        this.white_list = white_list;
+        this.black_list = black_list;
 
         setLayer(OverlayLayer.ABOVE_WIDGETS);
         setPosition(OverlayPosition.TOP_RIGHT);
@@ -47,20 +52,28 @@ public class StorageOverlayBank extends Overlay {
         panelComponent.setOrientation(ComponentOrientation.VERTICAL);
         panelComponent.setBorder(new Rectangle(0,0,0,0));
 
-        this.storage = loadStorage(storage_key);
+        this.storage = loadStorage();
     }
 
-    private JsonObject loadStorage(final String storage_key) {
+    private JsonObject loadStorage() {
         try {
             final JsonParser parser = new JsonParser();
-            return parser.parse(getStorage(storage_key)).getAsJsonObject();
+            return parser.parse(getStorage()).getAsJsonObject();
         } catch (final Exception exception) {
             return new JsonObject();
         }
     }
 
-    private String getStorage(final String storage_key) {
+    private String getStorage() {
         return configs.getConfiguration(StorageConfig.group, storage_key);
+    }
+
+    private String getWhitelist() {
+        return configs.getConfiguration(StorageConfig.group, storage_key + "_whitelist");
+    }
+
+    private String getBlacklist() {
+        return configs.getConfiguration(StorageConfig.group, storage_key + "_blacklist");
     }
 
     public void onItemContainerChanged(final ItemContainerChanged event) {
@@ -71,7 +84,12 @@ public class StorageOverlayBank extends Overlay {
 
             for (final Item item : item_container.getItems()) {
                 if (item != null && item.getId() != -1) {
-                    storage.addProperty(String.valueOf(item.getId()), item.getQuantity());
+                    final String id = String.valueOf(item.getId());
+                    if (storage.has(id)) {
+                        storage.addProperty(id, storage.get(id).getAsInt() + item.getQuantity());
+                    } else {
+                        storage.addProperty(id, item.getQuantity());
+                    }
                 }
             }
 
@@ -86,13 +104,31 @@ public class StorageOverlayBank extends Overlay {
         panel.getChildren().clear();
 
         for (final Map.Entry<String, JsonElement> item : storage.entrySet()) {
-            if (config.getBankWhitelist().contains(items.getItemComposition(Integer.parseInt(item.getKey())).getName())) {
-                panel.getChildren().add(new ImageComponent(items.getImage(Integer.parseInt(item.getKey()), item.getValue().getAsInt(), item.getValue().getAsInt() > 1)));
+            final int id = Integer.parseInt(item.getKey());
+            final String name = items.getItemComposition(id).getName();
+            final int quantity = item.getValue().getAsInt();
+
+            // Placeholder check.
+            if (quantity < 1) {
+                continue;
+
+            // Whitelist check.
+            } else if (white_list && getWhitelist() != null && !getWhitelist().contains(name)) {
+                continue;
+
+            // Blacklist check.
+            } else if (black_list && getBlacklist() != null && getBlacklist().contains(name)) {
+                continue;
             }
+
+            panel.getChildren().add(new ImageComponent(items.getImage(id, quantity, true)));
         }
 
-        panelComponent.getChildren().add(panel);
-
-        return super.render(graphics);
+        if (!panel.getChildren().isEmpty()) {
+            panelComponent.getChildren().add(panel);
+            return super.render(graphics);
+        } else {
+            return null;
+        }
     }
 }
