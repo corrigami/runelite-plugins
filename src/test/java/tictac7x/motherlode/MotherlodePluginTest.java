@@ -1,11 +1,11 @@
-package tictac7x.TODO_PLUGIN_NAME;
+package tictac7x.motherlode;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class TODO_PLUGIN_NAMEPluginTest {
+public class MotherlodePluginTest {
 	public static void main(String[] args) throws Exception {
-		ExternalPluginManager.loadBuiltin(TODO_PLUGIN_NAMEPlugin.class);
+		ExternalPluginManager.loadBuiltin(MotherlodePlugin.class);
 		RuneLite.main(args);
 	}
 }
