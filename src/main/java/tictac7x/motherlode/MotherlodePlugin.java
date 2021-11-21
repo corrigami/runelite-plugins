@@ -35,41 +35,47 @@ public class MotherlodePlugin extends Plugin {
 
 	private Motherlode motherlode;
 	private MotherlodeInventory inventory;
-	private MotherlodeVeins veins;
 	private MotherlodeSack sack;
+	private MotherlodeVeins veins;
 	private MotherlodeSackWidget sack_widget;
 	private MotherlodeVeinsOverlay veins_overlay;
+	private MotherlodeRockfallsOverlay rockfalls_overlay;
 
 	@Override
 	protected void startUp() {
 		if (motherlode == null) {
 			motherlode = new Motherlode(client);
-			inventory = new MotherlodeInventory();
-			veins = new MotherlodeVeins(motherlode);
-			sack = new MotherlodeSack(motherlode, inventory, client);
+			inventory = motherlode.getInventory();
+			sack = motherlode.getSack();
+			veins = motherlode.getVeins();
 
-			veins_overlay = new MotherlodeVeinsOverlay(config, motherlode, veins, sack, inventory, client);
-			sack_widget = new MotherlodeSackWidget(motherlode, sack, inventory);
+			veins_overlay = new MotherlodeVeinsOverlay(config, motherlode, client);
+			sack_widget = new MotherlodeSackWidget(motherlode);
+			rockfalls_overlay = new MotherlodeRockfallsOverlay(config, motherlode, client);
 		}
 
 		overlays.add(veins_overlay);
 		overlays.add(sack_widget);
+		overlays.add(rockfalls_overlay);
 	}
 
 	@Override
 	protected void shutDown() {
 		overlays.remove(veins_overlay);
 		overlays.remove(sack_widget);
+		overlays.remove(rockfalls_overlay);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
 		veins_overlay.onTileObjectSpawned(event.getGameObject());
+		rockfalls_overlay.onTileObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(final GameObjectDespawned event) {
 		veins_overlay.onTileObjectDespawned(event.getGameObject());
+		rockfalls_overlay.onTileObjectDespawned(event.getGameObject());
 	}
 
 	@Subscribe
@@ -88,10 +94,12 @@ public class MotherlodePlugin extends Plugin {
 	public void onGameStateChanged(final GameStateChanged event) {
 		motherlode.onGameStateChanged(event);
 		veins_overlay.onGameStateChanged(event);
+		rockfalls_overlay.onGameStateChanged(event);
 	}
 
 	@Subscribe
 	public void onGameTick(final GameTick event) {
+		motherlode.onGameTick();
 		sack.onGameTick();
 		veins.onGameTick();
 	}

@@ -6,6 +6,7 @@ import net.runelite.api.ObjectID;
 import net.runelite.api.events.ItemContainerChanged;
 
 public class MotherlodeInventory {
+    private final Motherlode motherlode;
     private final int PAY_DIRT = 12011;
     private final int INVENTORY_SIZE = 28;
 
@@ -13,7 +14,13 @@ public class MotherlodeInventory {
     private int pay_dirt_old = 0;
     private int items = 0;
 
+    public MotherlodeInventory(final Motherlode motherlode) {
+        this.motherlode = motherlode;
+    }
+
     public void onItemContainerChanged(final ItemContainerChanged event) {
+        if (!motherlode.inRegion()) return;
+
         if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
             pay_dirt_old = pay_dirt;
             pay_dirt = 0;
@@ -25,6 +32,8 @@ public class MotherlodeInventory {
                     items++;
                 }
             }
+
+            motherlode.updatePayDirtNeeded();
         }
     }
 

@@ -3,6 +3,7 @@ package tictac7x.motherlode;
 import com.google.common.collect.ImmutableSet;
 import net.runelite.api.TileObject;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class MotherlodeVeins {
             } else {
                 ore_veins.add(new OreVein(
                         x, y,
-                        motherlode.getVeinSector(x, y),
+                        motherlode.getSector(x, y),
                         depleted
                 ));
             }
@@ -82,6 +83,7 @@ public class MotherlodeVeins {
         return (ore_vein.isPresent()) ? (float) -ore_vein.get().ticks / ORE_VEIN_RESPAWN : 0;
     }
 
+    @Nullable
     public OreVein getOreVein(final TileObject object) {
         return ore_veins.stream().filter(ore_vein ->
             object.getWorldLocation().getX() == ore_vein.x &&

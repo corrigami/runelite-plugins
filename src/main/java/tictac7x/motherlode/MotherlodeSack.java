@@ -32,8 +32,11 @@ public class MotherlodeSack {
     }
 
     public void onGameTick() {
+        if (!motherlode.inRegion()) return;
+
         if (hopper_pay_dirt == 0 && client.getLocalPlayer() != null && client.getLocalPlayer().getAnimation() == ANIMATION_HOPPER_DEPOSIT) {
             hopper_pay_dirt += Math.max(inventory.countPayDirt(), inventory.countPayDirtOld());
+            motherlode.updatePayDirtNeeded();
         }
     }
 
@@ -59,6 +62,7 @@ public class MotherlodeSack {
         if (sack_pay_dirt != this.sack_pay_dirt) {
             this.sack_pay_dirt = sack_pay_dirt;
             this.hopper_pay_dirt = 0;
+            motherlode.updatePayDirtNeeded();
         }
     }
 }

@@ -17,28 +17,19 @@ public class MotherlodeSackWidget extends Overlay {
     private final MotherlodeInventory inventory;
     private final PanelComponent panel = new PanelComponent();
 
-    public MotherlodeSackWidget(final Motherlode motherlode, final MotherlodeSack sack, final MotherlodeInventory inventory) {
+    public MotherlodeSackWidget(final Motherlode motherlode) {
         this.motherlode = motherlode;
-        this.sack = sack;
-        this.inventory = inventory;
+        this.sack = motherlode.getSack();
+        this.inventory = motherlode.getInventory();
 
         setPosition(OverlayPosition.TOP_LEFT);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
-
-//        panel.setWrap(true);
-//        panel.setOrientation(ComponentOrientation.HORIZONTAL);
-//        panel.setBackgroundColor(null);
-
-//        panelComponent.setOrientation(ComponentOrientation.VERTICAL);
-//        panelComponent.setWrap(true);
-//        panelComponent.setBorder(new Rectangle(0,0,0,0));
+        panelComponent.setBorder(new Rectangle(0,0,0,0));
     }
 
     public void onWidgetLoaded(final WidgetLoaded event) {
 
     }
-
-
 
     private int getTotalPayDirtCount() {
         return inventory.countPayDirt() + sack.countPayDirt();
@@ -55,8 +46,7 @@ public class MotherlodeSackWidget extends Overlay {
     @Override
     public Dimension render(final Graphics2D graphics) {
         if (!motherlode.inRegion()) return null;
-
-        final int pay_dirt_needed = motherlode.getPayDirtNeeded(sack, inventory);
+        final int pay_dirt_needed = motherlode.getPayDirtNeeded();
 
         panelComponent.getChildren().clear();
         panel.getChildren().clear();

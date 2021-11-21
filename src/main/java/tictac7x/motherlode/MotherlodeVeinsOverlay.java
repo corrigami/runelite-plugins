@@ -15,24 +15,15 @@ public class MotherlodeVeinsOverlay extends Overlay {
     private final MotherlodeConfig config;
     private final Motherlode motherlode;
     private final MotherlodeVeins veins;
-    private final MotherlodeSack sack;
-    private final MotherlodeInventory inventory;
     private final Client client;
-
-    private final int VEIN_DRAW_DISTANCE = 4000;
 
     private final Set<TileObject> ore_veins = new HashSet<>();
     private final Set<TileObject> ore_veins_depleted = new HashSet<>();
-    private int player_x = 0;
-    private int player_y = 0;
-    private Sector player_sector = null;
 
-    public MotherlodeVeinsOverlay(final MotherlodeConfig config, final Motherlode motherlode, final MotherlodeVeins veins, final MotherlodeSack sack, final MotherlodeInventory inventory, final Client client) {
+    public MotherlodeVeinsOverlay(final MotherlodeConfig config, final Motherlode motherlode, final Client client) {
         this.config = config;
         this.motherlode = motherlode;
-        this.veins = veins;
-        this.sack = sack;
-        this.inventory = inventory;
+        this.veins = motherlode.getVeins();
         this.client = client;
 
         setPosition(OverlayPosition.DYNAMIC);
@@ -40,6 +31,8 @@ public class MotherlodeVeinsOverlay extends Overlay {
     }
 
     public void onTileObjectSpawned(final TileObject object) {
+        if (!motherlode.inRegion()) return;
+
         if (veins.isOreVein(object)) {
             ore_veins.add(object);
         } else if (veins.isOreVeinDepleted(object)) {
@@ -48,6 +41,8 @@ public class MotherlodeVeinsOverlay extends Overlay {
     }
 
     public void onTileObjectDespawned(final TileObject object) {
+        if (!motherlode.inRegion()) return;
+
         if (veins.isOreVein(object)) {
             ore_veins.remove(object);
         } else if (veins.isOreVeinDepleted(object)) {
@@ -58,6 +53,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
     public void onGameStateChanged(final GameStateChanged event) {
         if (event.getGameState() == GameState.LOADING) {
             ore_veins.clear();
+            ore_veins_depleted.clear();
         }
     }
 
@@ -68,18 +64,12 @@ public class MotherlodeVeinsOverlay extends Overlay {
         final Player player = client.getLocalPlayer();
         if (player == null) return null;
 
-        final int player_x = player.getWorldLocation().getX();
-        final int player_y = player.getWorldLocation().getY();
-        final int pay_dirt_needed = motherlode.getPayDirtNeeded(sack, inventory);
-
-        if (this.player_x != player_x || this.player_y != player_y) {
-            player_sector = motherlode.getVeinSector(player_x, player_y);
-        }
+        final int pay_dirt_needed = motherlode.getPayDirtNeeded();
 
         // Veins.
         for (final TileObject ore_vein : ore_veins) {
             final OreVein vein = veins.getOreVein(ore_vein);
-            if (vein.sector == player_sector && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= VEIN_DRAW_DISTANCE) {
+            if (vein != null && motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= motherlode.getDrawDistance()) {
                 renderPie(graphics, ore_vein, pay_dirt_needed > 0 ? config.getOreVeinsColor() : pay_dirt_needed == 0 ? null : config.getOreVeinsStoppingColor(), 1, pie_fill_alpha, 150);
             }
         }
@@ -87,7 +77,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
         // Depleted veins.
         for (final TileObject ore_vein_depleted : ore_veins_depleted) {
             final OreVein vein = veins.getOreVein(ore_vein_depleted);
-            if (vein.sector == player_sector && player.getLocalLocation().distanceTo(ore_vein_depleted.getLocalLocation()) <= VEIN_DRAW_DISTANCE) {
+            if (vein != null && motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein_depleted.getLocalLocation()) <= motherlode.getDrawDistance()) {
                 renderPie(graphics, ore_vein_depleted, pay_dirt_needed > 0 ? config.getOreVeinsDepletedColor() : pay_dirt_needed == 0 ? null : config.getOreVeinsStoppingColor(), veins.getDepletedOreVeinProgress(ore_vein_depleted), pie_fill_alpha, 150);
             }
         }
