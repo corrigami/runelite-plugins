@@ -3,7 +3,6 @@ package tictac7x.motherlode;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class MotherlodeRockfalls {

@@ -5,7 +5,7 @@ import net.runelite.client.externalplugins.ExternalPluginManager;
 
 public class MotherlodePluginTest {
 	public static void main(String[] args) throws Exception {
-		ExternalPluginManager.loadBuiltin(MotherlodePlugin.class);
+		ExternalPluginManager.loadBuiltin(MotherlodeImprovedPlugin.class);
 		RuneLite.main(args);
 	}
 }

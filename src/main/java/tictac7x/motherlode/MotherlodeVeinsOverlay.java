@@ -15,6 +15,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
     private final MotherlodeConfig config;
     private final Motherlode motherlode;
     private final MotherlodeVeins veins;
+    private final MotherlodeInventory inventory;
     private final Client client;
 
     private final Set<TileObject> ore_veins = new HashSet<>();
@@ -23,6 +24,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
     public MotherlodeVeinsOverlay(final MotherlodeConfig config, final Motherlode motherlode, final Client client) {
         this.config = config;
         this.motherlode = motherlode;
+        this.inventory = motherlode.getInventory();
         this.veins = motherlode.getVeins();
         this.client = client;
 
@@ -65,12 +67,13 @@ public class MotherlodeVeinsOverlay extends Overlay {
         if (player == null) return null;
 
         final int pay_dirt_needed = motherlode.getPayDirtNeeded();
+        if (pay_dirt_needed == 0 && inventory.countPayDirt() != 0) return null;
 
         // Veins.
         for (final TileObject ore_vein : ore_veins) {
             final OreVein vein = veins.getOreVein(ore_vein);
             if (vein != null && motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= motherlode.getDrawDistance()) {
-                renderPie(graphics, ore_vein, pay_dirt_needed > 0 ? config.getOreVeinsColor() : pay_dirt_needed == 0 ? null : config.getOreVeinsStoppingColor(), 1, pie_fill_alpha, 150);
+                renderPie(graphics, ore_vein, pay_dirt_needed > 0 ? config.getOreVeinsColor() : config.getOreVeinsStoppingColor(), 1, 150);
             }
         }
 
@@ -78,7 +81,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
         for (final TileObject ore_vein_depleted : ore_veins_depleted) {
             final OreVein vein = veins.getOreVein(ore_vein_depleted);
             if (vein != null && motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein_depleted.getLocalLocation()) <= motherlode.getDrawDistance()) {
-                renderPie(graphics, ore_vein_depleted, pay_dirt_needed > 0 ? config.getOreVeinsDepletedColor() : pay_dirt_needed == 0 ? null : config.getOreVeinsStoppingColor(), veins.getDepletedOreVeinProgress(ore_vein_depleted), pie_fill_alpha, 150);
+                renderPie(graphics, ore_vein_depleted, pay_dirt_needed > 0 ? config.getOreVeinsDepletedColor() : config.getOreVeinsStoppingColor(), veins.getDepletedOreVeinProgress(ore_vein_depleted), 150);
             }
         }
 

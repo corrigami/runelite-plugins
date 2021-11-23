@@ -1,5 +1,6 @@
 package tictac7x.motherlode;
 
+import com.google.common.collect.ImmutableSet;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
@@ -19,7 +20,7 @@ public class MotherlodeRockfallsOverlay extends Overlay {
     private final Motherlode motherlode;
     private final Client client;
 
-    private final int ROCKFALL = 26679;
+    private final Set<Integer> ROCKFALLS = ImmutableSet.of(26679, 26680);
 
     private final Set<TileObject> rockfalls = new HashSet<>();
 
@@ -32,13 +33,13 @@ public class MotherlodeRockfallsOverlay extends Overlay {
     }
 
     public void onTileObjectSpawned(final TileObject object) {
-        if (motherlode.inRegion() && object.getId() == ROCKFALL) {
+        if (motherlode.inRegion() && ROCKFALLS.contains(object.getId())) {
             rockfalls.add(object);
         }
     }
 
     public void onTileObjectDespawned(final TileObject object) {
-        if (motherlode.inRegion() && object.getId() == ROCKFALL) {
+        if (motherlode.inRegion() && ROCKFALLS.contains(object.getId())) {
             rockfalls.remove(object);
         }
     }
@@ -64,7 +65,7 @@ public class MotherlodeRockfallsOverlay extends Overlay {
 
             if (
                 rockfall_predefined.isPresent() && rockfall_predefined.get().sectors.contains(motherlode.getPlayerSector()) ||
-                motherlode.getPlayerSector() == Sector.DOWNSTAIRS && player.getLocalLocation().distanceTo(rockfall.getLocalLocation()) <= motherlode.getDrawDistance()
+                !rockfall_predefined.isPresent() && motherlode.getPlayerSector() == Sector.DOWNSTAIRS && player.getLocalLocation().distanceTo(rockfall.getLocalLocation()) <= motherlode.getDrawDistance()
             ) {
                 renderTile(graphics, rockfall, config.getRockfallsColor());
             }

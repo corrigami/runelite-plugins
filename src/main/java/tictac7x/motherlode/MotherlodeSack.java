@@ -1,7 +1,6 @@
 package tictac7x.motherlode;
 
 import net.runelite.api.Client;
-import net.runelite.api.Player;
 
 public class MotherlodeSack {
     private final Motherlode motherlode;
@@ -11,7 +10,7 @@ public class MotherlodeSack {
     private final int VARBIT_SACK_UPGRADED = 5556;
     private final int VARBIT_SACK_PAY_DIRT = 5558;
     private final int SACK_SIZE_DEFAULT = 80;
-    private final int SACK_SIZE_UPGRADED = 160;
+    private final int SACK_SIZE_UPGRADED = 161;
     private final int ANIMATION_HOPPER_DEPOSIT = 832;
 
     private int sack_pay_dirt = 0;

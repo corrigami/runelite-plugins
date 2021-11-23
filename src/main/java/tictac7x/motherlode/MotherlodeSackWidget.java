@@ -3,7 +3,6 @@ package tictac7x.motherlode;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.ComponentOrientation;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import tictac7x.Overlay;
