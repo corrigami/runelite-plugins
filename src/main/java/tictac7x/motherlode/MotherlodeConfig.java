@@ -1,12 +1,14 @@
 package tictac7x.motherlode;
 
+import tictac7x.Overlay;
+
+import java.awt.Color;
+
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-import tictac7x.Overlay;
 
-import java.awt.*;
 
 @ConfigGroup("tictac7x-motherlode")
 public interface MotherlodeConfig extends Config {
@@ -40,5 +42,5 @@ public interface MotherlodeConfig extends Config {
 		name = "Rockfalls",
 		description = "Highlight rockfalls that need to be cleared.",
 		position = 4
-	) default Color getRockfallsColor() { return Overlay.color_red; }
+	) default Color getRockfallsColor() { return new Color(Overlay.color_red.getRed(), Overlay.color_red.getGreen(), Overlay.color_red.getBlue(), 70); }
 }
