@@ -1,12 +1,11 @@
 package tictac7x.motherlode;
 
-import com.google.common.collect.ImmutableSet;
-import net.runelite.api.TileObject;
-
-import javax.annotation.Nullable;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
+import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableSet;
+import net.runelite.api.TileObject;
 
 public class MotherlodeVeins {
     private final Motherlode motherlode;
@@ -39,9 +38,9 @@ public class MotherlodeVeins {
                 ore_vein.get().ticks = 0;
             } else {
                 ore_veins.add(new OreVein(
-                        x, y,
-                        motherlode.getSector(x, y),
-                        depleted
+                    x, y,
+                    motherlode.getSector(x, y),
+                    depleted
                 ));
             }
         }
@@ -52,8 +51,8 @@ public class MotherlodeVeins {
 
         if (isOreVeinDepleted(object)) {
             ore_veins.stream().filter(ore_vein_depleted ->
-                    object.getWorldLocation().getX() == ore_vein_depleted.x &&
-                            object.getWorldLocation().getY() == ore_vein_depleted.y
+                object.getWorldLocation().getX() == ore_vein_depleted.x &&
+                object.getWorldLocation().getY() == ore_vein_depleted.y
             ).findAny().ifPresent(ore_veins::remove);
         }
     }
@@ -76,8 +75,8 @@ public class MotherlodeVeins {
 
     public float getDepletedOreVeinProgress(final TileObject object) {
         final Optional<OreVein> ore_vein = ore_veins.stream().filter(ore_vein_depleted ->
-                object.getWorldLocation().getX() == ore_vein_depleted.x &&
-                        object.getWorldLocation().getY() == ore_vein_depleted.y
+            object.getWorldLocation().getX() == ore_vein_depleted.x &&
+            object.getWorldLocation().getY() == ore_vein_depleted.y
         ).findAny();
 
         return (ore_vein.isPresent()) ? (float) -ore_vein.get().ticks / ORE_VEIN_RESPAWN : 0;

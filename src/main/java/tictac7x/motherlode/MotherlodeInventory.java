@@ -1,7 +1,7 @@
 package tictac7x.motherlode;
 
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
+import net.runelite.api.InventoryID;
 import net.runelite.api.events.ItemContainerChanged;
 
 public class MotherlodeInventory {

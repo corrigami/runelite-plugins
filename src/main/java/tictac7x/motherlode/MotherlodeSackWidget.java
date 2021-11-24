@@ -1,14 +1,15 @@
 package tictac7x.motherlode;
 
+import tictac7x.Overlay;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Graphics2D;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
-import tictac7x.Overlay;
-
-import java.awt.*;
-
 
 public class MotherlodeSackWidget extends Overlay {
     private final Motherlode motherlode;

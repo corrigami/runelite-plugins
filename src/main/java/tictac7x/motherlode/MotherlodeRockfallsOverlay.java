@@ -1,5 +1,11 @@
 package tictac7x.motherlode;
 
+import tictac7x.Overlay;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Optional;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import com.google.common.collect.ImmutableSet;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -8,12 +14,6 @@ import net.runelite.api.TileObject;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import tictac7x.Overlay;
-
-import java.awt.*;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 public class MotherlodeRockfallsOverlay extends Overlay {
     private final MotherlodeConfig config;

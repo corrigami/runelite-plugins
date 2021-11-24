@@ -1,9 +1,8 @@
 package tictac7x.motherlode;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.util.Arrays;
 import java.util.Set;
+import java.util.Arrays;
+import com.google.common.collect.ImmutableSet;
 
 public class MotherlodeRockfalls {
     private final Motherlode motherlode;

@@ -1,15 +1,17 @@
 package tictac7x.motherlode;
 
-import net.runelite.api.*;
+import tictac7x.Overlay;
+import java.util.Set;
+import java.util.HashSet;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import net.runelite.api.Client;
+import net.runelite.api.TileObject;
+import net.runelite.api.GameState;
+import net.runelite.api.Player;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import tictac7x.Overlay;
-
-import java.awt.Graphics2D;
-import java.awt.Dimension;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MotherlodeVeinsOverlay extends Overlay {
     private final MotherlodeConfig config;
@@ -67,13 +69,16 @@ public class MotherlodeVeinsOverlay extends Overlay {
         if (player == null) return null;
 
         final int pay_dirt_needed = motherlode.getPayDirtNeeded();
-        if (pay_dirt_needed == 0 && inventory.countPayDirt() != 0) return null;
+        final int inventory_pay_dirt = inventory.countPayDirt();
+
+        // Inventory is full of pay-dirt.
+        if (pay_dirt_needed == 0 && inventory_pay_dirt != 0) return null;
 
         // Veins.
         for (final TileObject ore_vein : ore_veins) {
             final OreVein vein = veins.getOreVein(ore_vein);
             if (vein != null && motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= motherlode.getDrawDistance()) {
-                renderPie(graphics, ore_vein, pay_dirt_needed > 0 ? config.getOreVeinsColor() : config.getOreVeinsStoppingColor(), 1, 150);
+                renderPie(graphics, ore_vein, pay_dirt_needed >= 0 ? config.getOreVeinsColor() : config.getOreVeinsStoppingColor(), 1, 150);
             }
         }
 
@@ -81,7 +86,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
         for (final TileObject ore_vein_depleted : ore_veins_depleted) {
             final OreVein vein = veins.getOreVein(ore_vein_depleted);
             if (vein != null && motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein_depleted.getLocalLocation()) <= motherlode.getDrawDistance()) {
-                renderPie(graphics, ore_vein_depleted, pay_dirt_needed > 0 ? config.getOreVeinsDepletedColor() : config.getOreVeinsStoppingColor(), veins.getDepletedOreVeinProgress(ore_vein_depleted), 150);
+                renderPie(graphics, ore_vein_depleted, pay_dirt_needed >= 0 ? config.getOreVeinsDepletedColor() : config.getOreVeinsStoppingColor(), veins.getDepletedOreVeinProgress(ore_vein_depleted), 150);
             }
         }
 

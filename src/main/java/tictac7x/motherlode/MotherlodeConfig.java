@@ -1,14 +1,11 @@
 package tictac7x.motherlode;
 
 import tictac7x.Overlay;
-
 import java.awt.Color;
-
 import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
-
 
 @ConfigGroup("tictac7x-motherlode")
 public interface MotherlodeConfig extends Config {
@@ -30,7 +27,7 @@ public interface MotherlodeConfig extends Config {
 
 	@Alpha
 	@ConfigItem(
-		keyName = "ore_veins_dont",
+		keyName = "ore_veins_stop",
 		name = "Stopping Ore Veins",
 		description = "Highlight ore veins when they shouldn't be mined.",
 		position = 3

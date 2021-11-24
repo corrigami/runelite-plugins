@@ -1,7 +1,7 @@
 package tictac7x.motherlode;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class Rockfall {
     public final int x;

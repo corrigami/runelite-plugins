@@ -1,12 +1,13 @@
 package tictac7x.motherlode;
 
+import java.util.Set;
+import java.util.Arrays;
+import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableSet;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Set;
 
 public class Motherlode {
     private final Client client;
@@ -102,7 +103,6 @@ public class Motherlode {
             this.player_x = player_x;
             this.player_y = player_y;
             player_sector = getSector(player_x, player_y);
-            System.out.println("SECTOR UPDATED " + player_sector);
         }
     }
 
