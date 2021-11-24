@@ -40,4 +40,11 @@ public interface MotherlodeConfig extends Config {
 		description = "Highlight rockfalls that need to be cleared.",
 		position = 4
 	) default Color getRockfallsColor() { return new Color(Overlay.color_red.getRed(), Overlay.color_red.getGreen(), Overlay.color_red.getBlue(), 70); }
+
+	@ConfigItem(
+		keyName = "draw_distance",
+		name = "Draw distance",
+		description = "Change how far away ore veins and rockfalls will be highlighted.",
+		position = 5
+	) default int getDrawDistance() { return 4000; }
 }

@@ -20,6 +20,9 @@ public class MotherlodeVeins {
         this.motherlode = motherlode;
     }
 
+    /**
+     * @param object - Check if spawned TileObject is ore vein.
+     */
     public void onTileObjectSpawned(final TileObject object) {
         if (!motherlode.inRegion()) return;
 
@@ -34,8 +37,8 @@ public class MotherlodeVeins {
             ).findAny();
 
             if (ore_vein.isPresent()) {
-                ore_vein.get().depleted = depleted;
-                ore_vein.get().ticks = 0;
+                ore_vein.get().setDepleted(depleted);
+                ore_vein.get().resetGameTicks();
             } else {
                 ore_veins.add(new OreVein(
                     x, y,
@@ -46,6 +49,9 @@ public class MotherlodeVeins {
         }
     }
 
+    /**
+     * @param object - Check if despawned TileObject is ore vein.
+     */
     public void onTileObjectDespawned(final TileObject object) {
         if (!motherlode.inRegion()) return;
 
@@ -57,12 +63,14 @@ public class MotherlodeVeins {
         }
     }
 
+    /**
+     * Game tick clock to update depleted ore veins progress.
+     */
     public void onGameTick() {
         if (!motherlode.inRegion()) return;
 
-        for (final OreVein ore_vein_depleted : ore_veins) {
-            ore_vein_depleted.onGameTick();
-        }
+        // Update every depleted ore vein game tick.
+        ore_veins.stream().filter(ore_vein -> ore_vein.isDepleted()).forEach(OreVein::onGameTick);
     }
 
     public boolean isOreVein(final TileObject object) {
@@ -73,15 +81,25 @@ public class MotherlodeVeins {
         return ORE_VEINS_DEPLETED.contains(object.getId());
     }
 
-    public float getDepletedOreVeinProgress(final TileObject object) {
+    /**
+     * Get depleted ore vein progress based on the ore vein TileObject.
+     * @param object - TileObject to get progress for.
+     * @return float of depleted ore vein progress or 1 if not depleted.
+     */
+    public float getOreVeinProgress(final TileObject object) {
         final Optional<OreVein> ore_vein = ore_veins.stream().filter(ore_vein_depleted ->
             object.getWorldLocation().getX() == ore_vein_depleted.x &&
             object.getWorldLocation().getY() == ore_vein_depleted.y
         ).findAny();
 
-        return (ore_vein.isPresent()) ? (float) -ore_vein.get().ticks / ORE_VEIN_RESPAWN : 0;
+        return (ore_vein.isPresent()) ? (float) -ore_vein.get().getGameTicks() / ORE_VEIN_RESPAWN : 1;
     }
 
+    /**
+     * Get custom OreVein object based on the TileObject.
+     * @param object - TileObject of the ore vein.
+     * @return - OreVein for the TileObject or null.
+     */
     @Nullable
     public OreVein getOreVein(final TileObject object) {
         return ore_veins.stream().filter(ore_vein ->

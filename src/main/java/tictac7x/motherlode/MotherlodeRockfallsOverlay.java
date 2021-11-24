@@ -57,15 +57,21 @@ public class MotherlodeRockfallsOverlay extends Overlay {
         final Player player = client.getLocalPlayer();
         if (player == null) return null;
 
+        // Rockfalls.
         for (final TileObject rockfall : rockfalls) {
+            // Find if the rockfall is predefined/upstairs.
             final Optional<Rockfall> rockfall_predefined = motherlode.getRockfalls().getRockfalls().stream().filter(rock ->
                 rockfall.getWorldLocation().getX() == rock.x &&
                 rockfall.getWorldLocation().getY() == rock.y
             ).findAny();
 
+
             if (
+                // Upstairs rockfall is rendered based on the sector.
                 rockfall_predefined.isPresent() && rockfall_predefined.get().sectors.contains(motherlode.getPlayerSector()) ||
-                !rockfall_predefined.isPresent() && motherlode.getPlayerSector() == Sector.DOWNSTAIRS && player.getLocalLocation().distanceTo(rockfall.getLocalLocation()) <= motherlode.getDrawDistance()
+
+                // Downstairs rockfall is rendered based on the draw distance.
+                !rockfall_predefined.isPresent() && motherlode.getPlayerSector() == Sector.DOWNSTAIRS && player.getLocalLocation().distanceTo(rockfall.getLocalLocation()) <= config.getDrawDistance()
             ) {
                 renderTile(graphics, rockfall, config.getRockfallsColor());
             }

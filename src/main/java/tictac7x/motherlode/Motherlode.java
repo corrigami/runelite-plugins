@@ -16,7 +16,6 @@ public class Motherlode {
     private final MotherlodeVeins veins;
     private final MotherlodeRockfalls rockfalls;
 
-    private final int DRAW_DISTANCE = 4000;
     private final Set<Integer> REGIONS = ImmutableSet.of(14679, 14680, 14681, 14935, 14936, 14937, 15191, 15192, 15193);
 
     private boolean in_region = false;
@@ -49,14 +48,16 @@ public class Motherlode {
         return veins;
     }
 
-    public int getDrawDistance() {
-        return DRAW_DISTANCE;
-    }
-
     public MotherlodeRockfalls getRockfalls() {
         return rockfalls;
     }
 
+    /**
+     * Get sector based on the world location.
+     * @param x - World location X.
+     * @param y - World location Y.
+     * @return specific sector or downstairs.
+     */
     public Sector getSector(final int x, final int y) {
         final int[] location = new int[]{x, y};
 
@@ -77,6 +78,12 @@ public class Motherlode {
         return Sector.DOWNSTAIRS;
     }
 
+    /**
+     * Check if location is inside sector.
+     * @param sector
+     * @param location
+     * @return
+     */
     private boolean isInSector(final int[][] sector, final int[] location) {
         for (int[] point : sector) {
             if (Arrays.equals(point, location)) {
@@ -87,12 +94,19 @@ public class Motherlode {
         return false;
     }
 
+    /**
+     * World map loaded, recheck if player is in motherlode.
+     * @param event
+     */
     public void onGameStateChanged(final GameStateChanged event) {
         if (event.getGameState() == GameState.LOADING) {
             in_region = updateInRegion();
         }
     }
 
+    /**
+     * On game tick update player sector if player X or Y have changed.
+     */
     public void onGameTick() {
         if (!in_region || client.getLocalPlayer() == null) return;
 
@@ -110,6 +124,10 @@ public class Motherlode {
         return player_sector;
     }
 
+    /**
+     * Update whether player is in Motherlode region.
+     * @return true if in Motherlode.
+     */
     private boolean updateInRegion() {
         if (client == null || client.getMapRegions() == null) return false;
 
@@ -126,6 +144,9 @@ public class Motherlode {
         return in_region;
     }
 
+    /**
+     * Calculate the needed pay dirt based on the sack size, pay dirt in sack, inventory items and inventory pay-dirt.
+     */
     public void updatePayDirtNeeded() {
         final int sack_size = sack.getSize();
         final int sack_pay_dirt = sack.countPayDirt();

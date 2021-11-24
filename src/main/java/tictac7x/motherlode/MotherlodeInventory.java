@@ -17,6 +17,10 @@ public class MotherlodeInventory {
         this.motherlode = motherlode;
     }
 
+    /**
+     * Inventory changed, calculate amount of items and pay-dirt in inventory.
+     * @param event - ItemContainerChanged (need to check if container ID is inventory ID).
+     */
     public void onItemContainerChanged(final ItemContainerChanged event) {
         if (!motherlode.inRegion()) return;
 

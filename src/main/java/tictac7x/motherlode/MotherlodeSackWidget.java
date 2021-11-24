@@ -35,6 +35,11 @@ public class MotherlodeSackWidget extends Overlay {
         return inventory.countPayDirt() + sack.countPayDirt();
     }
 
+    /**
+     * Calculate whether the amount of total pay-dirt is perfect.
+     * @param pay_dirt_needed - Needed pay dirt.
+     * @return true if total pay-dirt is perfect.
+     */
     private boolean isPayDirtTotalPerfect(final int pay_dirt_needed) {
         return (
             this.getTotalPayDirtCount() == sack.getSize() && inventory.countPayDirt() != 0 ||
@@ -53,7 +58,7 @@ public class MotherlodeSackWidget extends Overlay {
 
         // Panel background color.
         final Color color_background =
-            (this.isPayDirtTotalPerfect(pay_dirt_needed)) ? color_green :
+            (this.isPayDirtTotalPerfect(pay_dirt_needed) || pay_dirt_needed == 0 && inventory.countPayDirt() > 0) ? color_green :
             (sack.isFull() || pay_dirt_needed < 0) ? color_red :
             null;
         panel.setBackgroundColor(getPanelBackgroundColor(color_background));
