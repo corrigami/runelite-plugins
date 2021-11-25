@@ -16,6 +16,7 @@ public class MotherlodeSack {
     private int sack_pay_dirt = 0;
     private int hopper_pay_dirt = 0;
     private boolean upgraded = false;
+    private boolean should_be_emptied = false;
 
     public MotherlodeSack(final Motherlode motherlode, final MotherlodeInventory inventory, final Client client) {
         this.motherlode = motherlode;
@@ -48,8 +49,16 @@ public class MotherlodeSack {
         return upgraded ? SACK_SIZE_UPGRADED : SACK_SIZE_DEFAULT;
     }
 
+    public boolean isFullActual() {
+        return sack_pay_dirt > getSize();
+    }
+
     public boolean isFull() {
         return countPayDirt() > getSize();
+    }
+
+    public boolean shouldBeEmptied() {
+        return should_be_emptied;
     }
 
     private void updateSackUpgrade() {
@@ -67,6 +76,12 @@ public class MotherlodeSack {
             this.sack_pay_dirt = sack_pay_dirt;
             this.hopper_pay_dirt = 0;
             motherlode.updatePayDirtNeeded();
+
+            if (isFullActual()) {
+                should_be_emptied = true;
+            } else if (this.sack_pay_dirt == 0) {
+                should_be_emptied = false;
+            }
         }
     }
 }

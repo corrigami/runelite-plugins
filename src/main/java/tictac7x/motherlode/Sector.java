@@ -5,10 +5,10 @@ package tictac7x.motherlode;
  */
 public enum Sector {
     DOWNSTAIRS,
-    UPSTAIRS_1,
-    UPSTAIRS_2,
-    UPSTAIRS_3,
-    UPSTAIRS_4,
-    UPSTAIRS_5,
-    UPSTAIRS_6
+    UPSTAIRS_W,
+    UPSTAIRS_NW,
+    UPSTAIRS_SE,
+    UPSTAIRS_S,
+    UPSTAIRS_NE,
+    UPSTAIRS_E
 }

@@ -5,20 +5,33 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Graphics2D;
+import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 
+import javax.annotation.Nullable;
+
 public class MotherlodeSackWidget extends Overlay {
+    private final MotherlodeConfig config;
     private final Motherlode motherlode;
+    private final Client client;
     private final MotherlodeSack sack;
     private final MotherlodeInventory inventory;
     private final PanelComponent panel = new PanelComponent();
 
-    public MotherlodeSackWidget(final Motherlode motherlode) {
+    @Nullable
+    private Widget widget = null;
+
+    public MotherlodeSackWidget(final MotherlodeConfig config, final Motherlode motherlode, final Client client) {
+        this.config = config;
         this.motherlode = motherlode;
+        this.client = client;
         this.sack = motherlode.getSack();
         this.inventory = motherlode.getInventory();
 
@@ -27,8 +40,29 @@ public class MotherlodeSackWidget extends Overlay {
         panelComponent.setBorder(new Rectangle(0,0,0,0));
     }
 
-    public void onWidgetLoaded(final WidgetLoaded event) {
+    public void loadNativeWidget() {
+        final Widget widget = client.getWidget(WidgetInfo.MOTHERLODE_MINE);
 
+        if (widget != null) {
+            this.widget = widget;
+            updateMotherlodeNativeWidget(config.showCustomSackWidget());
+        }
+    }
+
+    public void onWidgetLoaded(final WidgetLoaded event) {
+        if (event.getGroupId() == WidgetInfo.MOTHERLODE_MINE.getGroupId()) {
+            loadNativeWidget();
+        }
+    }
+
+    public void onConfigChanged(final ConfigChanged event) {
+        if (event.getGroup().equals(MotherlodeConfig.group) && event.getKey().equals(MotherlodeConfig.custom_sack_widget)) {
+            updateMotherlodeNativeWidget(config.showCustomSackWidget());
+        }
+    }
+
+    public void updateMotherlodeNativeWidget(final boolean hidden) {
+        if (widget != null) widget.setHidden(hidden);
     }
 
     private int getTotalPayDirtCount() {
@@ -50,7 +84,7 @@ public class MotherlodeSackWidget extends Overlay {
 
     @Override
     public Dimension render(final Graphics2D graphics) {
-        if (!motherlode.inRegion()) return null;
+        if (!motherlode.inRegion() || !config.showCustomSackWidget()) return null;
         final int pay_dirt_needed = motherlode.getPayDirtNeeded();
 
         panelComponent.getChildren().clear();

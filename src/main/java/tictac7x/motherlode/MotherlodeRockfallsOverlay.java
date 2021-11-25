@@ -46,8 +46,12 @@ public class MotherlodeRockfallsOverlay extends Overlay {
 
     public void onGameStateChanged(final GameStateChanged event) {
         if (event.getGameState() == GameState.LOADING) {
-            rockfalls.clear();;
+            clear();
         }
+    }
+
+    public void clear() {
+        rockfalls.clear();
     }
 
     @Override
@@ -66,13 +70,17 @@ public class MotherlodeRockfallsOverlay extends Overlay {
             ).findAny();
 
 
-            if (
-                // Upstairs rockfall is rendered based on the sector.
-                rockfall_predefined.isPresent() && rockfall_predefined.get().sectors.contains(motherlode.getPlayerSector()) ||
+            // Upstairs rockfall is rendered based on the sector.
+            if (rockfall_predefined.isPresent() && motherlode.getPlayerSectors() != null) {
+                for (final Sector sector : rockfall_predefined.get().sectors) {
+                    if (motherlode.getPlayerSectors().contains(sector)) {
+                        renderTile(graphics, rockfall, config.getRockfallsColor());
+                        break;
+                    }
+                }
 
-                // Downstairs rockfall is rendered based on the draw distance.
-                !rockfall_predefined.isPresent() && motherlode.getPlayerSector() == Sector.DOWNSTAIRS && player.getLocalLocation().distanceTo(rockfall.getLocalLocation()) <= config.getDrawDistance()
-            ) {
+            // Downstairs rockfall is rendered based on the draw distance.
+            } else if (!rockfall_predefined.isPresent() && motherlode.isDownStairs() && player.getLocalLocation().distanceTo(rockfall.getLocalLocation()) <= config.getDrawDistance()) {
                 renderTile(graphics, rockfall, config.getRockfallsColor());
             }
         }

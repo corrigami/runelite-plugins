@@ -12,10 +12,14 @@ import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WallObjectDespawned;
 import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.GroundObjectDespawned;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
@@ -35,6 +39,9 @@ public class MotherlodeImprovedPlugin extends Plugin {
 	@Inject
 	private OverlayManager overlays;
 
+	@Inject
+	private ClientThread client_thread;
+
 	@Provides
 	MotherlodeConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(MotherlodeConfig.class);
@@ -44,9 +51,10 @@ public class MotherlodeImprovedPlugin extends Plugin {
 	private MotherlodeInventory inventory;
 	private MotherlodeSack sack;
 	private MotherlodeVeins veins;
-	private MotherlodeSackWidget sack_widget;
-	private MotherlodeVeinsOverlay veins_overlay;
-	private MotherlodeRockfallsOverlay rockfalls_overlay;
+	private MotherlodeSackWidget widget_sack;
+	private MotherlodeVeinsOverlay overlay_veins;
+	private MotherlodeRockfallsOverlay overlay_rockfalls;
+	private MotherlodeObjectsOverlay overlay_objects;
 
 	@Override
 	protected void startUp() {
@@ -56,52 +64,76 @@ public class MotherlodeImprovedPlugin extends Plugin {
 			sack = motherlode.getSack();
 			veins = motherlode.getVeins();
 
-			veins_overlay = new MotherlodeVeinsOverlay(config, motherlode, client);
-			sack_widget = new MotherlodeSackWidget(motherlode);
-			rockfalls_overlay = new MotherlodeRockfallsOverlay(config, motherlode, client);
+			overlay_veins = new MotherlodeVeinsOverlay(config, motherlode, client);
+			widget_sack = new MotherlodeSackWidget(config, motherlode, client);
+			overlay_rockfalls = new MotherlodeRockfallsOverlay(config, motherlode, client);
+			overlay_objects = new MotherlodeObjectsOverlay(config, motherlode);
 		}
 
-		overlays.add(veins_overlay);
-		overlays.add(sack_widget);
-		overlays.add(rockfalls_overlay);
+		client_thread.invokeLater(() -> {
+			widget_sack.loadNativeWidget();
+			motherlode.updatePayDirtNeeded();
+		});
+
+		overlays.add(overlay_veins);
+		overlays.add(overlay_rockfalls);
+		overlays.add(overlay_objects);
+		overlays.add(widget_sack);
 	}
 
 	@Override
 	protected void shutDown() {
-		overlays.remove(veins_overlay);
-		overlays.remove(sack_widget);
-		overlays.remove(rockfalls_overlay);
+		overlay_veins.clear();
+		widget_sack.updateMotherlodeNativeWidget(false);
+		overlay_rockfalls.clear();
+
+		overlays.remove(overlay_veins);
+		overlays.remove(overlay_rockfalls);
+		overlays.remove(overlay_objects);
+		overlays.remove(widget_sack);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		veins_overlay.onTileObjectSpawned(event.getGameObject());
-		rockfalls_overlay.onTileObjectSpawned(event.getGameObject());
+		overlay_veins.onTileObjectSpawned(event.getGameObject());
+		overlay_rockfalls.onTileObjectSpawned(event.getGameObject());
+		overlay_objects.onTileObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(final GameObjectDespawned event) {
-		veins_overlay.onTileObjectDespawned(event.getGameObject());
-		rockfalls_overlay.onTileObjectDespawned(event.getGameObject());
+		overlay_veins.onTileObjectDespawned(event.getGameObject());
+		overlay_rockfalls.onTileObjectDespawned(event.getGameObject());
+		overlay_objects.onTileObjectDespawned(event.getGameObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectSpawned(final GroundObjectSpawned event) {
+		overlay_objects.onTileObjectSpawned(event.getGroundObject());
+	}
+
+	@Subscribe
+	public void onGroundObjectDespawned(final GroundObjectDespawned event) {
+		overlay_objects.onTileObjectDespawned(event.getGroundObject());
 	}
 
 	@Subscribe
 	public void onWallObjectSpawned(final WallObjectSpawned event) {
 		veins.onTileObjectSpawned(event.getWallObject());
-		veins_overlay.onTileObjectSpawned(event.getWallObject());
+		overlay_veins.onTileObjectSpawned(event.getWallObject());
 	}
 
 	@Subscribe
 	public void onWallObjectDespawned(final WallObjectDespawned event) {
 		veins.onTileObjectDespawned(event.getWallObject());
-		veins_overlay.onTileObjectDespawned(event.getWallObject());
+		overlay_veins.onTileObjectDespawned(event.getWallObject());
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		motherlode.onGameStateChanged(event);
-		veins_overlay.onGameStateChanged(event);
-		rockfalls_overlay.onGameStateChanged(event);
+		overlay_veins.onGameStateChanged(event);
+		overlay_rockfalls.onGameStateChanged(event);
 	}
 
 	@Subscribe
@@ -118,11 +150,16 @@ public class MotherlodeImprovedPlugin extends Plugin {
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
-		sack_widget.onWidgetLoaded(event);
+		client_thread.invokeLater(() -> widget_sack.onWidgetLoaded(event));
 	}
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
 		inventory.onItemContainerChanged(event);
+	}
+
+	@Subscribe
+	public void onConfigChanged (final ConfigChanged event) {
+		widget_sack.onConfigChanged(event);
 	}
 }

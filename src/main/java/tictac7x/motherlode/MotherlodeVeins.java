@@ -1,5 +1,6 @@
 package tictac7x.motherlode;
 
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Optional;
@@ -40,11 +41,15 @@ public class MotherlodeVeins {
                 ore_vein.get().setDepleted(depleted);
                 ore_vein.get().resetGameTicks();
             } else {
-                ore_veins.add(new OreVein(
-                    x, y,
-                    motherlode.getSector(x, y),
-                    depleted
-                ));
+                final List<Sector> sectors = motherlode.getSectors(x, y, false);
+
+                if (sectors.size() > 0) {
+                    ore_veins.add(new OreVein(
+                        x, y,
+                        sectors.get(0),
+                        depleted
+                    ));
+                }
             }
         }
     }

@@ -18,6 +18,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
     private final Motherlode motherlode;
     private final MotherlodeVeins veins;
     private final MotherlodeInventory inventory;
+    private final MotherlodeSack sack;
     private final Client client;
 
     private final Set<TileObject> ore_veins = new HashSet<>();
@@ -26,6 +27,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
         this.config = config;
         this.motherlode = motherlode;
         this.inventory = motherlode.getInventory();
+        this.sack = motherlode.getSack();
         this.veins = motherlode.getVeins();
         this.client = client;
 
@@ -47,8 +49,12 @@ public class MotherlodeVeinsOverlay extends Overlay {
 
     public void onGameStateChanged(final GameStateChanged event) {
         if (event.getGameState() == GameState.LOADING) {
-            ore_veins.clear();
+            clear();
         }
+    }
+
+    public void clear() {
+        ore_veins.clear();
     }
 
     @Override
@@ -62,7 +68,10 @@ public class MotherlodeVeinsOverlay extends Overlay {
         final int inventory_pay_dirt = inventory.countPayDirt();
 
         // Inventory is full of pay-dirt.
-        if (pay_dirt_needed == 0 && inventory_pay_dirt != 0) return null;
+        if (pay_dirt_needed == 0 && inventory.countItems() == inventory.getSize()) return null;
+
+        // Sack should be emptied first.
+        if (sack.shouldBeEmptied()) return null;
 
         // Veins.
         for (final TileObject ore_vein : ore_veins) {
@@ -71,14 +80,28 @@ public class MotherlodeVeinsOverlay extends Overlay {
 
             // Depleted ore vein.
             if (vein.isDepleted()) {
-                if (motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
-                    renderPie(graphics, ore_vein, pay_dirt_needed >= 0 ? config.getOreVeinsDepletedColor() : config.getOreVeinsStoppingColor(), veins.getOreVeinProgress(ore_vein), 150);
+                if (motherlode.getPlayerSectors().contains(vein.sector) && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
+                    // Can't be mined.
+                    if (pay_dirt_needed == 0 && inventory.countItems() != inventory.getSize()) {
+                        renderPie(graphics, ore_vein, config.getOreVeinsDepletedColor(), veins.getOreVeinProgress(ore_vein), 150);
+
+                    // Can be mined.
+                    } else if (motherlode.needToMine()) {
+                        renderPie(graphics, ore_vein, config.getOreVeinsDepletedColor(), veins.getOreVeinProgress(ore_vein), 150);
+                    }
                 }
 
             // Available ore vein.
             } else {
-                if (motherlode.getPlayerSector() == vein.sector && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
-                    renderPie(graphics, ore_vein, pay_dirt_needed >= 0 ? config.getOreVeinsColor() : config.getOreVeinsStoppingColor(), 1, 150);
+                if (motherlode.getPlayerSectors().contains(vein.sector) && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
+                    // Can't be mined.
+                    if (pay_dirt_needed == 0 && inventory.countItems() != inventory.getSize()) {
+                        renderPie(graphics, ore_vein, config.getOreVeinsDepletedColor(), 1, 150);
+
+                    // Can be mined.
+                    } else if (motherlode.needToMine()) {
+                        renderPie(graphics, ore_vein, config.getOreVeinsColor(), 1, 150);
+                    }
                 }
             }
         }

@@ -7,15 +7,17 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("tictac7x-motherlode")
+@ConfigGroup(MotherlodeConfig.group)
 public interface MotherlodeConfig extends Config {
+	String group = "tictac7x-motherlode";
+
 	@Alpha
 	@ConfigItem(
 		keyName = "ore_veins",
 		name = "Mineable Ore Veins",
 		description = "Highlight ore veins that can be mined.",
 		position = 1
-	) default Color getOreVeinsColor() { return Overlay.color_green; }
+	) default Color getOreVeinsColor() { return Overlay.getColor(Overlay.color_green, Overlay.alpha_vibrant); }
 
 	@Alpha
 	@ConfigItem(
@@ -23,7 +25,7 @@ public interface MotherlodeConfig extends Config {
 		name = "Depleted Ore Veins",
 		description = "Highlight ore veins that are depleted.",
 		position = 2
-	) default Color getOreVeinsDepletedColor() { return Overlay.color_yellow; }
+	) default Color getOreVeinsDepletedColor() { return Overlay.getColor(Overlay.color_yellow, Overlay.alpha_vibrant); }
 
 	@Alpha
 	@ConfigItem(
@@ -31,7 +33,7 @@ public interface MotherlodeConfig extends Config {
 		name = "Stopping Ore Veins",
 		description = "Highlight ore veins when they shouldn't be mined.",
 		position = 3
-	) default Color getOreVeinsStoppingColor() { return Overlay.color_red; }
+	) default Color getOreVeinsStoppingColor() { return Overlay.getColor(Overlay.color_red, Overlay.alpha_vibrant); }
 
 	@Alpha
 	@ConfigItem(
@@ -39,7 +41,7 @@ public interface MotherlodeConfig extends Config {
 		name = "Rockfalls",
 		description = "Highlight rockfalls that need to be cleared.",
 		position = 4
-	) default Color getRockfallsColor() { return new Color(Overlay.color_red.getRed(), Overlay.color_red.getGreen(), Overlay.color_red.getBlue(), 70); }
+	) default Color getRockfallsColor() { return Overlay.getColor(Overlay.color_red, Overlay.alpha_normal); }
 
 	@ConfigItem(
 		keyName = "draw_distance",
@@ -47,4 +49,12 @@ public interface MotherlodeConfig extends Config {
 		description = "Change how far away ore veins and rockfalls will be highlighted.",
 		position = 5
 	) default int getDrawDistance() { return 4000; }
+
+	String custom_sack_widget = "custom_sack_widget";
+	@ConfigItem(
+		keyName = custom_sack_widget,
+		name = "Custom sack widget",
+		description = "Toggle custom sack widget",
+		position = 6
+	) default boolean showCustomSackWidget() { return true; }
 }
