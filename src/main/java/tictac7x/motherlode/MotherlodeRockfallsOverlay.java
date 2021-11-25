@@ -59,7 +59,7 @@ public class MotherlodeRockfallsOverlay extends Overlay {
         if (!motherlode.inRegion()) return null;
 
         final Player player = client.getLocalPlayer();
-        if (player == null) return null;
+        if (player == null || motherlode.getSack().shouldBeEmptied()) return null;
 
         // Rockfalls.
         for (final TileObject rockfall : rockfalls) {

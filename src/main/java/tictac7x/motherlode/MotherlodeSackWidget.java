@@ -94,6 +94,7 @@ public class MotherlodeSackWidget extends Overlay {
         final Color color_background =
             (this.isPayDirtTotalPerfect(pay_dirt_needed) || pay_dirt_needed == 0 && inventory.countPayDirt() > 0) ? color_green :
             (sack.isFull() || pay_dirt_needed < 0) ? color_red :
+            (sack.shouldBeEmptied()) ? color_yellow :
             null;
         panel.setBackgroundColor(getPanelBackgroundColor(color_background));
 
