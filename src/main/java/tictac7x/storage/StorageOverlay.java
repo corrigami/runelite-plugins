@@ -1,14 +1,6 @@
 package tictac7x.storage;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -21,26 +13,14 @@ import java.awt.*;
 import java.util.Map;
 
 public class StorageOverlay extends Overlay {
-    private final StorageConfig config;
-    private final ConfigManager configs;
+    private final Storage storage;
     private final ItemManager items;
-    private final InventoryID item_container;
-    private final String storage_key;
-    private final boolean white_list;
-    private final boolean black_list;
 
     private final PanelComponent panel = new PanelComponent();
 
-    private JsonObject storage;
-
-    public StorageOverlay(final StorageConfig config, final ConfigManager configs, final ItemManager items, final InventoryID item_container, final String storage_key, final boolean white_list, final boolean black_list) {
-        this.config = config;
-        this.configs = configs;
+    public StorageOverlay(final Storage storage, final ItemManager items) {
+        this.storage = storage;
         this.items = items;
-        this.item_container = item_container;
-        this.storage_key = storage_key;
-        this.white_list = white_list;
-        this.black_list = black_list;
 
         setLayer(OverlayLayer.ABOVE_WIDGETS);
         setPosition(OverlayPosition.TOP_RIGHT);
@@ -51,51 +31,6 @@ public class StorageOverlay extends Overlay {
 
         panelComponent.setOrientation(ComponentOrientation.VERTICAL);
         panelComponent.setBorder(new Rectangle(0,0,0,0));
-
-        this.storage = loadStorage();
-    }
-
-    private JsonObject loadStorage() {
-        try {
-            final JsonParser parser = new JsonParser();
-            return parser.parse(getStorage()).getAsJsonObject();
-        } catch (final Exception exception) {
-            return new JsonObject();
-        }
-    }
-
-    private String getStorage() {
-        return configs.getConfiguration(StorageConfig.group, storage_key);
-    }
-
-    private String getWhitelist() {
-        return configs.getConfiguration(StorageConfig.group, storage_key + "_whitelist");
-    }
-
-    private String getBlacklist() {
-        return configs.getConfiguration(StorageConfig.group, storage_key + "_blacklist");
-    }
-
-    public void onItemContainerChanged(final ItemContainerChanged event) {
-        final ItemContainer item_container = event.getItemContainer();
-
-        if (item_container != null && item_container.getId() == this.item_container.getId()) {
-            final JsonObject storage = new JsonObject();
-
-            for (final Item item : item_container.getItems()) {
-                if (item != null && item.getId() != -1) {
-                    final String id = String.valueOf(item.getId());
-                    if (storage.has(id)) {
-                        storage.addProperty(id, storage.get(id).getAsInt() + item.getQuantity());
-                    } else {
-                        storage.addProperty(id, item.getQuantity());
-                    }
-                }
-            }
-
-            this.storage = storage;
-            configs.setConfiguration(StorageConfig.group, storage_key, storage.toString());
-        }
     }
 
     @Override
@@ -103,7 +38,7 @@ public class StorageOverlay extends Overlay {
         panelComponent.getChildren().clear();
         panel.getChildren().clear();
 
-        for (final Map.Entry<String, JsonElement> item : storage.entrySet()) {
+        for (final Map.Entry<String, JsonElement> item : storage.getStorage().entrySet()) {
             final int id = Integer.parseInt(item.getKey());
             final String name = items.getItemComposition(id).getName();
             final int quantity = item.getValue().getAsInt();
@@ -113,11 +48,11 @@ public class StorageOverlay extends Overlay {
                 continue;
 
             // Whitelist check.
-            } else if (white_list && getWhitelist() != null && !getWhitelist().contains(name)) {
+            } else if (storage.isWhitelistEnabled() && !storage.getWhitelist().has(name)) {
                 continue;
 
             // Blacklist check.
-            } else if (black_list && getBlacklist() != null && getBlacklist().contains(name)) {
+            } else if (storage.isBlacklistEnabled() && storage.getBlacklist().has(name)) {
                 continue;
             }
 

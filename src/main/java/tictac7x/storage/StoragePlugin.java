@@ -1,12 +1,19 @@
 package tictac7x.storage;
 
 import javax.inject.Inject;
+
+import com.google.gson.JsonObject;
 import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemID;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.config.ConfigManager;
@@ -40,13 +47,22 @@ public class StoragePlugin extends Plugin {
 		return configManager.getConfig(StorageConfig.class);
 	}
 
+	private Storage bank;
+	private Storage inventory;
+	private StorageManager storage_manager;
 	private StorageOverlay overlay_bank;
 	private StorageOverlay overlay_inventory;
 
 	@Override
 	protected void startUp() {
-		overlay_inventory = new StorageOverlay(config, configs, items, InventoryID.INVENTORY, "inventory", false, true);
-		overlay_bank = new StorageOverlay(config, configs, items, InventoryID.BANK, "bank", true, false);
+		if (bank == null) {
+			bank = new Storage(configs, InventoryID.BANK, "bank", true, false);
+			inventory = new Storage(configs, InventoryID.INVENTORY, "inventory", false, true);
+			storage_manager = new StorageManager(client, inventory, bank);
+
+			overlay_inventory = new StorageOverlay(inventory, items);
+			overlay_bank = new StorageOverlay(bank, items);
+		}
 
 		overlays.add(overlay_inventory);
 		overlays.add(overlay_bank);
@@ -60,7 +76,14 @@ public class StoragePlugin extends Plugin {
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
-		overlay_inventory.onItemContainerChanged(event);
-		overlay_bank.onItemContainerChanged(event);
+		storage_manager.onItemContainerChanged(event);
+		bank.onItemContainerChanged(event);
+		inventory.onItemContainerChanged(event);
+	}
+
+	@Subscribe
+	public void onConfigChanged(final ConfigChanged event) {
+		bank.onConfigChanged(event);
+		inventory.onConfigChanged(event);
 	}
 }
