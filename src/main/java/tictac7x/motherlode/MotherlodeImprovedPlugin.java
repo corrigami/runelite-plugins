@@ -59,7 +59,7 @@ public class MotherlodeImprovedPlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		if (motherlode == null) {
-			motherlode = new Motherlode(client);
+			motherlode = new Motherlode(client, config);
 			inventory = motherlode.getInventory();
 			sack = motherlode.getSack();
 			veins = motherlode.getVeins();
@@ -160,6 +160,7 @@ public class MotherlodeImprovedPlugin extends Plugin {
 
 	@Subscribe
 	public void onConfigChanged (final ConfigChanged event) {
+		motherlode.onConfigChanged(event);
 		widget_sack.onConfigChanged(event);
 	}
 }

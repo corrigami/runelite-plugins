@@ -69,6 +69,8 @@ public class MotherlodeRockfallsOverlay extends Overlay {
                 rockfall.getWorldLocation().getY() == rock.y
             ).findAny();
 
+            if (config.upstairsOnly() && !rockfall_predefined.isPresent()) continue;
+
 
             // Upstairs rockfall is rendered based on the sector.
             if (rockfall_predefined.isPresent() && motherlode.getPlayerSectors() != null) {

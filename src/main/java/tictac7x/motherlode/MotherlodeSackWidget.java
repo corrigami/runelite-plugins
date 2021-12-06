@@ -37,7 +37,7 @@ public class MotherlodeSackWidget extends Overlay {
 
         setPosition(OverlayPosition.TOP_LEFT);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
-        panelComponent.setBorder(new Rectangle(0,0,0,0));
+        makePanelResizeable(panelComponent, panel);
     }
 
     public void loadNativeWidget() {
@@ -45,7 +45,7 @@ public class MotherlodeSackWidget extends Overlay {
 
         if (widget != null) {
             this.widget = widget;
-            updateMotherlodeNativeWidget(config.showCustomSackWidget());
+            updateMotherlodeNativeWidget(config.showSackPaydirt() || config.showSackNeeded() || config.showSackDeposits());
         }
     }
 
@@ -56,8 +56,8 @@ public class MotherlodeSackWidget extends Overlay {
     }
 
     public void onConfigChanged(final ConfigChanged event) {
-        if (event.getGroup().equals(MotherlodeConfig.group) && event.getKey().equals(MotherlodeConfig.custom_sack_widget)) {
-            updateMotherlodeNativeWidget(config.showCustomSackWidget());
+        if (event.getGroup().equals(MotherlodeConfig.group)) {
+            updateMotherlodeNativeWidget(config.showSackPaydirt() || config.showSackNeeded() || config.showSackDeposits());
         }
     }
 
@@ -84,8 +84,9 @@ public class MotherlodeSackWidget extends Overlay {
 
     @Override
     public Dimension render(final Graphics2D graphics) {
-        if (!motherlode.inRegion() || !config.showCustomSackWidget()) return null;
+        if (!motherlode.inRegion() || !config.showSackDeposits() && !config.showSackNeeded() && !config.showSackPaydirt()) return null;
         final int pay_dirt_needed = motherlode.getPayDirtNeeded();
+        final int deposits_left = motherlode.getDepositsLeft();
 
         panelComponent.getChildren().clear();
         panel.getChildren().clear();
@@ -99,19 +100,32 @@ public class MotherlodeSackWidget extends Overlay {
         panel.setBackgroundColor(getPanelBackgroundColor(color_background));
 
         // Sack Pay-dirt count.
-        panel.getChildren().add(LineComponent.builder()
-            .left("Sack:").leftColor(color_background != null ? color_white : color_orange)
-            .right(String.valueOf(sack.countPayDirt())).rightColor(color_white)
-            .build()
-        );
+        if (config.showSackPaydirt()) {
+            panel.getChildren().add(LineComponent.builder()
+                .left("Sack:").leftColor(color_background != null ? color_white : color_orange)
+                .right(String.valueOf(sack.countPayDirt())).rightColor(color_white)
+                .build()
+            );
+        }
+
+        // Inventory deposits left.
+        if (config.showSackDeposits()) {
+            panel.getChildren().add(LineComponent.builder()
+                .left("Deposits:").leftColor(color_background != null ? color_white : color_orange)
+                .right(String.valueOf(deposits_left)).rightColor(color_white)
+                .build()
+            );
+        }
 
         // Pay-dirt needed to mine.
-        final Color color_needed = (color_background != null || pay_dirt_needed == 0) ? color_white : color_green;
-        panel.getChildren().add(LineComponent.builder()
-            .left("Needed:").leftColor(color_background != null ? color_white : color_orange)
-            .right(String.valueOf(pay_dirt_needed)).rightColor(color_needed)
-            .build()
-        );
+        if (config.showSackNeeded()) {
+            final Color color_needed = (color_background != null || pay_dirt_needed == 0) ? color_white : color_green;
+            panel.getChildren().add(LineComponent.builder()
+                .left("Needed:").leftColor(color_background != null ? color_white : color_orange)
+                .right(String.valueOf(pay_dirt_needed)).rightColor(color_needed)
+                .build()
+            );
+        }
 
         panelComponent.getChildren().add(panel);
         return super.render(graphics);

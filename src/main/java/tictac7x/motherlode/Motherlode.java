@@ -9,9 +9,11 @@ import com.google.common.collect.ImmutableSet;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.events.ConfigChanged;
 
 public class Motherlode {
     private final Client client;
+    private final MotherlodeConfig config;
     private final MotherlodeInventory inventory;
     private final MotherlodeSack sack;
     private final MotherlodeVeins veins;
@@ -21,6 +23,7 @@ public class Motherlode {
 
     private boolean in_region = false;
     private int pay_dirt_needed = 0;
+    private int deposits_left = 0;
 
     private List<Sector> player_sector = new ArrayList<>();
     @Nullable
@@ -28,8 +31,9 @@ public class Motherlode {
     @Nullable
     private Integer player_y = null;
     
-    public Motherlode(final Client client) {
+    public Motherlode(final Client client, final MotherlodeConfig config) {
         this.client = client;
+        this.config = config;
         this.inventory = new MotherlodeInventory(this);
         this.sack = new MotherlodeSack(this, inventory, client);
         this.veins = new MotherlodeVeins(this);
@@ -159,6 +163,12 @@ public class Motherlode {
         return in_region;
     }
 
+    public void onConfigChanged(final ConfigChanged event) {
+        if (event.getGroup().equals(MotherlodeConfig.group) && event.getKey().equals(MotherlodeConfig.maximize_sack_paydirt)) {
+            updatePayDirtNeeded();
+        }
+    }
+
     /**
      * Calculate the needed pay dirt based on the sack size, pay dirt in sack, inventory items and inventory pay-dirt.
      */
@@ -170,28 +180,44 @@ public class Motherlode {
         final int inventory_size = inventory.getSize();
 
         // Sack is full, but pay-dirt can be deposited one more time.
+        // Or user doesn't care about maximizing pay-dirt.
         // Needed pay dirt is all available space in inventory.
-        if (sack_pay_dirt == sack_size) {
+        if (sack_pay_dirt == sack_size || !config.maximizeSackPaydirt() && sack_pay_dirt <= sack_size) {
             pay_dirt_needed = inventory_size - inventory_items;
-            return;
 
         // Sack is more than full, need to be emptied.
         } else if (sack_pay_dirt > sack_size) {
             pay_dirt_needed = inventory_pay_dirt * -1;
-            return;
-        }
 
-        // Sack is not full.
-        final int to_mine = sack_size - sack_pay_dirt;
-
-        // More than 1 inventory needs to be deposited.
-        if (to_mine > inventory_size) {
-            pay_dirt_needed = inventory_size - inventory_items;
-
-        // Last deposit to get sack full, but to be able to deposit one more time.
         } else {
-            pay_dirt_needed = Math.min(to_mine - inventory_pay_dirt, inventory_size - inventory_items);
+            // Sack is not full.
+            final int to_mine = sack_size - sack_pay_dirt;
+
+            // More than 1 inventory needs to be deposited.
+            if (to_mine > inventory_size) {
+                pay_dirt_needed = inventory_size - inventory_items;
+
+                // Last deposit to get sack full, but to be able to deposit one more time.
+            } else {
+                pay_dirt_needed = Math.min(to_mine - inventory_pay_dirt, inventory_size - inventory_items);
+            }
         }
+
+        if (sack_pay_dirt == sack_size) {
+            deposits_left = 1;
+        } else if (sack_pay_dirt < sack_size) {
+            deposits_left = (sack_size - sack_pay_dirt) / (inventory_size - inventory_items + inventory_pay_dirt) + 1;
+
+            if (config.maximizeSackPaydirt() && pay_dirt_needed < inventory_size - inventory_items) {
+                deposits_left += 1;
+            }
+        } else {
+            deposits_left = 0;
+        }
+    }
+
+    public int getDepositsLeft() {
+        return deposits_left;
     }
 
     public int getPayDirtNeeded() {
@@ -239,7 +265,7 @@ public class Motherlode {
         {3750, 5682}, {3750, 5683}, {3750, 5684}, {3750, 5685},
         {3751, 5678}, {3751, 5680}, {3751, 5681}, {3751, 5683}, {3751, 5684},
         {3752, 5676}, {3752, 5677}, {3752, 5678}, {3752, 5679}, {3752, 5680}, {3752, 5681}, {3752, 5682}, {3752, 5683}, {3752, 5684},
-        {3753, 5676}, {3753, 5677}, {3753, 5678}, {3753, 5680}, {3753, 5682}, {3753, 5683},
+        {3753, 5676}, {3753, 5677}, {3753, 5678}, {3753, 5680}, {3753, 5682}, {3753, 5683}, {3753, 5684},
         {3754, 5675}, {3754, 5676}, {3754, 5678}, {3754, 5682}, {3754, 5683},
         {3755, 5675}, {3755, 5676}, {3755, 5677}
     };

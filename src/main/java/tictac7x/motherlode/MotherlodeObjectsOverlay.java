@@ -84,7 +84,7 @@ public class MotherlodeObjectsOverlay extends Overlay {
             }
         }
 
-        if (ladder_up != null && motherlode.needToDepositPayDirt() && motherlode.isUpstairs()) {
+        if (ladder_up != null && (motherlode.needToDepositPayDirt() || pay_dirt_needed < 0) && motherlode.isUpstairs()) {
             if (pay_dirt_needed == 0) {
                 renderClickbox(graphics, ladder_up, getColor(config.getOreVeinsColor(), alpha_normal));
             } else if (pay_dirt_needed < 0) {

@@ -76,7 +76,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
         // Veins.
         for (final TileObject ore_vein : ore_veins) {
             final OreVein vein = veins.getOreVein(ore_vein);
-            if (vein == null) continue;
+            if (vein == null || config.upstairsOnly() && vein.sector == Sector.DOWNSTAIRS) continue;
 
             // Depleted ore vein.
             if (vein.isDepleted()) {

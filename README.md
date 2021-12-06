@@ -1,4 +1,4 @@
-# Motherlode Mine Improved - v0.2
+# Motherlode Mine Improved - v0.3
 ![](img/motherlode.png)
 
 <br>
@@ -15,6 +15,7 @@
 
 ## Custom widget
 * Show how many pay-dirt is stored (sack and hopper combined).
+* Show how many deposits left before sack is full.
 * Show how many pay-dirt you need to mine before depositing.
 * Change background color based on the action you need to do (deposit to hopper, search from sack, don't deposit too much).
 
