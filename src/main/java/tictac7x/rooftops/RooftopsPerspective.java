@@ -2,6 +2,7 @@ package tictac7x.rooftops;
 
 import net.runelite.api.Client;
 import net.runelite.api.Model;
+import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.geometry.RectangleUnion;
 import net.runelite.api.geometry.Shapes;
@@ -108,86 +109,61 @@ public class RooftopsPerspective {
     {
         int[] x2d = new int[m.getVerticesCount()];
         int[] y2d = new int[m.getVerticesCount()];
-        final int[] faceColors3 = m.getFaceColors3();
-
-        net.runelite.api.Perspective.modelToCanvas(client,
-                m.getVerticesCount(),
-                x, y, z,
-                jauOrient,
-                m.getVerticesX(), m.getVerticesZ(), m.getVerticesY(),
-                x2d, y2d);
-
-        final int radius = 5;
-
-        int[][] tris = new int[][]{
-                m.getTrianglesX(),
-                m.getTrianglesY(),
-                m.getTrianglesZ()
-        };
-
+        int[] faceColors3 = m.getFaceColors3();
+        Perspective.modelToCanvas(client, m.getVerticesCount(), x, y, z, jauOrient, m.getVerticesX(), m.getVerticesZ(), m.getVerticesY(), x2d, y2d);
+//        int radius = true;
+        int[][] tris = new int[][]{m.getFaceIndices1(), m.getFaceIndices2(), m.getFaceIndices3()};
         int vpX1 = client.getViewportXOffset();
         int vpY1 = client.getViewportXOffset();
         int vpX2 = vpX1 + client.getViewportWidth();
         int vpY2 = vpY1 + client.getViewportHeight();
+        List<RectangleUnion.Rectangle> rects = new ArrayList(m.getFaceCount());
 
-        List<RectangleUnion.Rectangle> rects = new ArrayList<>(m.getTrianglesCount());
+        label56:
+        for(int tri = 0; tri < m.getFaceCount(); ++tri) {
+            if (faceColors3[tri] != -2) {
+                int minX = 2147483647;
+                int minY = 2147483647;
+                int maxX = -2147483648;
+                int maxY = -2147483648;
+                int[][] var21 = tris;
+                int var22 = tris.length;
 
-        nextTri:
-        for (int tri = 0; tri < m.getTrianglesCount(); tri++)
-        {
-            if (faceColors3[tri] == -2)
-            {
-                continue;
+                for(int var23 = 0; var23 < var22; ++var23) {
+                    int[] vertex = var21[var23];
+                    int idx = vertex[tri];
+                    int xs = x2d[idx];
+                    int ys = y2d[idx];
+                    if (xs == -2147483648 || ys == -2147483648) {
+                        continue label56;
+                    }
+
+                    if (xs < minX) {
+                        minX = xs;
+                    }
+
+                    if (xs > maxX) {
+                        maxX = xs;
+                    }
+
+                    if (ys < minY) {
+                        minY = ys;
+                    }
+
+                    if (ys > maxY) {
+                        maxY = ys;
+                    }
+                }
+
+                minX -= 5;
+                minY -= 5;
+                maxX += 5;
+                maxY += 5;
+                if (vpX1 <= maxX && vpX2 >= minX && vpY1 <= maxY && vpY2 >= minY) {
+                    RectangleUnion.Rectangle r = new RectangleUnion.Rectangle(minX, minY, maxX, maxY);
+                    rects.add(r);
+                }
             }
-
-            int
-                    minX = Integer.MAX_VALUE,
-                    minY = Integer.MAX_VALUE,
-                    maxX = Integer.MIN_VALUE,
-                    maxY = Integer.MIN_VALUE;
-
-            for (int[] vertex : tris)
-            {
-                final int idx = vertex[tri];
-                final int xs = x2d[idx];
-                final int ys = y2d[idx];
-
-                if (xs == Integer.MIN_VALUE || ys == Integer.MIN_VALUE)
-                {
-                    continue nextTri;
-                }
-
-                if (xs < minX)
-                {
-                    minX = xs;
-                }
-                if (xs > maxX)
-                {
-                    maxX = xs;
-                }
-                if (ys < minY)
-                {
-                    minY = ys;
-                }
-                if (ys > maxY)
-                {
-                    maxY = ys;
-                }
-            }
-
-            minX -= radius;
-            minY -= radius;
-            maxX += radius;
-            maxY += radius;
-
-            if (vpX1 > maxX || vpX2 < minX || vpY1 > maxY || vpY2 < minY)
-            {
-                continue;
-            }
-
-            RectangleUnion.Rectangle r = new RectangleUnion.Rectangle(minX, minY, maxX, maxY);
-
-            rects.add(r);
         }
 
         return RectangleUnion.union(rects);
