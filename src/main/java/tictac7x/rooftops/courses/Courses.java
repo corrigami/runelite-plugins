@@ -39,6 +39,7 @@ public class Courses extends Overlay {
     private final RooftopCourseSeers rooftop_seers = new RooftopCourseSeers();
     private final RooftopCoursePollnivneach rooftop_pollnivneach = new RooftopCoursePollnivneach();
     private final RooftopCourseRellekka rooftop_rellekka = new RooftopCourseRellekka();
+    private final RooftopCourseArdougne rooftop_ardougne = new RooftopCourseArdougne();
 
     private final List<TileObject> obstacles = new ArrayList<>();
     private final List<Integer> obstacles_visited = new ArrayList<>();
@@ -90,6 +91,8 @@ public class Courses extends Overlay {
             return rooftop_pollnivneach;
         } else if (rooftop_rellekka.getObstacles().contains(obstacle)) {
             return rooftop_rellekka;
+        } else if (rooftop_ardougne.getObstacles().contains(obstacle)) {
+            return rooftop_ardougne;
         }
 
         return null;
