@@ -31,13 +31,13 @@ public class RooftopCourseArdougne extends Course {
 
             // Poses.
             ImmutableSet.of(
-                //821, 819,
-                //819, 823,
-                762, //819,
-                //823,
-                //823,
-                757, 756, 757 // 819, 823,
-                //823, 824, 819
+                //
+                //
+                762,
+                //
+                //
+                757, 756, 757
+                //
             ),
 
             // Idles.
@@ -48,7 +48,6 @@ public class RooftopCourseArdougne extends Course {
                 //
                 //
                 757
-                //
                 //
             ),
 

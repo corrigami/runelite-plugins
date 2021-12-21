@@ -1,4 +1,4 @@
-# Rooftop Agility Improved - v0.4.5
+# Rooftop Agility Improved - v0.4.6
 Improved clickboxes for rooftop agility courses.
 
 ![](img/seers.png)
@@ -23,7 +23,7 @@ Improved clickboxes for rooftop agility courses.
 - [x] Seers
 - [x] Pollnivneach
 - [x] Rellekka
-- [ ] Ardougne
+- [x] Ardougne
 
 <br>
 
