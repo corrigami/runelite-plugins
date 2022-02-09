@@ -1,20 +1,13 @@
 package tictac7x;
 
+import java.awt.*;
 import java.util.Map;
-import java.awt.Color;
-import java.awt.Shape;
-import java.awt.Rectangle;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import net.runelite.api.Tile;
-import net.runelite.api.Scene;
-import net.runelite.api.Client;
-import net.runelite.api.TileObject;
-import net.runelite.api.GameObject;
-import net.runelite.api.WallObject;
-import net.runelite.api.GroundObject;
+
+import net.runelite.api.*;
+import net.runelite.api.Point;
+import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.DecorativeObject;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.ui.overlay.components.PanelComponent;
@@ -55,12 +48,12 @@ public abstract class Overlay extends net.runelite.client.ui.overlay.OverlayPane
         renderShape(graphics, object.getClickbox(), color);
     }
 
-    public void renderItem(final Graphics2D graphics, final Tile item, final Color color) {
-        renderShape(graphics, item.getItemLayer().getCanvasTilePoly(), color);
-    }
-
-    public void renderTile(final Graphics2D graphics, final TileObject object, final Color color) {
-        renderShape(graphics, object.getCanvasTilePoly(), color);
+    public void renderTile(final Client client, final Graphics2D graphics, final Tile tile, final Color color) {
+        try {
+            final LocalPoint point_ground = LocalPoint.fromWorld(client, tile.getWorldLocation());
+            final Polygon poly = Perspective.getCanvasTilePoly(client, point_ground, tile.getItemLayer().getHeight());
+            renderShape(graphics, poly, color);
+        } catch (Exception ignored) {}
     }
 
     public void renderShape(final Graphics2D graphics, final Shape shape, final Color color) {
@@ -78,24 +71,19 @@ public abstract class Overlay extends net.runelite.client.ui.overlay.OverlayPane
         } catch (Exception ignored) {}
     }
 
-    public void renderPie(final Graphics2D graphics, final TileObject object, final Color color) {
-        renderPie(graphics, object, color, pie_progress);
-    }
-
-    public void renderPie(final Graphics2D graphics, final TileObject object, final Color color, final float progress) {
-        renderPie(graphics, object, color, progress, 0);
-    }
-
-    public void renderPie(final Graphics2D graphics, final TileObject object, final Color color, final float progress, final int offset) {
+    public void renderPie(final Client client, final Graphics2D graphics, final WorldPoint location, final Color color, final float progress, final int offset) {
         if (!isValidColor(color)) return;
 
         try {
-            final ProgressPieComponent progressPieComponent = new ProgressPieComponent();
-            progressPieComponent.setPosition(object.getCanvasLocation(offset));
-            progressPieComponent.setProgress(-progress);
-            progressPieComponent.setBorderColor(darkenColor(color));
-            progressPieComponent.setFill(color);
-            progressPieComponent.render(graphics);
+            final LocalPoint point_ground = LocalPoint.fromWorld(client, location);
+            final Point point_center = Perspective.getCanvasTextLocation(client, graphics, point_ground, "", offset);
+
+            final ProgressPieComponent pie = new ProgressPieComponent();
+            pie.setPosition(new Point(point_center.getX(), point_center.getY()));
+            pie.setProgress(-progress);
+            pie.setBorderColor(darkenColor(color));
+            pie.setFill(color);
+            pie.render(graphics);
         } catch (Exception ignored) {}
     }
 
