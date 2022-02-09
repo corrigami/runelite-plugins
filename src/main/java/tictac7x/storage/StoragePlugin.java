@@ -12,6 +12,7 @@ import net.runelite.api.ItemID;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
@@ -29,6 +30,9 @@ import net.runelite.client.ui.overlay.OverlayManager;
 public class StoragePlugin extends Plugin {
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientThread client_thread;
 
 	@Inject
 	private StorageConfig config;
@@ -56,22 +60,22 @@ public class StoragePlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		if (bank == null) {
-			bank = new Storage(configs, InventoryID.BANK, "bank", true, true);
-			inventory = new Storage(configs, InventoryID.INVENTORY, "inventory", false, true);
+			bank = new Storage(configs, items, client_thread, InventoryID.BANK, "bank", true, true);
+			inventory = new Storage(configs, items, client_thread, InventoryID.INVENTORY, "inventory", false, true);
 			storage_manager = new StorageManager(client, inventory, bank);
 
-			overlay_inventory = new StorageOverlay(inventory, items);
-			overlay_bank = new StorageOverlay(bank, items);
+			overlay_bank = new StorageOverlay(bank);
+			overlay_inventory = new StorageOverlay(inventory);
 		}
 
-		overlays.add(overlay_inventory);
 		overlays.add(overlay_bank);
+		overlays.add(overlay_inventory);
 	}
 
 	@Override
 	protected void shutDown() {
-		overlays.remove(overlay_inventory);
 		overlays.remove(overlay_bank);
+		overlays.remove(overlay_inventory);
 	}
 
 	@Subscribe

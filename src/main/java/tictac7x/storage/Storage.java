@@ -1,18 +1,23 @@
 package tictac7x.storage;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.ui.overlay.components.ImageComponent;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 public class Storage {
     private final ConfigManager configs;
+    private final ItemManager items;
+    private final ClientThread client_thread;
     private final String storage_id;
     private final int item_container_id;
     private final boolean whitelist_enabled, blacklist_enabled;
@@ -20,9 +25,12 @@ public class Storage {
 
     private JsonObject storage;
     private String[] whitelist, blacklist;
+    private final List<ImageComponent> images = new ArrayList<>();
 
-    public Storage(final ConfigManager configs, final InventoryID item_container_id, final String storage_id, final boolean whitelist, final boolean blacklist) {
+    public Storage(final ConfigManager configs, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist, final boolean blacklist) {
         this.configs = configs;
+        this.items = items;
+        this.client_thread = client_thread;
         this.storage_id = storage_id;
         this.item_container_id = item_container_id.getId();
         this.whitelist_enabled = whitelist;
@@ -31,14 +39,53 @@ public class Storage {
         this.storage = loadStorage();
         this.whitelist = loadWhitelist();
         this.blacklist = loadBlacklist();
+        this.updateStorageImages();
     }
 
-    public int getItemContainerID() {
-        return item_container_id;
+    public List<ImageComponent> getStorageImages() {
+        return images;
     }
 
-    public int getFreeSpace() {
-        return free_space;
+    private void updateStorageImages() {
+        // Images need to be created on the client thread.
+        client_thread.invoke(() -> {
+            // Clear old images.
+            images.clear();
+
+            // Whitelist check.
+            for (final String whitelist : whitelist) {
+                for (final Map.Entry<String, JsonElement> item : storage.entrySet()) {
+                    final int id = Integer.parseInt(item.getKey());
+                    final String name = items.getItemComposition(id).getName();
+                    final int quantity = item.getValue().getAsInt();
+
+                    // Placeholder check.
+                    if (quantity < 1 || name == null) continue;
+
+                    // Blacklist check.
+                    if (blacklist_enabled && blacklist != null) {
+                        boolean blacklisted = false;
+
+                        for (final String blacklist : blacklist) {
+                            if (blacklist == null || blacklist.length() == 0) continue;
+
+                            // Item blacklisted.
+                            if (name.contains(blacklist)) {
+                                blacklisted = true;
+                                break;
+                            }
+                        }
+
+                        if (blacklisted) continue;
+                    }
+
+                    // Whitelist disabled or item whitelisted.
+                    if (!whitelist_enabled || whitelist != null && name.contains(whitelist)) {
+                        images.add(new ImageComponent(items.getImage(id, quantity, true)));
+                    }
+                }
+            }
+        });
     }
 
     public boolean show() {
@@ -87,26 +134,6 @@ public class Storage {
         return new String[]{configs.getConfiguration(StorageConfig.group, getBlacklistID())};
     }
 
-    public boolean isWhitelistEnabled() {
-        return whitelist_enabled;
-    }
-
-    public boolean isBlacklistEnabled() {
-        return blacklist_enabled;
-    }
-
-    public String[] getWhitelist() {
-        return whitelist;
-    }
-
-    public String[] getBlacklist() {
-        return blacklist;
-    }
-
-    public JsonObject getStorage() {
-        return storage;
-    }
-
     /**
      * Dynamically deposit items stored in json to the storage.
      * For example needed when depositing to bank with deposit box without opening the actual bank interface.
@@ -122,6 +149,7 @@ public class Storage {
                 }
             }
             saveStorageToConfig();
+            updateStorageImages();
         }
     }
 
@@ -134,10 +162,12 @@ public class Storage {
             // Update whitelist.
             if (Objects.equals(event.getKey(), getWhitelistID())) {
                 this.whitelist = event.getNewValue().split(",");
+                this.updateStorageImages();
 
                 // Update blacklist.
             } else if (Objects.equals(event.getKey(), getBlacklistID())) {
                 this.blacklist = event.getNewValue().split(",");
+                this.updateStorageImages();
             }
         }
     }
@@ -167,6 +197,7 @@ public class Storage {
 
             this.storage = storage;
             saveStorageToConfig();
+            updateStorageImages();
         }
     }
 }
