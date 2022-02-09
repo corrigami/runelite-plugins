@@ -2,16 +2,11 @@ package tictac7x.storage;
 
 import javax.inject.Inject;
 
-import com.google.gson.JsonObject;
 import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemID;
 import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -27,7 +22,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	description = "Show overlays of various storages and searchable panel",
 	tags = { "storage", "bank", "inventory" }
 )
-public class StoragePlugin extends Plugin {
+public class TicTac7xStoragePlugin extends Plugin {
 	@Inject
 	private Client client;
 
