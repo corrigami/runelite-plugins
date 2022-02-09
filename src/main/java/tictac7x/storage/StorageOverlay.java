@@ -1,12 +1,16 @@
 package tictac7x.storage;
 
 import com.google.gson.JsonElement;
+import net.runelite.api.InventoryID;
+import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.components.*;
 import net.runelite.client.ui.overlay.components.ComponentOrientation;
-import net.runelite.client.ui.overlay.components.ImageComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
+import net.runelite.client.ui.overlay.components.TextComponent;
+import net.runelite.client.ui.overlay.infobox.InfoBox;
+import net.runelite.client.util.ImageUtil;
 import tictac7x.Overlay;
 
 import java.awt.*;
@@ -38,32 +42,54 @@ public class StorageOverlay extends Overlay {
         panelComponent.getChildren().clear();
         panel.getChildren().clear();
 
-        for (final Map.Entry<String, JsonElement> item : storage.getStorage().entrySet()) {
-            final int id = Integer.parseInt(item.getKey());
-            final String name = items.getItemComposition(id).getName();
-            final int quantity = item.getValue().getAsInt();
+        // Storage overlay hidden.
+        if (!storage.show()) return null;
 
-            // Placeholder check.
-            if (quantity < 1) {
-                continue;
+        // Whitelist check.
+        for (final String whitelist : storage.getWhitelist()) {
+            for (final Map.Entry<String, JsonElement> item : storage.getStorage().entrySet()) {
+                final int id = Integer.parseInt(item.getKey());
+                final String name = items.getItemComposition(id).getName();
+                final int quantity = item.getValue().getAsInt();
 
-            // Whitelist check.
-            } else if (storage.isWhitelistEnabled() && !storage.getWhitelist().has(name)) {
-                continue;
+                // Placeholder check.
+                if (quantity < 1 || name == null) continue;
 
-            // Blacklist check.
-            } else if (storage.isBlacklistEnabled() && storage.getBlacklist().has(name)) {
-                continue;
+                // Blacklist check.
+                if (storage.isBlacklistEnabled() && storage.getBlacklist() != null) {
+                    boolean blacklisted = false;
+
+                    for (final String blacklist : storage.getBlacklist()) {
+                        if (blacklist == null || blacklist.length() == 0) continue;
+
+                        // Item blacklisted.
+                        if (name.contains(blacklist)) {
+                            blacklisted = true;
+                            break;
+                        }
+                    }
+
+                    if (blacklisted) continue;
+                }
+
+                // Whitelist disabled or item whitelisted.
+                if (!storage.isWhitelistEnabled() || whitelist != null && name.contains(whitelist)) {
+                    panel.getChildren().add(new ImageComponent(items.getImage(id, quantity, true)));
+                }
             }
-
-            panel.getChildren().add(new ImageComponent(items.getImage(id, quantity, true)));
         }
 
+        // TODO - Inventory free space with quantity.
+//        if (storage.getItemContainerID() == InventoryID.INVENTORY.getId()) {
+//            panel.getChildren().add(new ImageComponent(ImageUtil.loadImageResource(getClass(), "inventory.png")));
+//        }
+
+        // Show panel.
         if (!panel.getChildren().isEmpty()) {
             panelComponent.getChildren().add(panel);
             return super.render(graphics);
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

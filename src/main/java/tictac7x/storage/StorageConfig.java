@@ -21,15 +21,24 @@ public interface StorageConfig extends Config {
 			description = "inventory",
 			section = inventory,
 			position = 1,
-			hidden = false
+			hidden = true
 		) default String getInventory() { return ""; }
+
+		@ConfigItem(
+			keyName = "inventory_show",
+			name = "Show inventory overlay",
+			description = "Show overlay of inventory items.",
+			section = inventory,
+			position = 2
+		) default boolean showInventory() { return true; }
 
 		@ConfigItem(
 			keyName = "inventory_whitelist",
 			name = "whitelist",
 			description = "Names of items to show in the inventory overlay.",
 			section = inventory,
-			position = 2
+			position = 3,
+			hidden = true
 		) default String getInventoryWhitelist() { return ""; }
 
 		@ConfigItem(
@@ -37,7 +46,7 @@ public interface StorageConfig extends Config {
 			name = "blacklist",
 			description = "Names of items to hide from the inventory overlay.",
 			section = inventory,
-			position = 3
+			position = 4
 		) default String getInventoryBlacklist() { return ""; }
 
 	@ConfigSection(
@@ -52,22 +61,30 @@ public interface StorageConfig extends Config {
 			description = "bank",
 			section = bank,
 			position = 1,
-			hidden = false
+			hidden = true
 		) default String getBank() { return ""; }
 
 		@ConfigItem(
-			keyName = "bank_whitelist",
-			name = "whitelist",
-			description = "Names of items to show in the bank overlay.",
+			keyName = "bank_show",
+			name = "Show bank overlay",
+			description = "Show overlay of bank items.",
 			section = bank,
 			position = 2
+		) default boolean showBank() { return true; }
+
+		@ConfigItem(
+			keyName = "bank_whitelist",
+			name = "Bank whitelist",
+			description = "Names of items to show in the bank overlay.",
+			section = bank,
+			position = 3
 		) default String getBankWhitelist() { return ""; }
 
 		@ConfigItem(
 			keyName = "bank_blacklist",
-			name = "blacklist",
+			name = "Bank blacklist",
 			description = "Names of items to hide from the bank overlay.",
 			section = bank,
-			position = 3
+			position = 4
 		) default String getBankBlacklist() { return ""; }
 }

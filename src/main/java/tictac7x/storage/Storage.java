@@ -16,8 +16,10 @@ public class Storage {
     private final String storage_id;
     private final int item_container_id;
     private final boolean whitelist_enabled, blacklist_enabled;
+    private int free_space = 0;
 
-    private JsonObject storage, whitelist, blacklist;
+    private JsonObject storage;
+    private String[] whitelist, blacklist;
 
     public Storage(final ConfigManager configs, final InventoryID item_container_id, final String storage_id, final boolean whitelist, final boolean blacklist) {
         this.configs = configs;
@@ -29,6 +31,18 @@ public class Storage {
         this.storage = loadStorage();
         this.whitelist = loadWhitelist();
         this.blacklist = loadBlacklist();
+    }
+
+    public int getItemContainerID() {
+        return item_container_id;
+    }
+
+    public int getFreeSpace() {
+        return free_space;
+    }
+
+    public boolean show() {
+        return configs.getConfiguration(StorageConfig.group, storage_id + "_show").equals("true");
     }
 
     private String getWhitelistID() {
@@ -62,32 +76,15 @@ public class Storage {
     /**
      * Get whitelist json from config.
      */
-    private JsonObject loadWhitelist() {
-        return getListFromString(configs.getConfiguration(StorageConfig.group, getWhitelistID()));
+    private String[] loadWhitelist() {
+        return new String[]{configs.getConfiguration(StorageConfig.group, getWhitelistID())};
     }
 
     /**
      * Get blacklist json from config.
      */
-    private JsonObject loadBlacklist() {
-        return getListFromString(configs.getConfiguration(StorageConfig.group, getBlacklistID()));
-    }
-
-    /**
-     * Get json from white/blacklist comma separated string.
-     * @param value - Comma separated string.
-     * @return json of listed elements.
-     */
-    private JsonObject getListFromString(final String value) {
-        final JsonObject object = new JsonObject();
-        if (value == null) return object;
-
-        for (String item : value.split(",")) {
-            item = item.trim();
-            object.addProperty(item, true);
-        }
-
-        return object;
+    private String[] loadBlacklist() {
+        return new String[]{configs.getConfiguration(StorageConfig.group, getBlacklistID())};
     }
 
     public boolean isWhitelistEnabled() {
@@ -98,11 +95,11 @@ public class Storage {
         return blacklist_enabled;
     }
 
-    public JsonObject getWhitelist() {
+    public String[] getWhitelist() {
         return whitelist;
     }
 
-    public JsonObject getBlacklist() {
+    public String[] getBlacklist() {
         return blacklist;
     }
 
@@ -136,11 +133,11 @@ public class Storage {
         if (Objects.equals(event.getGroup(), StorageConfig.group)) {
             // Update whitelist.
             if (Objects.equals(event.getKey(), getWhitelistID())) {
-                this.whitelist = getListFromString(event.getNewValue());
+                this.whitelist = event.getNewValue().split(",");
 
                 // Update blacklist.
             } else if (Objects.equals(event.getKey(), getBlacklistID())) {
-                this.blacklist = getListFromString(event.getNewValue());
+                this.blacklist = event.getNewValue().split(",");
             }
         }
     }
@@ -153,6 +150,7 @@ public class Storage {
         final ItemContainer item_container = event.getItemContainer();
 
         if (item_container != null && item_container.getId() == item_container_id) {
+            free_space = item_container.size();
             final JsonObject storage = new JsonObject();
 
             Arrays.stream(item_container.getItems()).filter(
@@ -164,6 +162,7 @@ public class Storage {
                 } else {
                     storage.addProperty(id, item.getQuantity());
                 }
+                free_space -= 1;
             });
 
             this.storage = storage;

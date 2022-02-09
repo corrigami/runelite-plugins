@@ -56,7 +56,7 @@ public class StoragePlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		if (bank == null) {
-			bank = new Storage(configs, InventoryID.BANK, "bank", true, false);
+			bank = new Storage(configs, InventoryID.BANK, "bank", true, true);
 			inventory = new Storage(configs, InventoryID.INVENTORY, "inventory", false, true);
 			storage_manager = new StorageManager(client, inventory, bank);
 
