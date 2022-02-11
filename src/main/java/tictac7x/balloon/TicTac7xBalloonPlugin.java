@@ -22,7 +22,7 @@ import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 	description = "Show amount of logs stored in the balloon transport system storages.",
 	tags = { "balloon", "transport", "logs", "storage" }
 )
-public class BalloonPlugin extends Plugin {
+public class TicTac7xBalloonPlugin extends Plugin {
 	@Inject
 	private Client client;
 
@@ -44,7 +44,7 @@ public class BalloonPlugin extends Plugin {
 	@Inject
 	private BalloonConfig config;
 
-	private Storage storage;
+	private BalloonStorage balloon_storage;
 	private BalloonOverlayLogs overlay_logs;
 	private BalloonInfoboxLogs infobox_logs;
 	private BalloonInfoboxLogs infobox_logs_oak;
@@ -55,14 +55,14 @@ public class BalloonPlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		if (overlay_logs == null) {
-			storage = new Storage(config, client, configs);
-			overlay_logs = new BalloonOverlayLogs(config, configs, items, storage);
+			balloon_storage = new BalloonStorage(config, client, configs);
+			overlay_logs = new BalloonOverlayLogs(config, configs, items, balloon_storage);
 
 			infobox_logs = new BalloonInfoboxLogs(
 				"logs",
 				items.getImage(ItemID.LOGS),
-				() -> showInfobox(Storage.Logs.LOGS),
-				() -> storage.getLogsCount(Storage.Logs.LOGS),
+				() -> showInfobox(BalloonStorage.Logs.LOGS),
+				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS),
 				"Entrana / Taverley",
 				this
 			);
@@ -70,32 +70,32 @@ public class BalloonPlugin extends Plugin {
 			infobox_logs_oak = new BalloonInfoboxLogs(
 				"logs_oak",
 				items.getImage(ItemID.OAK_LOGS),
-				() -> showInfobox(Storage.Logs.LOGS_OAK),
-				() -> storage.getLogsCount(Storage.Logs.LOGS_OAK),
+				() -> showInfobox(BalloonStorage.Logs.LOGS_OAK),
+				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_OAK),
 				"Crafting Guild",
 				this);
 
 			infobox_logs_willow = new BalloonInfoboxLogs(
 				"logs_willow",
 				items.getImage(ItemID.WILLOW_LOGS),
-				() -> showInfobox(Storage.Logs.LOGS_WILLOW),
-				() -> storage.getLogsCount(Storage.Logs.LOGS_WILLOW),
+				() -> showInfobox(BalloonStorage.Logs.LOGS_WILLOW),
+				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_WILLOW),
 				"Varrock",
 				this);
 
 			infobox_logs_yew = new BalloonInfoboxLogs(
 				"logs_yew",
 				items.getImage(ItemID.YEW_LOGS),
-				() -> showInfobox(Storage.Logs.LOGS_YEW),
-				() -> storage.getLogsCount(Storage.Logs.LOGS_YEW),
+				() -> showInfobox(BalloonStorage.Logs.LOGS_YEW),
+				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_YEW),
 				"Castle Wars",
 				this);
 
 			infobox_logs_magic = new BalloonInfoboxLogs(
 				"logs_magic",
 				items.getImage(ItemID.MAGIC_LOGS),
-				() -> showInfobox(Storage.Logs.LOGS_MAGIC),
-				() -> storage.getLogsCount(Storage.Logs.LOGS_MAGIC),
+				() -> showInfobox(BalloonStorage.Logs.LOGS_MAGIC),
+				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_MAGIC),
 				"Grand Tree",
 				this);
 		}
@@ -120,12 +120,12 @@ public class BalloonPlugin extends Plugin {
 
 	@Subscribe
 	public void onChatMessage(final ChatMessage event) {
-		client_thread.invokeLater(() -> storage.onChatMessage(event));
+		client_thread.invokeLater(() -> balloon_storage.onChatMessage(event));
 	}
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
-		client_thread.invokeLater(() -> storage.onWidgetLoaded(event));
+		client_thread.invokeLater(() -> balloon_storage.onWidgetLoaded(event));
 	}
 
 	@Provides
@@ -133,7 +133,7 @@ public class BalloonPlugin extends Plugin {
 		return configManager.getConfig(BalloonConfig.class);
 	}
 
-	private boolean showInfobox(final Storage.Logs logs) {
-		return config.getStyle() == BalloonConfig.style.INFOBOXES && storage.showLogs(logs);
+	private boolean showInfobox(final BalloonStorage.Logs logs) {
+		return config.getStyle() == BalloonConfig.style.INFOBOXES && balloon_storage.showLogs(logs);
 	}
 }

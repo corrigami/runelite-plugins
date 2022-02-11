@@ -5,7 +5,7 @@ import net.runelite.client.externalplugins.ExternalPluginManager;
 
 public class BalloonPluginTest {
 	public static void main(String[] args) throws Exception {
-		ExternalPluginManager.loadBuiltin(tictac7x.balloon.BalloonPlugin.class);
+		ExternalPluginManager.loadBuiltin(TicTac7xBalloonPlugin.class);
 		RuneLite.main(args);
 	}
 }

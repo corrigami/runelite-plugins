@@ -11,7 +11,7 @@ public class BalloonInfoboxLogs extends InfoBox {
     private final Supplier<Integer> logs_count;
     private final String tooltip;
 
-    public BalloonInfoboxLogs(final String name, final BufferedImage image, final Supplier<Boolean> render_check, final Supplier<Integer> logs_count, final String tooltip, final BalloonPlugin plugin) {
+    public BalloonInfoboxLogs(final String name, final BufferedImage image, final Supplier<Boolean> render_check, final Supplier<Integer> logs_count, final String tooltip, final TicTac7xBalloonPlugin plugin) {
         super(image, plugin);
         this.name = name;
         this.render_check = render_check;

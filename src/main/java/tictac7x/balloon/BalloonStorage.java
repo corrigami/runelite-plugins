@@ -16,7 +16,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
 
-public class Storage {
+public class BalloonStorage {
     enum Logs { LOGS, LOGS_OAK, LOGS_WILLOW, LOGS_YEW, LOGS_MAGIC }
 
     private static final int WIDGET_STORAGE = 229;
@@ -40,7 +40,7 @@ public class Storage {
     private final int[] storage = new int[STORAGE_LOGS_TYPES];
     private final int[] inventory = new int[STORAGE_LOGS_TYPES];
 
-    public Storage(final BalloonConfig config, final Client client, final ConfigManager configs) {
+    public BalloonStorage(final BalloonConfig config, final Client client, final ConfigManager configs) {
         this.config = config;
         this.client = client;
         this.configs = configs;

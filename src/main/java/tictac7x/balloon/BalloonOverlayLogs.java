@@ -16,14 +16,14 @@ import net.runelite.client.ui.overlay.components.ComponentOrientation;
 public class BalloonOverlayLogs extends OverlayPanel {
     private final BalloonConfig config;
     private final ItemManager items;
-    private final Storage storage;
+    private final BalloonStorage balloon_storage;
 
     private final PanelComponent panel = new PanelComponent();
 
-    public BalloonOverlayLogs(final BalloonConfig config, final ConfigManager configs, final ItemManager items, final Storage storage) {
+    public BalloonOverlayLogs(final BalloonConfig config, final ConfigManager configs, final ItemManager items, final BalloonStorage balloon_storage) {
         this.config = config;
         this.items = items;
-        this.storage = storage;
+        this.balloon_storage = balloon_storage;
 
         setLayer(OverlayLayer.ABOVE_WIDGETS);
         setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
@@ -44,28 +44,28 @@ public class BalloonOverlayLogs extends OverlayPanel {
             panel.getChildren().clear();
 
             // Logs - Entrana / Taverly.
-            if (storage.showLogs(Storage.Logs.LOGS)) {
-                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.LOGS, storage.getLogsCount(Storage.Logs.LOGS), true)));
+            if (balloon_storage.showLogs(BalloonStorage.Logs.LOGS)) {
+                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.LOGS, balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS), true)));
             }
 
             // Oak logs - Crafting guild.
-            if (storage.showLogs(Storage.Logs.LOGS_OAK)) {
-                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.OAK_LOGS, storage.getLogsCount(Storage.Logs.LOGS_OAK), true)));
+            if (balloon_storage.showLogs(BalloonStorage.Logs.LOGS_OAK)) {
+                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.OAK_LOGS, balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_OAK), true)));
             }
 
             // Willow logs - Varrock.
-            if (storage.showLogs(Storage.Logs.LOGS_WILLOW)) {
-                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.WILLOW_LOGS, storage.getLogsCount(Storage.Logs.LOGS_WILLOW), true)));
+            if (balloon_storage.showLogs(BalloonStorage.Logs.LOGS_WILLOW)) {
+                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.WILLOW_LOGS, balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_WILLOW), true)));
             }
 
             // Yew logs - Castle wars.
-            if (storage.showLogs(Storage.Logs.LOGS_YEW)) {
-                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.YEW_LOGS, storage.getLogsCount(Storage.Logs.LOGS_YEW), true)));
+            if (balloon_storage.showLogs(BalloonStorage.Logs.LOGS_YEW)) {
+                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.YEW_LOGS, balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_YEW), true)));
             }
 
             // Magic logs - Grand tree.
-            if (storage.showLogs(Storage.Logs.LOGS_MAGIC)) {
-                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.MAGIC_LOGS, storage.getLogsCount(Storage.Logs.LOGS_MAGIC), true)));
+            if (balloon_storage.showLogs(BalloonStorage.Logs.LOGS_MAGIC)) {
+                panel.getChildren().add(new ImageComponent(items.getImage(ItemID.MAGIC_LOGS, balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_MAGIC), true)));
             }
 
             if (panel.getChildren().size() > 0) {
