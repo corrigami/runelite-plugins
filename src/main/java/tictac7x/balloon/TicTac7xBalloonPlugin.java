@@ -5,9 +5,8 @@ import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
+import net.runelite.api.events.*;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.config.ConfigManager;
@@ -51,6 +50,11 @@ public class TicTac7xBalloonPlugin extends Plugin {
 	private BalloonInfoboxLogs infobox_logs_willow;
 	private BalloonInfoboxLogs infobox_logs_yew;
 	private BalloonInfoboxLogs infobox_logs_magic;
+
+	@Provides
+	BalloonConfig provideConfig(ConfigManager configManager) {
+		return configManager.getConfig(BalloonConfig.class);
+	}
 
 	@Override
 	protected void startUp() {
@@ -128,9 +132,14 @@ public class TicTac7xBalloonPlugin extends Plugin {
 		client_thread.invokeLater(() -> balloon_storage.onWidgetLoaded(event));
 	}
 
-	@Provides
-	BalloonConfig provideConfig(ConfigManager configManager) {
-		return configManager.getConfig(BalloonConfig.class);
+	@Subscribe
+	public void onGameObjectSpawned(final GameObjectSpawned event) {
+		balloon_storage.onGameObjectSpawned(event);
+	}
+
+	@Subscribe
+	public void onGameStateChanged(final GameStateChanged event) {
+		balloon_storage.onGameStateChanged(event);
 	}
 
 	private boolean showInfobox(final BalloonStorage.Logs logs) {

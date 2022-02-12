@@ -1,20 +1,21 @@
 package tictac7x.balloon;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.NonNull;
-import java.util.Date;
-import java.util.EnumSet;
+
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.runelite.api.Client;
-import net.runelite.api.ItemID;
+
+import net.runelite.api.*;
+
 import java.text.SimpleDateFormat;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemContainer;
+
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
+
+import javax.annotation.Nullable;
 
 public class BalloonStorage {
     enum Logs { LOGS, LOGS_OAK, LOGS_WILLOW, LOGS_YEW, LOGS_MAGIC }
@@ -31,6 +32,7 @@ public class BalloonStorage {
     private final Pattern regex_fly = Pattern.compile("You board the balloon and fly to (the )?(.*)\\.");
     private final Pattern regex_needed = Pattern.compile("You need 1 (.*) to make this trip\\.");
     private final Pattern regex_check = Pattern.compile("This crate currently contains (\\d+) logs, (\\d+) oak logs, (\\d+) willow logs, (\\d+)<br>yew logs and (\\d+) magic logs\\.");
+    private final Set<Integer> balloons = ImmutableSet.of(19133, 19135, 19137, 19139, 19141, 19143);
 
     private final BalloonConfig config;
     private final Client client;
@@ -39,6 +41,9 @@ public class BalloonStorage {
     private static final int STORAGE_LOGS_TYPES = 5;
     private final int[] storage = new int[STORAGE_LOGS_TYPES];
     private final int[] inventory = new int[STORAGE_LOGS_TYPES];
+
+    @Nullable
+    private GameObject visible_balloon = null;
 
     public BalloonStorage(final BalloonConfig config, final Client client, final ConfigManager configs) {
         this.config = config;
@@ -70,6 +75,7 @@ public class BalloonStorage {
             config.show() == BalloonConfig.Show.INDEFINITELY
             || config.show() == BalloonConfig.Show.ALL && now.getTime() - date_format.parse(config.getStorageDateGeneral()).getTime() < duration
             || config.show() == BalloonConfig.Show.RECENTLY_USED && now.getTime() - date_format.parse(logs_date).getTime() < duration
+            || config.showNearBalloon() && visible_balloon != null
         ); } catch (final Exception ignored) {}
 
         return false;
@@ -264,6 +270,19 @@ public class BalloonStorage {
                     this.inventory[getLogsIndex(Logs.LOGS_MAGIC)] = inventory.count(ItemID.MAGIC_LOGS);
                 }
             }
+        }
+    }
+
+    public void onGameObjectSpawned(final GameObjectSpawned event) {
+        final GameObject object = event.getGameObject();
+        if (balloons.contains(object.getId())) {
+            visible_balloon = object;
+        }
+    }
+
+    public void onGameStateChanged(final GameStateChanged event) {
+        if (event.getGameState() == GameState.LOADING) {
+            visible_balloon = null;
         }
     }
 }
