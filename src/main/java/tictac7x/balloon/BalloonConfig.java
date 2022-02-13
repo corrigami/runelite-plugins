@@ -7,6 +7,14 @@ import net.runelite.client.config.ConfigGroup;
 
 @ConfigGroup(BalloonConfig.group)
 public interface BalloonConfig extends Config {
+	enum Logs { LOGS_REGULAR, LOGS_OAK, LOGS_WILLOW, LOGS_YEW, LOGS_MAGIC }
+	String location_varrock = "Varrock";
+	String location_entrana = "Entrana";
+	String location_taverley = "Taverley";
+	String location_crafting_guild = "Crafting Guild";
+	String location_castle_wars = "Castle Wars";
+	String location_grand_tree = "Gnome Stronghold";
+
 	String group = "tictac7x-balloon";
 	enum style { WIDGET, INFOBOXES }
 	enum Show { RECENTLY_USED, ALL, INDEFINITELY }
@@ -31,7 +39,7 @@ public interface BalloonConfig extends Config {
 		keyName = "duration",
 		name = "Display duration",
 		description = "Choose for how many minutes the information about recently used logs is visible."
-	) default int getDuration() { return 10; }
+	) default int getDisplayDuration() { return 10; }
 
 	@ConfigItem(
 		position = 4,
@@ -40,59 +48,83 @@ public interface BalloonConfig extends Config {
 		description = "Show storage logs amounts when you are near the balloon."
 	) default boolean showNearBalloon() { return true; }
 
-	String key_storage = "storage";
+	String logs_regular = "logs_regular";
 	@ConfigItem(
-		keyName = key_storage,
-		name = key_storage,
-		description = key_storage,
-		hidden = false
-	) default String getStorage() { return "0,0,0,0,0"; }
+		keyName = logs_regular,
+		name = logs_regular,
+		description = logs_regular,
+		hidden = true
+	) default int getLogsRegular() { return 0; }
 
-	String key_storage_date_general = "storage_date_general";
+	String logs_regular_date = "logs_regular_date";
 	@ConfigItem(
-		keyName = key_storage_date_general,
-		name = key_storage_date_general,
-		description = key_storage_date_general,
-		hidden = false
-	) default String getStorageDateGeneral() { return ""; }
+		keyName = logs_regular_date,
+		name = logs_regular_date,
+		description = logs_regular_date,
+		hidden = true
+	) default String getLogsRegularDate() { return ""; }
 
-	String key_storage_date_logs = "storage_date_logs";
+	String logs_oak = "logs_oak";
 	@ConfigItem(
-		keyName = key_storage_date_logs,
-		name = key_storage_date_logs,
-		description = key_storage_date_logs,
-		hidden = false
-	) default String getStorageDateLogs() { return ""; }
+		keyName = logs_oak,
+		name = logs_oak,
+		description = logs_oak,
+		hidden = true
+	) default int getLogsOak() { return 0; }
 
-	String key_storage_date_logs_oak = "storage_date_logs_oak";
+	String logs_oak_date = "logs_oak_date";
 	@ConfigItem(
-		keyName = key_storage_date_logs_oak,
-		name = key_storage_date_logs_oak,
-		description = key_storage_date_logs_oak,
-		hidden = false
-	) default String getStorageDateLogsOak() { return ""; }
+		keyName = logs_oak_date,
+		name = logs_oak_date,
+		description = logs_oak_date,
+		hidden = true
+	) default String getLogsOakDate() { return ""; }
 
-	String key_storage_date_logs_willow = "storage_date_logs_willow";
+	String logs_willow = "logs_willow";
 	@ConfigItem(
-		keyName = key_storage_date_logs_willow,
-		name = key_storage_date_logs_willow,
-		description = key_storage_date_logs_willow,
-		hidden = false
-	) default String getStorageDateLogsWillow() { return ""; }
+		keyName = logs_willow,
+		name = logs_willow,
+		description = logs_willow,
+		hidden = true
+	) default int getLogsWillow() { return 0; }
 
-	String key_storage_date_logs_yew = "storage_date_logs_yew";
+	String logs_willow_date = "logs_willow_date";
 	@ConfigItem(
-		keyName = key_storage_date_logs_yew,
-		name = key_storage_date_logs_yew,
-		description = key_storage_date_logs_yew,
-		hidden = false
-	) default String getStorageDateLogsYew() { return ""; }
+		keyName = logs_willow_date,
+		name = logs_willow_date,
+		description = logs_willow_date,
+		hidden = true
+	) default String getWillowLogsDate() { return ""; }
 
-	String key_storage_date_logs_magic = "storage_date_logs_magic";
+	String logs_yew = "logs_yew";
 	@ConfigItem(
-		keyName = key_storage_date_logs_magic,
-		name = key_storage_date_logs_magic,
-		description = key_storage_date_logs_magic,
-		hidden = false
-	) default String getStorageDateLogsMagic() { return ""; }
+		keyName = logs_yew,
+		name = logs_yew,
+		description = logs_yew,
+		hidden = true
+	) default int getLogsYew() { return 0; }
+
+	String logs_yew_date = "logs_yew_date";
+	@ConfigItem(
+		keyName = logs_yew_date,
+		name = logs_yew_date,
+		description = logs_yew_date,
+		hidden = true
+	) default String getLogsYewDate() { return ""; }
+
+	String logs_magic = "logs_magic";
+	@ConfigItem(
+		keyName = logs_magic,
+		name = logs_magic,
+		description = logs_magic,
+		hidden = true
+	) default int getLogsMagic() { return 0; }
+
+	String logs_magic_date = "logs_magic_date";
+	@ConfigItem(
+		keyName = logs_magic_date,
+		name = logs_magic_date,
+		description = logs_magic_date,
+		hidden = true
+	) default String getLogsMagicDate() { return ""; }
 }

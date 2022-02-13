@@ -1,15 +1,20 @@
 package tictac7x.balloon;
 
 import javax.inject.Inject;
-import net.runelite.api.Client;
-import net.runelite.api.ItemID;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
-import net.runelite.api.events.*;
+import tictac7x.balloon.BalloonConfig.Logs;
+
+import net.runelite.api.Client;
+import net.runelite.api.ItemID;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -45,7 +50,7 @@ public class TicTac7xBalloonPlugin extends Plugin {
 
 	private BalloonStorage balloon_storage;
 	private BalloonOverlayLogs overlay_logs;
-	private BalloonInfoboxLogs infobox_logs;
+	private BalloonInfoboxLogs infobox_logs_regular;
 	private BalloonInfoboxLogs infobox_logs_oak;
 	private BalloonInfoboxLogs infobox_logs_willow;
 	private BalloonInfoboxLogs infobox_logs_yew;
@@ -62,50 +67,54 @@ public class TicTac7xBalloonPlugin extends Plugin {
 			balloon_storage = new BalloonStorage(config, client, configs);
 			overlay_logs = new BalloonOverlayLogs(config, configs, items, balloon_storage);
 
-			infobox_logs = new BalloonInfoboxLogs(
-				"logs",
+			infobox_logs_regular = new BalloonInfoboxLogs(
+				BalloonConfig.logs_regular,
 				items.getImage(ItemID.LOGS),
-				() -> showInfobox(BalloonStorage.Logs.LOGS),
-				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS),
-				"Entrana / Taverley",
+				() -> showInfobox(Logs.LOGS_REGULAR),
+				() -> balloon_storage.getLogs(Logs.LOGS_REGULAR),
+				BalloonConfig.location_entrana + " / " + BalloonConfig.location_taverley,
 				this
 			);
 
 			infobox_logs_oak = new BalloonInfoboxLogs(
-				"logs_oak",
+				BalloonConfig.logs_oak,
 				items.getImage(ItemID.OAK_LOGS),
-				() -> showInfobox(BalloonStorage.Logs.LOGS_OAK),
-				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_OAK),
-				"Crafting Guild",
-				this);
+				() -> showInfobox(Logs.LOGS_OAK),
+				() -> balloon_storage.getLogs(Logs.LOGS_OAK),
+				BalloonConfig.location_crafting_guild,
+				this
+			);
 
 			infobox_logs_willow = new BalloonInfoboxLogs(
-				"logs_willow",
+				BalloonConfig.logs_willow,
 				items.getImage(ItemID.WILLOW_LOGS),
-				() -> showInfobox(BalloonStorage.Logs.LOGS_WILLOW),
-				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_WILLOW),
-				"Varrock",
-				this);
+				() -> showInfobox(Logs.LOGS_WILLOW),
+				() -> balloon_storage.getLogs(Logs.LOGS_WILLOW),
+				BalloonConfig.location_varrock,
+				this
+			);
 
 			infobox_logs_yew = new BalloonInfoboxLogs(
-				"logs_yew",
+				BalloonConfig.logs_yew,
 				items.getImage(ItemID.YEW_LOGS),
-				() -> showInfobox(BalloonStorage.Logs.LOGS_YEW),
-				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_YEW),
-				"Castle Wars",
-				this);
+				() -> showInfobox(Logs.LOGS_YEW),
+				() -> balloon_storage.getLogs(Logs.LOGS_YEW),
+				BalloonConfig.location_castle_wars,
+				this
+			);
 
 			infobox_logs_magic = new BalloonInfoboxLogs(
-				"logs_magic",
+				BalloonConfig.logs_magic,
 				items.getImage(ItemID.MAGIC_LOGS),
-				() -> showInfobox(BalloonStorage.Logs.LOGS_MAGIC),
-				() -> balloon_storage.getLogsCount(BalloonStorage.Logs.LOGS_MAGIC),
-				"Grand Tree",
-				this);
+				() -> showInfobox(Logs.LOGS_MAGIC),
+				() -> balloon_storage.getLogs(Logs.LOGS_MAGIC),
+				BalloonConfig.location_grand_tree,
+				this
+			);
 		}
 
 		overlays.add(overlay_logs);
-		infoboxes.addInfoBox(infobox_logs);
+		infoboxes.addInfoBox(infobox_logs_regular);
 		infoboxes.addInfoBox(infobox_logs_oak);
 		infoboxes.addInfoBox(infobox_logs_willow);
 		infoboxes.addInfoBox(infobox_logs_yew);
@@ -115,7 +124,7 @@ public class TicTac7xBalloonPlugin extends Plugin {
 	@Override
 	protected void shutDown() {
 		overlays.remove(overlay_logs);
-		infoboxes.removeInfoBox(infobox_logs);
+		infoboxes.removeInfoBox(infobox_logs_regular);
 		infoboxes.removeInfoBox(infobox_logs_oak);
 		infoboxes.removeInfoBox(infobox_logs_willow);
 		infoboxes.removeInfoBox(infobox_logs_yew);
@@ -142,7 +151,7 @@ public class TicTac7xBalloonPlugin extends Plugin {
 		balloon_storage.onGameStateChanged(event);
 	}
 
-	private boolean showInfobox(final BalloonStorage.Logs logs) {
-		return config.getStyle() == BalloonConfig.style.INFOBOXES && balloon_storage.showLogs(logs);
+	private boolean showInfobox(final Logs logs) {
+		return config.getStyle() == BalloonConfig.style.INFOBOXES && balloon_storage.shouldLogsBeDisplayed(logs);
 	}
 }
