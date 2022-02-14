@@ -1,6 +1,6 @@
 package tictac7x.balloon;
 
-import java.awt.Rectangle;
+import tictac7x.Overlay;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import tictac7x.balloon.BalloonConfig.Logs;
@@ -9,13 +9,11 @@ import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
-import net.runelite.client.ui.overlay.components.ComponentOrientation;
 
-public class BalloonOverlayLogs extends OverlayPanel {
+public class BalloonOverlayLogs extends Overlay {
     private final BalloonConfig config;
     private final ItemManager items;
     private final BalloonStorage balloon_storage;
@@ -29,13 +27,7 @@ public class BalloonOverlayLogs extends OverlayPanel {
 
         setLayer(OverlayLayer.UNDER_WIDGETS);
         setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
-
-        panel.setWrap(true);
-        panel.setOrientation(ComponentOrientation.HORIZONTAL);
-        panel.setBackgroundColor(null);
-
-        panelComponent.setOrientation(ComponentOrientation.VERTICAL);
-        panelComponent.setBorder(new Rectangle(0,0,0,0));
+        makePanelResizeable(panelComponent, panel);
     }
 
     @Override
