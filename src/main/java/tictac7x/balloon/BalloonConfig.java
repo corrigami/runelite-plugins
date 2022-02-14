@@ -44,8 +44,8 @@ public interface BalloonConfig extends Config {
 	@ConfigItem(
 		position = 4,
 		keyName = "show_near_balloon",
-		name = "Always show overlay near balloon",
-		description = "Show storage logs amounts when you are near the balloon."
+		name = "Always show near balloon",
+		description = "Show storage logs amounts when you are near any of the balloons."
 	) default boolean showNearBalloon() { return true; }
 
 	String logs_regular = "logs_regular";

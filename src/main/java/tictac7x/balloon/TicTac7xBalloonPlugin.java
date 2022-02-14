@@ -14,6 +14,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -149,6 +150,13 @@ public class TicTac7xBalloonPlugin extends Plugin {
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		balloon_storage.onGameStateChanged(event);
+	}
+
+	@Subscribe
+	public void onConfigChanged(final ConfigChanged event) {
+		try {
+			balloon_storage.onConfigChanged(event);
+		} catch (final Exception ignored) {}
 	}
 
 	private boolean showInfobox(final Logs logs) {

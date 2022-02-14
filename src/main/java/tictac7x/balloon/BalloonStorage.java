@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.text.ParseException;
 import javax.annotation.Nullable;
 import java.text.SimpleDateFormat;
 import tictac7x.balloon.BalloonConfig.Logs;
@@ -22,11 +23,11 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.api.events.GameObjectSpawned;
 
 public class BalloonStorage {
-
     private static final int WIDGET_STORAGE = 229;
     private static final int WIDGET_STORAGE_MESSAGE = 1;
     private static final int WIDGET_STORAGE_STORE = 193;
@@ -46,7 +47,6 @@ public class BalloonStorage {
     private final ConfigManager configs;
 
     private final Logs[] logs = new Logs[] { Logs.LOGS_REGULAR, Logs.LOGS_OAK, Logs.LOGS_WILLOW, Logs.LOGS_YEW, Logs.LOGS_MAGIC };
-    private final Map<Logs, Integer> storage;
     private final Map<Logs, Date> storage_dates;
     private final Map<Logs, Integer> inventory;
 
@@ -58,19 +58,8 @@ public class BalloonStorage {
         this.client = client;
         this.configs = configs;
 
-        this.storage = loadStorageFromConfig();
         this.storage_dates = loadStorageDatesFromConfig();
         this.inventory = new HashMap<>();
-    }
-
-    private Map<Logs, Integer> loadStorageFromConfig() {
-        final Map<Logs, Integer> storage = new HashMap<>();
-
-        for (final Logs logs : this.logs) {
-            storage.put(logs, Integer.valueOf(configs.getConfiguration(BalloonConfig.group, getLogsKey(logs))));
-        }
-
-        return storage;
     }
 
     private Map<Logs, Date> loadStorageDatesFromConfig() {
@@ -88,7 +77,7 @@ public class BalloonStorage {
     }
 
     public int getLogs(final Logs logs) {
-        return storage.get(logs);
+        return Integer.parseInt(configs.getConfiguration(BalloonConfig.group, getLogsKey(logs)));
     }
 
     @Nullable
@@ -192,10 +181,10 @@ public class BalloonStorage {
             default: return;
         }
 
-        final int count = getLogs(logs);
+        final int amount = getLogs(logs);
 
         // Only update storage, if the amount of logs was previously known.
-        if (count > 0) {
+        if (amount > 0) {
             // Check if logs from inventory were not used.
             final ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
             if (
@@ -206,18 +195,16 @@ public class BalloonStorage {
                 && this.inventory.containsKey(Logs.LOGS_YEW) && this.inventory.get(Logs.LOGS_YEW) == inventory.count(ItemID.YEW_LOGS)
                 && this.inventory.containsKey(Logs.LOGS_MAGIC) && this.inventory.get(Logs.LOGS_MAGIC) == inventory.count(ItemID.MAGIC_LOGS)
             ) {
-                updateStorageLogs(logs, getLogs(logs) - 1);
+                updateStorageLogs(logs, amount - 1);
             }
         }
     }
 
     private void saveStorageLogsToConfig(final Logs logs, final int amount) {
-        storage.put(logs, amount);
         configs.setConfiguration(config.group, getLogsKey(logs), amount);
     }
 
     private void saveStorageLogsDateToConfig(final Logs logs, final Date date) {
-        storage_dates.put(logs, date);
         configs.setConfiguration(BalloonConfig.group, getLogsDateKey(logs), date_format.format(date));
     }
 
@@ -272,6 +259,22 @@ public class BalloonStorage {
     public void onGameStateChanged(final GameStateChanged event) {
         if (event.getGameState() == GameState.LOADING) {
             visible_balloon = null;
+        }
+    }
+
+    public void onConfigChanged(final ConfigChanged event) throws ParseException {
+        if (event.getGroup().equals(BalloonConfig.group)) {
+            if (event.getKey().equals(getLogsDateKey(Logs.LOGS_REGULAR))) {
+                storage_dates.put(Logs.LOGS_REGULAR, date_format.parse(event.getNewValue()));
+            } else if (event.getKey().equals(getLogsDateKey(Logs.LOGS_OAK))) {
+                storage_dates.put(Logs.LOGS_OAK, date_format.parse(event.getNewValue()));
+            } else if (event.getKey().equals(getLogsDateKey(Logs.LOGS_WILLOW))) {
+                storage_dates.put(Logs.LOGS_WILLOW, date_format.parse(event.getNewValue()));
+            } else if (event.getKey().equals(getLogsDateKey(Logs.LOGS_YEW))) {
+                storage_dates.put(Logs.LOGS_YEW, date_format.parse(event.getNewValue()));
+            } else if (event.getKey().equals(getLogsDateKey(Logs.LOGS_MAGIC))) {
+                storage_dates.put(Logs.LOGS_MAGIC, date_format.parse(event.getNewValue()));
+            }
         }
     }
 
