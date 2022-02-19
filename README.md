@@ -1,18 +1,18 @@
-# TODO_PLUGIN_NAME - v0.1
-TODO_PLUGIN_DESCRIPTION
+# Daily Tasks - v0.1
+Reminds you to do your daily tasks.
 
-## How to start writing a new plugin
-### Replace `TODO` variables in code
-* `TODO_PLUGIN_NAME`
-* `TODO_PLUGIN_DESCRIPTION`
-* `TODO_PLUGIN_TAGS`
+## Dailies
+[ ] - Collect resources from the kingdom
+[ ] - Buy Zaff's battlestaves
+[ ] - Collect free pure essence
+[ ] - Buckets of sand delivered to your bank
+[ ] - Exchange noted flax for bow strings.
+[ ] - Receive free ogre arrows from Rantz.
+[ ] - Convert bones into bonemeal and buckets of slime
+[ ] - Claim random free runes from Lundail.
+[ ] - Purchase herb boxes from Nightmare Zone.
+[ ] - Claim dynamite from Thirus.
+[ ] - Search for bronze crossbow and mith grapples with Fletching cape.
 
-### Edit test run configuration
-* Right click on `PluginTest`
-* Select `Modify Run Configuration...`
-* `Modify options` -> `Add VM options`
-  * `VM options:`: `-ea`
-  * `Program arguments`: `--debug --developer-mode`
-
-### Start RuneLite
-Start RuneLite by running the modified test file
+## Weeklies
+[ ] - Play Tears of Guthix minigame.
