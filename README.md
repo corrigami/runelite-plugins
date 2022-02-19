@@ -4,7 +4,7 @@ Reminds you to do your daily tasks.
 ## Dailies
 - [ ] Collect resources from the kingdom
 - [x] Zaff's battlestaves
-- [ ] Collect free pure essence
+- [x] Wizard Cromperty's pure essence
 - [x] Bert's buckets of sand
 - [ ] Exchange noted flax for bow strings.
 - [ ] Receive free ogre arrows from Rantz.
