@@ -8,3 +8,5 @@ nbactions.xml
 nb-configuration.xml
 nbproject/
 hs_err_pid*.log
+src/template
+src/plugin-*
