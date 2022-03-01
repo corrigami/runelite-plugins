@@ -9,6 +9,9 @@ import net.runelite.client.config.ConfigSection;
 public interface StorageConfig extends Config {
 	String group = "tictac7x-storage";
 
+	enum InventoryEmpty { HIDDEN, TOP, BOTTOM, FIRST, LAST }
+	enum OverlayDensity { COMPACT, REGULAR }
+
 	@ConfigSection(
 		name = "Inventory",
 		description = "Inventory overlay",
@@ -43,11 +46,19 @@ public interface StorageConfig extends Config {
 
 		@ConfigItem(
 			keyName = "inventory_blacklist",
-			name = "blacklist",
+			name = "Inventory blacklist",
 			description = "Names of items to hide from the inventory overlay.",
 			section = inventory,
 			position = 4
 		) default String getInventoryBlacklist() { return ""; }
+
+		@ConfigItem(
+			keyName = "inventory_empty",
+			name = "Empty slots location",
+			description = "Where to show how many empty slots inventory has.",
+			section = inventory,
+			position = 5
+		) default InventoryEmpty getInventoryEmptySlots() { return InventoryEmpty.BOTTOM; }
 
 	@ConfigSection(
 		name = "Bank",
@@ -87,4 +98,18 @@ public interface StorageConfig extends Config {
 			section = bank,
 			position = 4
 		) default String getBankBlacklist() { return ""; }
+
+	@ConfigSection(
+		name = "General",
+		description = "General settings",
+		position = 3
+	) String general = "general";
+
+		@ConfigItem(
+			keyName = "general_density",
+			name = "Items density",
+			description = "Change the density of the overlays.",
+			section = general,
+			position = 1
+		) default OverlayDensity getOverlayDensity() { return OverlayDensity.REGULAR; }
 }

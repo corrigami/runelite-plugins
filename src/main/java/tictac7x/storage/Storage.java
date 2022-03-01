@@ -15,13 +15,15 @@ import net.runelite.client.ui.overlay.components.ImageComponent;
 import java.util.*;
 
 public class Storage {
+    private final static int inventory_size = 28;
+
     private final ConfigManager configs;
     private final ItemManager items;
     private final ClientThread client_thread;
-    private final String storage_id;
+    public final String storage_id;
     private final int item_container_id;
     private final boolean whitelist_enabled, blacklist_enabled;
-    private int free_space = 0;
+    private int empty_slots_count = 0;
 
     private JsonObject storage;
     private String[] whitelist, blacklist;
@@ -180,7 +182,7 @@ public class Storage {
         final ItemContainer item_container = event.getItemContainer();
 
         if (item_container != null && item_container.getId() == item_container_id) {
-            free_space = item_container.size();
+            empty_slots_count = storage_id.equals(StorageConfig.inventory) ? inventory_size : item_container.size();
             final JsonObject storage = new JsonObject();
 
             Arrays.stream(item_container.getItems()).filter(
@@ -192,12 +194,16 @@ public class Storage {
                 } else {
                     storage.addProperty(id, item.getQuantity());
                 }
-                free_space -= 1;
+                empty_slots_count -= 1;
             });
 
             this.storage = storage;
             saveStorageToConfig();
             updateStorageImages();
         }
+    }
+
+    public int getEmptySlotsCount() {
+        return empty_slots_count;
     }
 }
