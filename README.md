@@ -8,7 +8,7 @@ Reminds you to do your daily tasks.
 - [x] Bert's buckets of sand
 - [ ] Exchange noted flax for bow strings.
 - [ ] Receive free ogre arrows from Rantz.
-- [ ] Convert bones into bonemeal and buckets of slime
+- [x] Exchange bones into bonemeal and buckets of slime
 - [ ] Claim random free runes from Lundail.
 - [ ] Purchase herb boxes from Nightmare Zone.
 - [ ] Claim dynamite from Thirus.

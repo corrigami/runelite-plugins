@@ -29,6 +29,7 @@ public class TicTac7xDailyPlugin extends Plugin {
 	private static final String TOOLTIP_BATTLESTAVES = "Buy %d battlestaves from Zaff at Varrock";
 	private static final String TOOLTIP_BUCKETS_OF_SAND = "Collect %d buckets of sand from Bert at Yanille";
 	private static final String TOOLTIP_PURE_ESSENCE = "Collect %d pure essence from Wizard Cromperty at East-Ardougne";
+	private static final String TOOLTIP_BUCKETS_OF_SLIME = "Exchange bones for %d buckets of slime and bonemeal from Robin at Porty Phasmatys";
 
 	private static final int BUCKETS_OF_SAND_QUEST_COMPLETE = 160;
 	private static final int BUCKETS_OF_SAND_AMOUNT = 84;
@@ -54,6 +55,9 @@ public class TicTac7xDailyPlugin extends Plugin {
 	@Nullable
 	private InfoBox infobox_pure_essence = null;
 
+	@Nullable
+	private InfoBox infobox_buckets_of_slime = null;
+
 	@Provides
 	DailyConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(DailyConfig.class);
@@ -63,13 +67,15 @@ public class TicTac7xDailyPlugin extends Plugin {
 	protected void startUp() {
 		if (infobox_battlestaves == null) {
 			infobox_battlestaves = createInfoBoxBattlestaves();
-			infobox_buckets_of_sand = createInfoBoxSand();
+			infobox_buckets_of_sand = createInfoBoxBucketsOfSand();
 			infobox_pure_essence = createInfoBoxPureEssence();
+			infobox_buckets_of_slime = createInfoBoxBucketsOfSlime();
 		}
 
 		infoboxes.addInfoBox(infobox_battlestaves);
 		infoboxes.addInfoBox(infobox_buckets_of_sand);
 		infoboxes.addInfoBox(infobox_pure_essence);
+		infoboxes.addInfoBox(infobox_buckets_of_slime);
 	}
 
 	@Override
@@ -78,6 +84,7 @@ public class TicTac7xDailyPlugin extends Plugin {
 			infoboxes.removeInfoBox(infobox_battlestaves);
 			infoboxes.removeInfoBox(infobox_buckets_of_sand);
 			infoboxes.removeInfoBox(infobox_pure_essence);
+			infoboxes.removeInfoBox(infobox_buckets_of_slime);
 		}
 	}
 
@@ -112,7 +119,7 @@ public class TicTac7xDailyPlugin extends Plugin {
 		} else return 5;
 	}
 
-	private InfoBox createInfoBoxSand() {
+	private InfoBox createInfoBoxBucketsOfSand() {
 		return new InfoBox(
 			DailyConfig.buckets_of_sand_id,
 			items.getImage(ItemID.BUCKET_OF_SAND),
@@ -148,6 +155,7 @@ public class TicTac7xDailyPlugin extends Plugin {
 	private boolean showPureEssence() {
 		return (
 			config.showPureEssence() &&
+			client.getVar(Varbits.DIARY_ARDOUGNE_EASY) == 1 &&
 			client.getVar(Varbits.DIARY_ARDOUGNE_MEDIUM) == 1 &&
 			client.getVar(Varbits.DAILY_ESSENCE_COLLECTED) == 0
 		);
@@ -158,9 +166,44 @@ public class TicTac7xDailyPlugin extends Plugin {
 			if (client.getVar(Varbits.DIARY_ARDOUGNE_HARD) == 1) {
 				if (client.getVar(Varbits.DIARY_ARDOUGNE_ELITE) == 1) {
 					return 250;
-				} else return 150;
-			} else return 100;
-		} else return 0;
+				} return 150;
+			} return 100;
+		} return 0;
+	}
+
+	private InfoBox createInfoBoxBucketsOfSlime() {
+		return new InfoBox(
+			DailyConfig.buckets_of_slime_id,
+			items.getImage(ItemID.BUCKET_OF_SLIME),
+			this::showBucketsOfSlime,
+			() -> String.valueOf(getBucketsOfSlimeAmount()),
+			() -> String.format(TOOLTIP_BUCKETS_OF_SLIME, getBucketsOfSlimeAmount()),
+			this::getDailyColor,
+			this
+		);
+	}
+
+	private boolean showBucketsOfSlime() {
+		return (
+			config.showBucketsOfSlime() &&
+			client.getVar(Varbits.DIARY_MORYTANIA_EASY) == 1 &&
+			client.getVar(Varbits.DIARY_MORYTANIA_MEDIUM) == 1 &&
+			getBucketsOfSlimeAmount() > 0
+		);
+	}
+
+	private int getBucketsOfSlimeAmount() {
+		int buckets_of_slime;
+
+		if (client.getVar(Varbits.DIARY_MORYTANIA_MEDIUM) == 1) {
+			if (client.getVar(Varbits.DIARY_MORYTANIA_HARD) == 1) {
+				if (client.getVar(Varbits.DIARY_MORYTANIA_ELITE) == 1) {
+					buckets_of_slime = 39;
+				} else buckets_of_slime = 26;
+			} else buckets_of_slime = 13;
+		} else buckets_of_slime = 0;
+
+		return buckets_of_slime - client.getVar(Varbits.DAILY_BONEMEAL_STATE);
 	}
 
 	private Color getDailyColor() {

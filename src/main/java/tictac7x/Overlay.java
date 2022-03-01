@@ -172,7 +172,11 @@ public abstract class Overlay extends net.runelite.client.ui.overlay.OverlayPane
     }
 
     public void makePanelResizeable(final PanelComponent parent, final PanelComponent child) {
-        child.setBackgroundColor(null);
+        parent.setOrientation(ComponentOrientation.VERTICAL);
         parent.setBorder(new Rectangle(0,0,0,0));
+
+        child.setWrap(true);
+        child.setOrientation(ComponentOrientation.HORIZONTAL);
+        child.setBackgroundColor(null);
     }
 }

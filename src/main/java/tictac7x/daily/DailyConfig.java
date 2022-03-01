@@ -35,4 +35,14 @@ public interface DailyConfig extends Config {
 		name = pure_essence_name,
 		description = pure_essence_description
 	) default boolean showPureEssence() { return true; }
+
+	String buckets_of_slime_id = "buckets_of_slime";
+	String buckets_of_slime_name = "Robin's buckets of slime and bonemeal";
+	String buckets_of_slime_description = "Reminds you to exchange bones for buckets of slime and bonemeal from Robin at Port Phasmatys.";
+
+	@ConfigItem(
+		keyName = buckets_of_slime_id,
+		name = buckets_of_slime_name,
+		description = buckets_of_slime_description
+	) default boolean showBucketsOfSlime() { return true; }
 }
