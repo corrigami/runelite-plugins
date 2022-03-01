@@ -29,7 +29,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	description = "Better indicators for ore veins",
 	tags = { "motherlode", "prospector", "golden", "nugget" }
 )
-public class MotherlodeImprovedPlugin extends Plugin {
+public class TicTac7xMotherlodePlugin extends Plugin {
 	@Inject
 	private Client client;
 
