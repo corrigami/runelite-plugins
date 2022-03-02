@@ -1,5 +1,6 @@
 package tictac7x.storage;
 
+import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.*;
@@ -7,19 +8,24 @@ import net.runelite.client.util.ImageUtil;
 import tictac7x.Overlay;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class StorageOverlay extends Overlay {
-    private static final String label_empty_slots = "%d free";
+    private static final String LABEL_FREE = "%d free";
+    private static final int PADDING_TOP = 5;
+    private static final int PADDING_LEFT = 5;
+    private static final int DENSITY_HORIZONTAL = 6;
+    private static final int DENSITY_VERTICAL = 4;
 
     private final StorageConfig config;
     private final Storage storage;
     private final PanelComponent panel = new PanelComponent();
-    private final ImageComponent icon_inventory;
+    private final BufferedImage inventory_image;
 
     public StorageOverlay(final StorageConfig config, final Storage storage) {
         this.config = config;
         this.storage = storage;
-        this.icon_inventory = new ImageComponent(ImageUtil.getResourceStreamFromClass(getClass(), "inventory.png"));
+        this.inventory_image = ImageUtil.getResourceStreamFromClass(getClass(), "inventory.png");
 
         setLayer(OverlayLayer.ABOVE_WIDGETS);
         setPosition(OverlayPosition.TOP_RIGHT);
@@ -35,8 +41,8 @@ public class StorageOverlay extends Overlay {
         if (!storage.show()) return null;
 
         // Storage overlay density.
-        if (config.getOverlayDensity() == StorageConfig.OverlayDensity.REGULAR) {
-            panel.setGap(new Point(6, 4));
+        if (config.getOverlayDensity() == StorageConfig.InventoryDensity.REGULAR) {
+            panel.setGap(new Point(DENSITY_HORIZONTAL, DENSITY_VERTICAL));
         } else {
             panel.setGap(new Point(0, 0));
         }
@@ -48,19 +54,23 @@ public class StorageOverlay extends Overlay {
             config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.LAST)
         ) {
             panelComponent.setGap(new Point(0, 0));
-            panelComponent.setBorder(new Rectangle(0, 0, 0, 0));
+            panelComponent.setBorder(new Rectangle(PADDING_LEFT, PADDING_TOP, 0, PADDING_TOP));
         }
 
         // Inventory empty slots in top.
         if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.TOP) {
             panelComponent.getChildren().add(createEmptySlotsComponent());
-            panelComponent.setBorder(new Rectangle(0, 5, 0, 0));
-            panelComponent.setGap(new Point(5, 5));
+            panelComponent.setBorder(new Rectangle(PADDING_LEFT, PADDING_TOP, 0, 0));
+            panelComponent.setGap(new Point(PADDING_LEFT, PADDING_TOP));
         }
 
         // Inventory empty slots as first item.
-        if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.FIRST && icon_inventory != null) {
-            panel.getChildren().add(icon_inventory);
+        if (
+            storage.storage_id.equals(StorageConfig.inventory) &&
+            config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.FIRST &&
+            storage.getEmptySlotsCount() > 0
+        ) {
+            panel.getChildren().add(createInventoryItem());
         }
 
         // Render storage visible items.
@@ -69,8 +79,12 @@ public class StorageOverlay extends Overlay {
         }
 
         // Inventory empty slots as last item.
-        if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.LAST && icon_inventory != null) {
-            panel.getChildren().add(icon_inventory);
+        if (
+            storage.storage_id.equals(StorageConfig.inventory) &&
+            config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.LAST &&
+            storage.getEmptySlotsCount() > 0
+        ) {
+            panel.getChildren().add(createInventoryItem());
         }
 
         if (!panel.getChildren().isEmpty()) {
@@ -80,7 +94,7 @@ public class StorageOverlay extends Overlay {
         // Inventory empty slots in bottom.
         if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.BOTTOM) {
             panelComponent.getChildren().add(createEmptySlotsComponent());
-            panelComponent.setBorder(new Rectangle(0, 0, 0, 10));
+            panelComponent.setBorder(new Rectangle(PADDING_LEFT, PADDING_TOP, 0, 10));
             panelComponent.setGap(new Point(0, 0));
         }
 
@@ -96,8 +110,30 @@ public class StorageOverlay extends Overlay {
     private TitleComponent createEmptySlotsComponent() {
         return TitleComponent
             .builder()
-            .text(String.format(label_empty_slots, storage.getEmptySlotsCount()))
+            .text(String.format(LABEL_FREE, storage.getEmptySlotsCount()))
             .color(color_gray)
             .build();
+    }
+
+    private ImageComponent createInventoryItem() {
+        // Make copy of inventory icon.
+        final BufferedImage inventory_image = new BufferedImage(this.inventory_image.getWidth(), this.inventory_image.getHeight(), this.inventory_image.getType());
+        final Graphics g = inventory_image.getGraphics();
+        g.drawImage(this.inventory_image, 0, 0, null);
+
+        // Free slots count.
+        final FontMetrics fm = g.getFontMetrics();
+        g.setFont(FontManager.getRunescapeSmallFont());
+
+        // Shadow.
+        g.setColor(Color.BLACK);
+        g.drawString(String.valueOf(storage.getEmptySlotsCount()), 1, fm.getAscent() - 3 + 1);
+
+        // Yellow label.
+        g.setColor(Color.YELLOW);
+        g.drawString(String.valueOf(storage.getEmptySlotsCount()), 0, fm.getAscent() - 3);
+
+        g.dispose();
+        return new ImageComponent(inventory_image);
     }
 }

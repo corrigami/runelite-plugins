@@ -9,8 +9,8 @@ import net.runelite.client.config.ConfigSection;
 public interface StorageConfig extends Config {
 	String group = "tictac7x-storage";
 
-	enum InventoryEmpty { HIDDEN, TOP, BOTTOM, FIRST, LAST }
-	enum OverlayDensity { COMPACT, REGULAR }
+	enum InventoryEmpty { TOP, FIRST, LAST, BOTTOM, HIDDEN }
+	enum InventoryDensity { COMPACT, REGULAR }
 
 	@ConfigSection(
 		name = "Inventory",
@@ -111,5 +111,5 @@ public interface StorageConfig extends Config {
 			description = "Change the density of the overlays.",
 			section = general,
 			position = 1
-		) default OverlayDensity getOverlayDensity() { return OverlayDensity.REGULAR; }
+		) default InventoryDensity getOverlayDensity() { return InventoryDensity.REGULAR; }
 }
