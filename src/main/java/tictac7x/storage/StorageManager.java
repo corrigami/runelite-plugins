@@ -1,13 +1,12 @@
 package tictac7x.storage;
 
-import com.google.gson.JsonObject;
-import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.widgets.WidgetInfo;
-
+import net.runelite.api.Client;
 import javax.annotation.Nullable;
+import com.google.gson.JsonObject;
+import net.runelite.api.InventoryID;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.events.ItemContainerChanged;
 
 public class StorageManager {
     private final Client client;

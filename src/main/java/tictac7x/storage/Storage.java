@@ -1,18 +1,22 @@
 package tictac7x.storage;
 
-import com.google.gson.JsonElement;
+import java.util.Map;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.ArrayList;
+import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.client.callback.ClientThread;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ItemManager;
+import net.runelite.client.callback.ClientThread;
+import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.components.ImageComponent;
-
-import java.util.*;
 
 public class Storage {
     private final static int inventory_size = 28;
@@ -54,40 +58,50 @@ public class Storage {
             // Clear old images.
             images.clear();
 
-            // Whitelist check.
-            for (final String whitelist : whitelist) {
-                for (final Map.Entry<String, JsonElement> item : storage.entrySet()) {
-                    final int id = Integer.parseInt(item.getKey());
-                    final String name = items.getItemComposition(id).getName();
-                    final int quantity = item.getValue().getAsInt();
-
-                    // Placeholder check.
-                    if (quantity < 1 || name == null) continue;
-
-                    // Blacklist check.
-                    if (blacklist_enabled && blacklist != null) {
-                        boolean blacklisted = false;
-
-                        for (final String blacklist : blacklist) {
-                            if (blacklist == null || blacklist.length() == 0) continue;
-
-                            // Item blacklisted.
-                            if (name.contains(blacklist)) {
-                                blacklisted = true;
-                                break;
-                            }
-                        }
-
-                        if (blacklisted) continue;
-                    }
-
-                    // Whitelist disabled or item whitelisted.
-                    if (!whitelist_enabled || whitelist != null && name.contains(whitelist)) {
-                        images.add(new ImageComponent(items.getImage(id, quantity, true)));
-                    }
+            // Order by whitelist.
+            if (whitelist_enabled) {
+                for (final String whitelist : whitelist) {
+                    updateStorageImagesBasedOnWhitelist(whitelist);
                 }
+
+            // Order by item container.
+            } else {
+                updateStorageImagesBasedOnWhitelist(null);
             }
         });
+    }
+
+    private void updateStorageImagesBasedOnWhitelist(@Nullable final String whitelist) {
+        for (final Map.Entry<String, JsonElement> item : storage.entrySet()) {
+            final int id = Integer.parseInt(item.getKey());
+            final String name = items.getItemComposition(id).getName();
+            final int quantity = item.getValue().getAsInt();
+
+            // Placeholder check.
+            if (quantity < 1 || name == null) continue;
+
+            // Blacklist check.
+            if (blacklist_enabled && blacklist != null) {
+                boolean blacklisted = false;
+
+                for (final String blacklist : blacklist) {
+                    if (blacklist == null || blacklist.length() == 0) continue;
+
+                    // Item blacklisted.
+                    if (name.contains(blacklist)) {
+                        blacklisted = true;
+                        break;
+                    }
+                }
+
+                if (blacklisted) continue;
+            }
+
+            // Whitelist disabled or item whitelisted.
+            if (!whitelist_enabled || whitelist != null && name.contains(whitelist)) {
+                images.add(new ImageComponent(items.getImage(id, quantity, true)));
+            }
+        }
     }
 
     public boolean show() {
@@ -123,17 +137,29 @@ public class Storage {
     }
 
     /**
-     * Get whitelist json from config.
+     * Get comma separated whitelist from config.
      */
     private String[] loadWhitelist() {
-        return new String[]{configs.getConfiguration(StorageConfig.group, getWhitelistID())};
+        final String whitelist = configs.getConfiguration(StorageConfig.group, getWhitelistID());
+
+        if (whitelist != null) {
+            return whitelist.split(",");
+        } else {
+            return new String[]{};
+        }
     }
 
     /**
-     * Get blacklist json from config.
+     * Get comma separated blacklist from config.
      */
     private String[] loadBlacklist() {
-        return new String[]{configs.getConfiguration(StorageConfig.group, getBlacklistID())};
+        final String blacklist = configs.getConfiguration(StorageConfig.group, getBlacklistID());
+
+        if (blacklist != null) {
+            return blacklist.split(",");
+        } else {
+            return new String[]{};
+        }
     }
 
     /**

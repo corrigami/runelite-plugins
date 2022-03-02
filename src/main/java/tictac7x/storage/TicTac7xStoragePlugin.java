@@ -1,19 +1,18 @@
 package tictac7x.storage;
 
 import javax.inject.Inject;
-
 import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.InventoryID;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
