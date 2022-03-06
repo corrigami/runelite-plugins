@@ -107,8 +107,8 @@ public interface StorageConfig extends Config {
 
 		@ConfigItem(
 			keyName = "general_density",
-			name = "Items density",
-			description = "Change the density of the overlays.",
+			name = "Grid density",
+			description = "Change the density of the items in the overlays.",
 			section = general,
 			position = 1
 		) default InventoryDensity getOverlayDensity() { return InventoryDensity.REGULAR; }
