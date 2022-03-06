@@ -61,7 +61,9 @@ public class Storage {
             // Order by whitelist.
             if (whitelist_enabled) {
                 for (final String whitelist : whitelist) {
-                    updateStorageImagesBasedOnWhitelist(whitelist);
+                    if (whitelist.length() > 0) {
+                        updateStorageImagesBasedOnWhitelist(whitelist);
+                    }
                 }
 
             // Order by item container.
