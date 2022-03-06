@@ -12,22 +12,22 @@ Show overlays of various storages like bank and inventory.
 
 ## Overlay styles
 #### Free space in top
-![img/top.png]
+![](img/top.png)
 
 #### Free space in bottom
-![img/bottom.png]
+![](img/bottom.png)
 
 #### Free space as first item
-![img/first.png]
+![](img/first.png)
 
 #### Free space as last item
-![img/last.png]
+![](img/last.png)
 
 #### Free space hidden
-![img/hidden.png]
+![](img/hidden.png)
 
 ## Config
-![img/config.png]
+![](img/config.png)
 
 ## Planned features
 * Show overlay of combined storages.
