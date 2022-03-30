@@ -1,6 +1,5 @@
 package tictac7x.rooftops;
 
-import net.runelite.api.Perspective;
 import tictac7x.Overlay;
 import tictac7x.rooftops.courses.Courses;
 
@@ -14,15 +13,11 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 
 import net.runelite.api.Tile;
-import net.runelite.api.Model;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.Player;
 import net.runelite.api.GameState;
-import net.runelite.api.GameObject;
 import net.runelite.api.TileObject;
-import net.runelite.api.GroundObject;
-import net.runelite.api.DecorativeObject;
 import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.GameStateChanged;
