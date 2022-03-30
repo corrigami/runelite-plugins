@@ -1,5 +1,6 @@
 package tictac7x.rooftops;
 
+import net.runelite.api.Perspective;
 import tictac7x.Overlay;
 import tictac7x.rooftops.courses.Courses;
 
@@ -98,19 +99,8 @@ public class RooftopsOverlay extends Overlay {
 
         // Obstacles.
         for (final TileObject obstacle : obstacles) {
-            final Shape clickbox = RooftopsPerspective.getClickbox(client,
-                obstacle instanceof GameObject
-                    ? (Model) ((GameObject) obstacle).getRenderable() :
-                obstacle instanceof GroundObject
-                    ? (Model) ((GroundObject) obstacle).getRenderable() :
-                obstacle instanceof DecorativeObject
-                    ? (Model) ((DecorativeObject) obstacle).getRenderable() :
-                null, 0, obstacle.getLocalLocation(), obstacle.getPlane() - client.getPlane()
-            );
-
-            if (clickbox != null) {
-                renderShape(graphics, clickbox, courses.getObstacleColor(obstacle));
-            }
+            final Shape clickbox = obstacle.getClickbox();
+            if (clickbox != null) renderShape(graphics, obstacle.getClickbox(), courses.getObstacleColor(obstacle));
         }
 
         return null;
