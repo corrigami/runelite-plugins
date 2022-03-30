@@ -100,7 +100,7 @@ public class RooftopsOverlay extends Overlay {
         // Obstacles.
         for (final TileObject obstacle : obstacles) {
             final Shape clickbox = obstacle.getClickbox();
-            if (clickbox != null) renderShape(graphics, obstacle.getClickbox(), courses.getObstacleColor(obstacle));
+            if (clickbox != null) renderShape(graphics, clickbox, courses.getObstacleColor(obstacle));
         }
 
         return null;
