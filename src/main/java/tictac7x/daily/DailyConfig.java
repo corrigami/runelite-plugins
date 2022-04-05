@@ -45,4 +45,14 @@ public interface DailyConfig extends Config {
 		name = buckets_of_slime_name,
 		description = buckets_of_slime_description
 	) default boolean showBucketsOfSlime() { return true; }
+
+	String miscellania_id = "miscellania";
+	String miscellania_name = "Miscellania favor";
+	String miscellania_description = "Reminds you to keep favor of Miscellania people at 100%.";
+
+	@ConfigItem(
+		keyName = miscellania_id,
+		name = miscellania_name,
+		description = miscellania_description
+	) default boolean showMiscellania() { return true; }
 }

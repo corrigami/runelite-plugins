@@ -2,7 +2,7 @@
 Reminds you to do your daily tasks.
 
 ## Dailies
-- [ ] Collect resources from the kingdom
+- [x] Keep Miscellania favor at 100%
 - [x] Zaff's battlestaves
 - [x] Wizard Cromperty's pure essence
 - [x] Bert's buckets of sand

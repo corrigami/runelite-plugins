@@ -6,6 +6,7 @@ import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.ItemID;
+import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
@@ -30,9 +31,11 @@ public class TicTac7xDailyPlugin extends Plugin {
 	private static final String TOOLTIP_BUCKETS_OF_SAND = "Collect %d buckets of sand from Bert at Yanille";
 	private static final String TOOLTIP_PURE_ESSENCE = "Collect %d pure essence from Wizard Cromperty at East-Ardougne";
 	private static final String TOOLTIP_BUCKETS_OF_SLIME = "Exchange bones for %d buckets of slime and bonemeal from Robin at Porty Phasmatys";
+	private static final String TOOLTIP_MISCELLANIA = "You need to work harder to increase your kingdom of Miscellania favor: %d%%";
 
 	private static final int BUCKETS_OF_SAND_QUEST_COMPLETE = 160;
 	private static final int BUCKETS_OF_SAND_AMOUNT = 84;
+	private static final int MISCELLANIA_FAVOR_MAX = 127;
 
 	@Inject
 	private Client client;
@@ -58,6 +61,9 @@ public class TicTac7xDailyPlugin extends Plugin {
 	@Nullable
 	private InfoBox infobox_buckets_of_slime = null;
 
+	@Nullable
+	private InfoBox infobox_miscellania = null;
+
 	@Provides
 	DailyConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(DailyConfig.class);
@@ -70,12 +76,14 @@ public class TicTac7xDailyPlugin extends Plugin {
 			infobox_buckets_of_sand = createInfoBoxBucketsOfSand();
 			infobox_pure_essence = createInfoBoxPureEssence();
 			infobox_buckets_of_slime = createInfoBoxBucketsOfSlime();
+			infobox_miscellania = createInFoBoxMiscellania();
 		}
 
 		infoboxes.addInfoBox(infobox_battlestaves);
 		infoboxes.addInfoBox(infobox_buckets_of_sand);
 		infoboxes.addInfoBox(infobox_pure_essence);
 		infoboxes.addInfoBox(infobox_buckets_of_slime);
+		infoboxes.addInfoBox(infobox_miscellania);
 	}
 
 	@Override
@@ -85,8 +93,33 @@ public class TicTac7xDailyPlugin extends Plugin {
 			infoboxes.removeInfoBox(infobox_buckets_of_sand);
 			infoboxes.removeInfoBox(infobox_pure_essence);
 			infoboxes.removeInfoBox(infobox_buckets_of_slime);
+			infoboxes.removeInfoBox(infobox_miscellania);
 		}
 	}
+
+	 private InfoBox createInFoBoxMiscellania() {
+		  return new InfoBox(
+				DailyConfig.miscellania_id,
+				items.getImage(ItemID.CASKET),
+				this::showMiscellania,
+				() -> getMiscellaniaFavor() + "%",
+				() -> String.format(TOOLTIP_MISCELLANIA, getMiscellaniaFavor()),
+				this::getDailyColor,
+		this
+		  );
+	 }
+
+	 private boolean showMiscellania() {
+		 return (
+			  config.showMiscellania() &&
+			  client.getVar(VarPlayer.THRONE_OF_MISCELLANIA) > 0 &&
+			  getMiscellaniaFavor() < 100
+		 );
+	 }
+
+	 private int getMiscellaniaFavor() {
+		 return client.getVar(Varbits.KINGDOM_APPROVAL) * 100 / MISCELLANIA_FAVOR_MAX;
+	 }
 
 	private InfoBox createInfoBoxBattlestaves() {
 		return new InfoBox(
