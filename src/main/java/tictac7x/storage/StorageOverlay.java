@@ -2,6 +2,7 @@ package tictac7x.storage;
 
 import java.awt.Point;
 import java.awt.Color;
+
 import tictac7x.Overlay;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -45,6 +46,10 @@ public class StorageOverlay extends Overlay {
         panel_items.setBorder(new Rectangle(PADDING, PADDING, PADDING - 4, PADDING));
     }
 
+    private int getItemsFreePadding() {
+        return storage.getEmptySlotsCount() == 28 ? PADDING : 0;
+    }
+
     @Override
     public Dimension render(final Graphics2D graphics) {
         panelComponent.getChildren().clear();
@@ -71,7 +76,7 @@ public class StorageOverlay extends Overlay {
 
         // Inventory empty slots in top.
         if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.TOP) {
-            panelComponent.setBorder(new Rectangle(0, PADDING, 0, 0));
+            panelComponent.setBorder(new Rectangle(getItemsFreePadding(), PADDING, getItemsFreePadding(), getItemsFreePadding()));
             addFreeSlotsImageComponent();
         }
 
@@ -104,7 +109,7 @@ public class StorageOverlay extends Overlay {
 
         // Inventory empty slots in bottom.
         if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.BOTTOM) {
-            panelComponent.setBorder(new Rectangle(0, 0, 0, PADDING));
+            panelComponent.setBorder(new Rectangle(getItemsFreePadding(), getItemsFreePadding(), getItemsFreePadding(), PADDING));
             addFreeSlotsImageComponent();
         }
 
@@ -153,6 +158,7 @@ public class StorageOverlay extends Overlay {
 
         // Make copy of inventory icon.
         final BufferedImage inventory_image = new BufferedImage(this.inventory_image.getWidth(), this.inventory_image.getHeight(), this.inventory_image.getType());
+//        final BufferedImage inventory_image = items.getImage(ItemID.PURE_ESSENCE);
         final Graphics graphics = inventory_image.getGraphics();
         graphics.drawImage(this.inventory_image, 0, 0, null);
 
@@ -162,11 +168,11 @@ public class StorageOverlay extends Overlay {
 
         // Shadow.
         graphics.setColor(Color.BLACK);
-        graphics.drawString(free, 1, fm.getAscent() - 3 + 1);
+        graphics.drawString(free, 1, fm.getAscent() - 2 + 1);
 
         // Yellow label.
         graphics.setColor(Color.YELLOW);
-        graphics.drawString(free, 0, fm.getAscent() - 3);
+        graphics.drawString(free, 0, fm.getAscent() - 2);
 
         graphics.dispose();
         return new ImageComponent(inventory_image);
