@@ -94,7 +94,7 @@ public class TitheOverlayInventory extends Overlay {
                 && inventory.count(ItemID.LOGAVANO_SEED) == 0
             ) {
                 for (final int farmers_outfit_id : farmers_outfit.keySet()) {
-                    highlightInventoryItem(client, graphics, farmers_outfit_id, seeds.get(farmers_outfit_id).get());
+                    highlightInventoryItem(client, graphics, farmers_outfit_id, farmers_outfit.get(farmers_outfit_id).get());
                 }
             }
         }
