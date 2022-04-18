@@ -4,5 +4,5 @@
 * [Rooftop Agility Improved - v0.4.7](../../tree/plugin-rooftops)
 * [Storage - v0.2](../../tree/plugin-storage)
 * [Sulliuscep run - v0.1](../../tree/plugin-sulliuscep)
-* [Tithe Farm Improvements - v0.3.1](../../tree/plugin-tithe)
+* [Tithe Farm Improvements - v0.3.2](../../tree/plugin-tithe)
 
