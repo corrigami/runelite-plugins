@@ -55,7 +55,7 @@ public class TicTac7xStoragePlugin extends Plugin {
 	protected void startUp() {
 		if (bank == null) {
 			bank = new Storage(configs, items, client_thread, InventoryID.BANK, StorageConfig.bank, true, true);
-			inventory = new Storage(configs, items, client_thread, InventoryID.INVENTORY, StorageConfig.inventory, false, true);
+			inventory = new Storage(configs, items, client_thread, InventoryID.INVENTORY, StorageConfig.inventory, config.isInventoryWhitelistEnabled(), true);
 			storage_manager = new StorageManager(client, inventory, bank);
 
 			overlay_bank = new StorageOverlay(config, bank);

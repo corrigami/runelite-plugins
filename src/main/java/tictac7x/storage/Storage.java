@@ -26,7 +26,8 @@ public class Storage {
     private final ClientThread client_thread;
     public final String storage_id;
     private final int item_container_id;
-    private final boolean whitelist_enabled, blacklist_enabled;
+    private boolean whitelist_enabled;
+    private final boolean blacklist_enabled;
     private int empty_slots_count = 0;
 
     private JsonObject storage;
@@ -145,7 +146,7 @@ public class Storage {
         final String whitelist = configs.getConfiguration(StorageConfig.group, getWhitelistID());
 
         if (whitelist != null) {
-            return whitelist.split(",");
+            return whitelist.replace("\n", "").replace("\r", "").split(",");
         } else {
             return new String[]{};
         }
@@ -158,7 +159,7 @@ public class Storage {
         final String blacklist = configs.getConfiguration(StorageConfig.group, getBlacklistID());
 
         if (blacklist != null) {
-            return blacklist.split(",");
+            return blacklist.replace("\n", "").replace("\r", "").split(",");
         } else {
             return new String[]{};
         }
@@ -191,12 +192,23 @@ public class Storage {
         if (Objects.equals(event.getGroup(), StorageConfig.group)) {
             // Update whitelist.
             if (Objects.equals(event.getKey(), getWhitelistID())) {
-                this.whitelist = event.getNewValue().split(",");
+                this.whitelist = event.getNewValue().replace("\n", "").replace("\r", "").split(",");
                 this.updateStorageImages();
 
-                // Update blacklist.
+            // Update blacklist.
             } else if (Objects.equals(event.getKey(), getBlacklistID())) {
-                this.blacklist = event.getNewValue().split(",");
+                this.blacklist = event.getNewValue().replace("\n", "").replace("\r", "").split(",");
+                this.updateStorageImages();
+
+            // Inventory whitelist toggled.
+            } else if (storage_id.equals(StorageConfig.inventory) && Objects.equals(event.getKey(), "inventory_whitelist_enabled")) {
+                this.whitelist_enabled = Boolean.parseBoolean(event.getNewValue());
+
+                // Only update whitelist if it was actually enabled.
+                if (this.whitelist_enabled) {
+                    this.whitelist = event.getNewValue().split(",");
+                }
+
                 this.updateStorageImages();
             }
         }

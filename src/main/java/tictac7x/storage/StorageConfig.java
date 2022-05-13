@@ -37,11 +37,10 @@ public interface StorageConfig extends Config {
 
 		@ConfigItem(
 			keyName = "inventory_whitelist",
-			name = "whitelist",
+			name = "Inventory whitelist",
 			description = "Names of items to show in the inventory overlay.",
 			section = inventory,
-			position = 3,
-			hidden = true
+			position = 9
 		) default String getInventoryWhitelist() { return ""; }
 
 		@ConfigItem(
@@ -49,7 +48,7 @@ public interface StorageConfig extends Config {
 			name = "Inventory blacklist",
 			description = "Names of items to hide from the inventory overlay.",
 			section = inventory,
-			position = 4
+			position = 10
 		) default String getInventoryBlacklist() { return ""; }
 
 		@ConfigItem(
@@ -58,7 +57,31 @@ public interface StorageConfig extends Config {
 			description = "Where to show how many empty slots inventory has.",
 			section = inventory,
 			position = 5
-		) default InventoryEmpty getInventoryEmptySlots() { return InventoryEmpty.BOTTOM; }
+		) default InventoryEmpty getInventoryEmptyStyle() { return InventoryEmpty.BOTTOM; }
+
+		@ConfigItem(
+			keyName = "inventory_hide",
+			name = "Hide when inventory tab is open",
+			description = "Hide inventory overlay, when inventory tab is open.",
+			section = inventory,
+			position = 6
+		) default boolean hideInventoryOverlayWhenInventoryIsOpen() { return true; }
+
+		@ConfigItem(
+			keyName = "inventory_whitelist_enabled",
+			name = "Use whitelist for inventory",
+			description = "Whitelist for inventory is disabled by default to show all items in the invetory.",
+			section = inventory,
+			position = 7
+		) default boolean isInventoryWhitelistEnabled() { return false; }
+
+	@ConfigItem(
+			keyName = "inventory_empty_zero",
+			name = "Show 0 spaces left",
+			description = "Show that inventory is full and 0 spaces are left.",
+			section = inventory,
+			position = 8
+		) default boolean showInventoryZeroSpaceLeft() { return true; }
 
 	@ConfigSection(
 		name = "Bank",
@@ -89,7 +112,7 @@ public interface StorageConfig extends Config {
 			description = "Names of items to show in the bank overlay.",
 			section = bank,
 			position = 3
-		) default String getBankWhitelist() { return ""; }
+		) default String getBankWhitelist() { return "Coins,\r\n ore"; }
 
 		@ConfigItem(
 			keyName = "bank_blacklist",

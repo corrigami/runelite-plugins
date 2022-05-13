@@ -1,4 +1,4 @@
-# Storage - v0.2.1
+# Storage - v0.3.1
 Show overlays of various storages like bank and inventory.
 
 ## Features

@@ -43,11 +43,14 @@ public class StorageOverlay extends Overlay {
         setPosition(OverlayPosition.TOP_RIGHT);
         makePanelResizeable(panelComponent, panel_items);
 
-        panel_items.setBorder(new Rectangle(PADDING, PADDING, PADDING - 4, PADDING));
+        panel_items.setBorder(new Rectangle(PADDING, 0, PADDING - 4, 0));
+        panelComponent.setBorder(new Rectangle(0, PADDING, 0, PADDING));
+        panelComponent.setGap(new Point(PADDING, PADDING));
     }
 
     private int getItemsFreePadding() {
-        return storage.getEmptySlotsCount() == 28 ? PADDING : 0;
+        return PADDING;
+//        return storage.getEmptySlotsCount() == 28 ? PADDING : 0;
     }
 
     @Override
@@ -65,26 +68,20 @@ public class StorageOverlay extends Overlay {
             panel_items.setGap(new Point(0, 0));
         }
 
-        // Inventory empty slots hidden or as items.
-        if (storage.storage_id.equals(StorageConfig.inventory) && (
-            config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.HIDDEN ||
-            config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.FIRST ||
-            config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.LAST)
-        ) {
-            panelComponent.setBorder(new Rectangle(0, 0, 0, 0));
-        }
-
         // Inventory empty slots in top.
-        if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.TOP) {
-            panelComponent.setBorder(new Rectangle(getItemsFreePadding(), PADDING, getItemsFreePadding(), getItemsFreePadding()));
+        if (
+            storage.storage_id.equals(StorageConfig.inventory) &&
+            config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.TOP &&
+            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
+        ) {
             addFreeSlotsImageComponent();
         }
 
         // Inventory empty slots as first item.
         if (
             storage.storage_id.equals(StorageConfig.inventory) &&
-            config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.FIRST &&
-            storage.getEmptySlotsCount() > 0
+            config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.FIRST &&
+            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
         ) {
             panel_items.getChildren().add(createInventoryItem());
         }
@@ -97,8 +94,8 @@ public class StorageOverlay extends Overlay {
         // Inventory empty slots as last item.
         if (
             storage.storage_id.equals(StorageConfig.inventory) &&
-            config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.LAST &&
-            storage.getEmptySlotsCount() > 0
+            config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.LAST &&
+            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
         ) {
             panel_items.getChildren().add(createInventoryItem());
         }
@@ -108,8 +105,11 @@ public class StorageOverlay extends Overlay {
         }
 
         // Inventory empty slots in bottom.
-        if (storage.storage_id.equals(StorageConfig.inventory) && config.getInventoryEmptySlots() == StorageConfig.InventoryEmpty.BOTTOM) {
-            panelComponent.setBorder(new Rectangle(getItemsFreePadding(), getItemsFreePadding(), getItemsFreePadding(), PADDING));
+        if (
+            storage.storage_id.equals(StorageConfig.inventory) &&
+            config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.BOTTOM &&
+            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
+        ) {
             addFreeSlotsImageComponent();
         }
 
@@ -158,7 +158,6 @@ public class StorageOverlay extends Overlay {
 
         // Make copy of inventory icon.
         final BufferedImage inventory_image = new BufferedImage(this.inventory_image.getWidth(), this.inventory_image.getHeight(), this.inventory_image.getType());
-//        final BufferedImage inventory_image = items.getImage(ItemID.PURE_ESSENCE);
         final Graphics graphics = inventory_image.getGraphics();
         graphics.drawImage(this.inventory_image, 0, 0, null);
 
