@@ -198,8 +198,10 @@ public class Courses extends Overlay {
         }
     }
 
-    public void onFailedObstacle() {
-        xp_drop = true;
+    public void onObstacleFailed() {
+        if (course == null) return;
+
+        this.xp_drop = true;
         this.obstacles_visited.clear();
         this.obstacle_next = course.getObstacles().get(0);
     }
