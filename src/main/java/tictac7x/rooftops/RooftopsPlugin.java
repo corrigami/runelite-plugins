@@ -19,6 +19,7 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.DecorativeObjectSpawned;
+import net.runelite.api.events.HitsplatApplied;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
@@ -107,6 +108,14 @@ public class RooftopsPlugin extends Plugin {
 	@Subscribe
 	public void onStatChanged(final StatChanged event) {
 		courses.onStatChanged(event);
+	}
+
+	@Subscribe
+	public void onHitsplatApplied(final HitsplatApplied event) {
+		if (event.getActor() != client.getLocalPlayer()) {
+			return;
+		}
+		courses.onFailedObstacle();
 	}
 
 	@Subscribe

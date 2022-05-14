@@ -198,6 +198,12 @@ public class Courses extends Overlay {
         }
     }
 
+    public void onFailedObstacle() {
+        xp_drop = true;
+        this.obstacles_visited.clear();
+        this.obstacle_next = course.getObstacles().get(0);
+    }
+
     public void onGameStateChanged(final GameStateChanged event) {
         if (event.getGameState() == GameState.LOADING) {
             obstacles.clear();
