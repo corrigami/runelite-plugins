@@ -6,9 +6,11 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
+
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
 import net.runelite.client.game.ItemManager;
@@ -19,14 +21,12 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 
 public class Storage {
-    private final static int inventory_size = 28;
-
     private final ConfigManager configs;
     private final ItemManager items;
     private final ClientThread client_thread;
     public final String storage_id;
     private final int item_container_id;
-    private boolean whitelist_enabled;
+    boolean whitelist_enabled;
     private final boolean blacklist_enabled;
     private int empty_slots_count = 0;
 
@@ -34,14 +34,14 @@ public class Storage {
     private String[] whitelist, blacklist;
     private final List<ImageComponent> images = new ArrayList<>();
 
-    public Storage(final ConfigManager configs, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist, final boolean blacklist) {
+    public Storage(final ConfigManager configs, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist_enabled, final boolean blacklist_enabled) {
         this.configs = configs;
         this.items = items;
         this.client_thread = client_thread;
         this.storage_id = storage_id;
         this.item_container_id = item_container_id.getId();
-        this.whitelist_enabled = whitelist;
-        this.blacklist_enabled = blacklist;
+        this.whitelist_enabled = whitelist_enabled;
+        this.blacklist_enabled = blacklist_enabled;
 
         this.storage = loadStorage();
         this.whitelist = loadWhitelist();
@@ -53,7 +53,7 @@ public class Storage {
         return images;
     }
 
-    private void updateStorageImages() {
+    void updateStorageImages() {
         // Images need to be created on the client thread.
         client_thread.invoke(() -> {
             // Clear old images.
@@ -142,7 +142,7 @@ public class Storage {
     /**
      * Get comma separated whitelist from config.
      */
-    private String[] loadWhitelist() {
+    String[] loadWhitelist() {
         final String whitelist = configs.getConfiguration(StorageConfig.group, getWhitelistID());
 
         if (whitelist != null) {
@@ -189,28 +189,17 @@ public class Storage {
      * @param event - ConfigChanged.
      */
     public void onConfigChanged(final ConfigChanged event) {
-        if (Objects.equals(event.getGroup(), StorageConfig.group)) {
-            // Update whitelist.
-            if (Objects.equals(event.getKey(), getWhitelistID())) {
-                this.whitelist = event.getNewValue().replace("\n", "").replace("\r", "").split(",");
-                this.updateStorageImages();
+        if (!Objects.equals(event.getGroup(), StorageConfig.group)) return;
 
-            // Update blacklist.
-            } else if (Objects.equals(event.getKey(), getBlacklistID())) {
-                this.blacklist = event.getNewValue().replace("\n", "").replace("\r", "").split(",");
-                this.updateStorageImages();
+        // Update whitelist.
+        if (Objects.equals(event.getKey(), getWhitelistID())) {
+            loadWhitelist();
+            this.updateStorageImages();
 
-            // Inventory whitelist toggled.
-            } else if (storage_id.equals(StorageConfig.inventory) && Objects.equals(event.getKey(), "inventory_whitelist_enabled")) {
-                this.whitelist_enabled = Boolean.parseBoolean(event.getNewValue());
-
-                // Only update whitelist if it was actually enabled.
-                if (this.whitelist_enabled) {
-                    this.whitelist = event.getNewValue().split(",");
-                }
-
-                this.updateStorageImages();
-            }
+        // Update blacklist.
+        } else if (Objects.equals(event.getKey(), getBlacklistID())) {
+            loadBlacklist();
+            this.updateStorageImages();
         }
     }
 
@@ -222,9 +211,9 @@ public class Storage {
         final ItemContainer item_container = event.getItemContainer();
 
         if (item_container != null && item_container.getId() == item_container_id) {
-            empty_slots_count = storage_id.equals(StorageConfig.inventory) ? inventory_size : item_container.size();
-            final JsonObject storage = new JsonObject();
+            this.empty_slots_count = item_container.size();
 
+            final JsonObject storage = new JsonObject();
             Arrays.stream(item_container.getItems()).filter(
                     item -> item != null && item.getId() != -1
             ).forEach(item -> {
@@ -234,7 +223,7 @@ public class Storage {
                 } else {
                     storage.addProperty(id, item.getQuantity());
                 }
-                empty_slots_count -= 1;
+                this.empty_slots_count -= 1;
             });
 
             this.storage = storage;
