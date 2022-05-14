@@ -119,6 +119,10 @@ public class Storage {
         return storage_id + "_blacklist";
     }
 
+    public boolean hideWithOverlay() {
+        return configs.getConfiguration(StorageConfig.group, storage_id + "_hide").equals("true");
+    }
+
     /**
      * Save storage json to config.
      */
@@ -211,7 +215,7 @@ public class Storage {
         final ItemContainer item_container = event.getItemContainer();
 
         if (item_container != null && item_container.getId() == item_container_id) {
-            this.empty_slots_count = item_container.size();
+            this.empty_slots_count = getStorageSize(item_container);
 
             final JsonObject storage = new JsonObject();
             Arrays.stream(item_container.getItems()).filter(
@@ -230,6 +234,10 @@ public class Storage {
             saveStorageToConfig();
             updateStorageImages();
         }
+    }
+
+    int getStorageSize(final ItemContainer item_container) {
+        return item_container.size();
     }
 
     public int getEmptySlotsCount() {

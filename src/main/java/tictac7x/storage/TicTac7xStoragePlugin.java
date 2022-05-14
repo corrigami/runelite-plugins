@@ -5,6 +5,8 @@ import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.InventoryID;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -58,8 +60,8 @@ public class TicTac7xStoragePlugin extends Plugin {
 			inventory = new StorageInventory(configs, items, client_thread, InventoryID.INVENTORY, StorageConfig.inventory, config.isInventoryWhitelistEnabled(), true);
 			storage_manager = new StorageManager(client, inventory, bank);
 
-			overlay_bank = new StorageOverlay(config, bank);
-			overlay_inventory = new StorageOverlayInventory(config, inventory);
+			overlay_bank = new StorageOverlay(client, config, bank, WidgetInfo.BANK_CONTAINER);
+			overlay_inventory = new StorageOverlayInventory(client, config, inventory);
 		}
 
 		overlays.add(overlay_bank);

@@ -6,6 +6,8 @@ import java.awt.FontMetrics;
 import java.awt.image.BufferedImage;
 import javax.annotation.Nullable;
 
+import net.runelite.api.Client;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.components.ImageComponent;
@@ -25,8 +27,8 @@ public class StorageOverlayInventory extends StorageOverlay {
     @Nullable
     private Integer items_free = null;
 
-    public StorageOverlayInventory(final StorageConfig config, final Storage storage) {
-        super(config, storage);
+    public StorageOverlayInventory(final Client client, final StorageConfig config, final Storage storage) {
+        super(client, config, storage, WidgetInfo.INVENTORY);
         this.inventory_image = ImageUtil.getResourceStreamFromClass(getClass(), "inventory.png");
     }
 

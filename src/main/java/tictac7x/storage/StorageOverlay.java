@@ -1,4 +1,7 @@
 package tictac7x.storage;
+import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import tictac7x.Overlay;
 
 import java.awt.Point;
@@ -11,18 +14,29 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 
+import javax.annotation.Nullable;
+
 public class StorageOverlay extends Overlay {
     private static final int PADDING = 10;
     private static final int DENSITY_HORIZONTAL = 6;
     private static final int DENSITY_VERTICAL = 4;
 
+    private final Client client;
     final StorageConfig config;
     final Storage storage;
     final PanelComponent panel_items = new PanelComponent();
 
-    public StorageOverlay(final StorageConfig config, final Storage storage) {
+    @Nullable
+    Widget widget = null;
+
+    @Nullable
+    final WidgetInfo widget_info;
+
+    public StorageOverlay(final Client client, final StorageConfig config, final Storage storage, final @Nullable WidgetInfo widget_info) {
+        this.client = client;
         this.config = config;
         this.storage = storage;
+        this.widget_info = widget_info;
 
         setLayer(OverlayLayer.ABOVE_WIDGETS);
         setPosition(OverlayPosition.TOP_RIGHT);
@@ -40,6 +54,10 @@ public class StorageOverlay extends Overlay {
 
         // Storage overlay hidden.
         if (!storage.show()) return null;
+
+        // Original widget visible.
+        updateWidget();
+        if (storage.hideWithOverlay() && widget != null && !widget.isHidden()) return null;
 
         // Storage overlay density.
         final boolean densityCompact = config.getOverlayDensity() == StorageConfig.InventoryDensity.COMPACT;
@@ -74,6 +92,11 @@ public class StorageOverlay extends Overlay {
 
         // Overlay empty, don't render it.
         return null;
+    }
+
+    private void updateWidget() {
+        if (this.widget != null) return;
+        this.widget = client.getWidget(widget_info);
     }
 
     void renderBefore() {}

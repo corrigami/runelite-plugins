@@ -1,6 +1,7 @@
 package tictac7x.storage;
 
 import net.runelite.api.InventoryID;
+import net.runelite.api.ItemContainer;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
@@ -9,6 +10,8 @@ import net.runelite.client.callback.ClientThread;
 import java.util.Objects;
 
 public class StorageInventory extends Storage {
+    private static final int INVENTORY_SIZE = 28;
+
     public StorageInventory(final ConfigManager configs, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist_enabled, final boolean blacklist_enabled) {
         super(configs, items, client_thread, item_container_id, storage_id, whitelist_enabled, blacklist_enabled);
     }
@@ -31,5 +34,10 @@ public class StorageInventory extends Storage {
         // Only update whitelist if it was actually enabled.
         if (super.whitelist_enabled) loadWhitelist();
         super.updateStorageImages();
+    }
+
+    @Override
+    int getStorageSize(final ItemContainer item_container) {
+        return INVENTORY_SIZE;
     }
 }

@@ -1,13 +1,17 @@
-# Storage - v0.3.1
+# Storage - v0.3.2
 Show overlays of various storages like bank and inventory.
 
 ## Features
 * Show overlay of bank items.
   * Items need to be whitelisted.
   * Blacklist can override whitelisted items.
+  * Option to hide when bank is open.
+  * Deposit boxes supported.
 * Show overlay of inventory items.
   * All items visible by default. 
+  * Whitelist can be toggled.
   * Items can be blacklisted.
+  * Option to hide when inventory is open.
 * Show amount of free space in inventory.
 
 ## Overlay styles
