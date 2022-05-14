@@ -135,11 +135,21 @@ public interface TitheConfig extends Config {
 			return 0;
 		}
 
-		@ConfigSection(
-			position = 4,
-			name = "Points",
-			description = "Show custom information about tithe farm points"
-		) String section_points = "points";
+		@ConfigItem(
+			position = 3,
+			keyName = "gricollers_can_charges_high",
+			name = "Gricoller's can high charges amount",
+			description = "Minimum number of charges to show water as high",
+			section = section_water
+		) default int getGricollersCanHighChargesAmount() {
+		return 75;
+	}
+
+	@ConfigSection(
+		position = 4,
+		name = "Points",
+		description = "Show custom information about tithe farm points"
+	) String section_points = "points";
 
 		String points = "points";
 		@ConfigItem(
