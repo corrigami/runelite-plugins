@@ -26,13 +26,14 @@ public class StorageInventory extends Storage {
         // Inventory whitelist toggle not changed.
         if (!Objects.equals(event.getKey(), "inventory_whitelist_enabled")) {
             super.onConfigChanged(event);
+            return;
         }
 
         // Inventory whitelist toggled.
         super.whitelist_enabled = Boolean.parseBoolean(event.getNewValue());
 
         // Only update whitelist if it was actually enabled.
-        if (super.whitelist_enabled) loadWhitelist();
+        if (super.whitelist_enabled) super.loadWhitelist();
         super.updateStorageImages();
     }
 

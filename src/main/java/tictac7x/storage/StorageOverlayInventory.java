@@ -99,11 +99,11 @@ public class StorageOverlayInventory extends StorageOverlay {
 
             // Shadow.
             graphics.setColor(Color.BLACK);
-            graphics.drawString(free, ((free_image.getWidth() - font_metrics.stringWidth(free)) / 2) + 1, font_metrics.getAscent() + 1);
+            graphics.drawString(free, ((free_image.getWidth() - font_metrics.stringWidth(free)) / 2) + 1, font_metrics.getAscent() + 2);
 
             // Label.
             graphics.setColor(color_gray);
-            graphics.drawString(free, (free_image.getWidth() - font_metrics.stringWidth(free)) / 2, font_metrics.getAscent());
+            graphics.drawString(free, (free_image.getWidth() - font_metrics.stringWidth(free)) / 2, font_metrics.getAscent() + 1);
 
             graphics.dispose();
             panel_items_free = new ImageComponent(free_image);
@@ -128,11 +128,11 @@ public class StorageOverlayInventory extends StorageOverlay {
 
         // Shadow.
         graphics.setColor(Color.BLACK);
-        graphics.drawString(free, 1, fm.getAscent() - 2 + 1);
+        graphics.drawString(free, 1, fm.getAscent());
 
         // Yellow label.
         graphics.setColor(Color.YELLOW);
-        graphics.drawString(free, 0, fm.getAscent() - 2);
+        graphics.drawString(free, 0, fm.getAscent() - 1);
 
         graphics.dispose();
         return new ImageComponent(inventory_image);

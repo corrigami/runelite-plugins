@@ -20,7 +20,6 @@ public class StorageOverlay extends Overlay {
     private static final int PADDING = 10;
     private static final int DENSITY_HORIZONTAL = 6;
     private static final int DENSITY_VERTICAL = 4;
-
     private final Client client;
     final StorageConfig config;
     final Storage storage;

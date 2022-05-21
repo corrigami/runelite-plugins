@@ -21,7 +21,7 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 
 public class Storage {
-    private final ConfigManager configs;
+    final ConfigManager configs;
     private final ItemManager items;
     private final ClientThread client_thread;
     public final String storage_id;
@@ -43,10 +43,10 @@ public class Storage {
         this.whitelist_enabled = whitelist_enabled;
         this.blacklist_enabled = blacklist_enabled;
 
-        this.storage = loadStorage();
-        this.whitelist = loadWhitelist();
-        this.blacklist = loadBlacklist();
-        this.updateStorageImages();
+        loadStorage();
+        loadWhitelist();
+        loadBlacklist();
+        updateStorageImages();
     }
 
     public List<ImageComponent> getStorageImages() {
@@ -134,38 +134,38 @@ public class Storage {
      * Get storage from config. Needed on first-run to restore state from previous session.
      * @return json of storage.
      */
-    private JsonObject loadStorage() {
+    private void loadStorage() {
         try {
             final JsonParser parser = new JsonParser();
-            return parser.parse(configs.getConfiguration(StorageConfig.group, storage_id)).getAsJsonObject();
+            this.storage = parser.parse(configs.getConfiguration(StorageConfig.group, storage_id)).getAsJsonObject();
         } catch (final Exception exception) {
-            return new JsonObject();
+            this.storage = new JsonObject();
         }
     }
 
     /**
      * Get comma separated whitelist from config.
      */
-    String[] loadWhitelist() {
+    void loadWhitelist() {
         final String whitelist = configs.getConfiguration(StorageConfig.group, getWhitelistID());
 
         if (whitelist != null) {
-            return whitelist.replace("\n", "").replace("\r", "").split(",");
+            this.whitelist = whitelist.replace("\n", "").replace("\r", "").split(",");
         } else {
-            return new String[]{};
+            this.whitelist = new String[]{};
         }
     }
 
     /**
      * Get comma separated blacklist from config.
      */
-    private String[] loadBlacklist() {
+    private void loadBlacklist() {
         final String blacklist = configs.getConfiguration(StorageConfig.group, getBlacklistID());
 
         if (blacklist != null) {
-            return blacklist.replace("\n", "").replace("\r", "").split(",");
+            this.blacklist = blacklist.replace("\n", "").replace("\r", "").split(",");
         } else {
-            return new String[]{};
+            this.blacklist = new String[]{};
         }
     }
 
