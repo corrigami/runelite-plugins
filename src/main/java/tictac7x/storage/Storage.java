@@ -21,9 +21,12 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 
 public class Storage {
-    final ConfigManager configs;
+    private final ConfigManager configs;
+    private final StorageConfig config;
     private final ItemManager items;
     private final ClientThread client_thread;
+    private final JsonParser json_parser;
+
     public final String storage_id;
     private final int item_container_id;
     boolean whitelist_enabled;
@@ -34,10 +37,13 @@ public class Storage {
     private String[] whitelist, blacklist;
     private final List<ImageComponent> images = new ArrayList<>();
 
-    public Storage(final ConfigManager configs, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist_enabled, final boolean blacklist_enabled) {
+    public Storage(final ConfigManager configs, final StorageConfig config, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist_enabled, final boolean blacklist_enabled) {
         this.configs = configs;
+        this.config = config;
         this.items = items;
         this.client_thread = client_thread;
+        this.json_parser = new JsonParser();
+
         this.storage_id = storage_id;
         this.item_container_id = item_container_id.getId();
         this.whitelist_enabled = whitelist_enabled;
@@ -127,7 +133,10 @@ public class Storage {
      * Save storage json to config.
      */
     private void saveStorageToConfig() {
-        configs.setConfiguration(StorageConfig.group, storage_id, storage.toString());
+        final JsonObject storages = json_parser.parse(config.getStorages()).getAsJsonObject();
+        storages.add(storage_id, storage);
+
+        configs.setConfiguration(StorageConfig.group, StorageConfig.storages, storages.toString());
     }
 
     /**
@@ -135,12 +144,8 @@ public class Storage {
      * @return json of storage.
      */
     private void loadStorage() {
-        try {
-            final JsonParser parser = new JsonParser();
-            this.storage = parser.parse(configs.getConfiguration(StorageConfig.group, storage_id)).getAsJsonObject();
-        } catch (final Exception exception) {
-            this.storage = new JsonObject();
-        }
+        final JsonObject storage = json_parser.parse(config.getStorages()).getAsJsonObject().getAsJsonObject(storage_id);
+        this.storage = storage != null ? storage : new JsonObject();
     }
 
     /**

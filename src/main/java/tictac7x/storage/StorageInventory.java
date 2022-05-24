@@ -12,8 +12,8 @@ import java.util.Objects;
 public class StorageInventory extends Storage {
     private static final int INVENTORY_SIZE = 28;
 
-    public StorageInventory(final ConfigManager configs, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist_enabled, final boolean blacklist_enabled) {
-        super(configs, items, client_thread, item_container_id, storage_id, whitelist_enabled, blacklist_enabled);
+    public StorageInventory(final ConfigManager configs, final StorageConfig config, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist_enabled, final boolean blacklist_enabled) {
+        super(configs, config, items, client_thread, item_container_id, storage_id, whitelist_enabled, blacklist_enabled);
     }
 
     /**

@@ -19,15 +19,6 @@ public interface StorageConfig extends Config {
 	) String inventory = "inventory";
 
 		@ConfigItem(
-			keyName = "inventory",
-			name = "inventory",
-			description = "inventory",
-			section = inventory,
-			position = 1,
-			hidden = true
-		) default String getInventory() { return ""; }
-
-		@ConfigItem(
 			keyName = "inventory_show",
 			name = "Show inventory overlay",
 			description = "Show overlay of inventory items.",
@@ -136,11 +127,21 @@ public interface StorageConfig extends Config {
 		position = 3
 	) String general = "general";
 
+		String storages = "storages";
+		@ConfigItem(
+			keyName = storages,
+			name = storages,
+			description = storages,
+			section = general,
+			position = 1,
+			hidden = false
+		) default String getStorages() { return "{}"; }
+
 		@ConfigItem(
 			keyName = "general_density",
 			name = "Grid density",
 			description = "Change the density of the items in the overlays.",
 			section = general,
-			position = 1
+			position = 2
 		) default InventoryDensity getOverlayDensity() { return InventoryDensity.REGULAR; }
 }

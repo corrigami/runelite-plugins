@@ -1,66 +1,107 @@
 package tictac7x.storage;
 
+import com.google.gson.*;
+import lombok.NonNull;
 import net.runelite.api.Item;
 import net.runelite.api.Client;
 import javax.annotation.Nullable;
-import com.google.gson.JsonObject;
+
 import net.runelite.api.InventoryID;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.client.config.ConfigManager;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StorageManager {
     private final Client client;
-    private final Storage inventory;
-    private final Storage bank;
+    private final ConfigManager configs;
+    private final StorageConfig config;
 
-    @Nullable
-    private Item[] inventory_items;
+    private JsonObject storages;
 
-    public StorageManager(final Client client, final Storage inventory, final Storage bank) {
+    private final Map<String, StorageOverlay> overlays = new HashMap<>();
+    private final JsonParser json_parser = new JsonParser();
+
+    public StorageManager(final Client client, final ConfigManager configs, final StorageConfig config) {
         this.client = client;
-        this.inventory = inventory;
-        this.bank = bank;
+        this.configs = configs;
+        this.config = config;
+
+        this.loadStorages();
     }
 
-    public void onItemContainerChanged(final ItemContainerChanged event) {
-        // Inventory changed, Deposit Box is opened.
-        if (event.getContainerId() == InventoryID.INVENTORY.getId() && client.getWidget(WidgetInfo.DEPOSIT_BOX_INVENTORY_ITEMS_CONTAINER) != null) {
-            final JsonObject deposit = new JsonObject();
-            final Item[] inventory_items = event.getItemContainer().getItems();
+    public void registerOverlay(final String storage_id, final StorageOverlay overlay) {
+        overlays.put(storage_id, overlay);
+        notifyOverlays(storage_id);
+    }
 
-            if (this.inventory_items != null) {
-                for (int i = 0; i < event.getItemContainer().size(); i++) {
-                    final Item item_before = this.inventory_items[i];
-                    final Item item_after = inventory_items[i];
-                    final String id = String.valueOf(item_before.getId());
+    public void unregisterOverlay(final String storage_id) {
+        overlays.remove(storage_id);
+    }
 
-                    int quantity_after = 0;
+    public void replace(final String storage_id, final JsonObject items, final int size, final int amount) {
+        final JsonObject storage = new JsonObject();
 
-                    // Item didn't change.
-                    if (item_before.getId() == item_after.getId() && item_before.getQuantity() == item_after.getQuantity()) continue;
+        storage.add("items", items);
+        storage.addProperty("size", size);
+        storage.addProperty("amount", amount);
+        storage.addProperty("empty", size - amount);
 
-                    // Amount from stack deposited.
-                    if (item_before.getId() != -1 && item_after.getId() != -1 && item_before.getId() == item_after.getId() && item_before.getQuantity() != item_after.getQuantity()) {
-                        quantity_after = item_after.getQuantity();
-                    }
+        this.storages.add(storage_id, storage);
+        this.updateStorages();
+        notifyOverlays(storage_id);
+    }
 
-                    // Multiple non-stack items with same IDs deposited.
-                    if (deposit.has(id)) {
-                        deposit.addProperty(id, deposit.get(id).getAsInt() + (item_before.getQuantity() - quantity_after));
+    public void deposit(final String storage_id, final JsonObject items) {
+//        JsonObject storage = this.storages.getAsJsonObject(String.valueOf(storage_id));
+//        if (storage == null) storage = new JsonObject();
+        updateStorages();
+        notifyOverlays(storage_id);
+    }
 
-                    // First time depositing item.
-                    } else {
-                        deposit.addProperty(id, item_before.getQuantity() - quantity_after);
-                    }
-                }
+    private void loadStorages() {
+        this.storages = json_parser.parse(config.getStorages()).getAsJsonObject();
+    }
 
-                bank.deposit(deposit);
-            }
+    private void updateStorages() {
+        configs.setConfiguration(StorageConfig.group, StorageConfig.storages, this.storages.toString());
+    }
+
+    private void notifyOverlays(final String storage_id) {
+        if (!overlays.containsKey(storage_id)) return;
+
+        final JsonObject storage = storages.get(storage_id).getAsJsonObject();
+        if (storage == null) return;
+
+        final StorageOverlay overlay = overlays.get(storage_id);
+
+        System.out.println("UPDATE OVERLAY " + storage_id + " " + storage.toString());
+        overlay.update(storage);
+    }
+
+    public void onItemContainerChanged(final @Nullable ItemContainerChanged event) {
+        if (event == null || event.getItemContainer() == null) return;
+
+        final ItemContainer item_container = event.getItemContainer();
+        final JsonObject items = new JsonObject();
+        int items_amount = 0;
+
+        for (final Item item : item_container.getItems()) {
+            if (item == null || item.getId() < 0) continue;
+
+            final String item_id = String.valueOf(item.getId());
+            final int item_amount = items.has(item_id)
+                    ? items.get(item_id).getAsInt() + item.getQuantity()
+                    : item.getQuantity();
+
+            items.addProperty(item_id, item_amount);
+            items_amount++;
         }
 
-        // Update inventory items after the deposit logic.
-        if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
-            inventory_items = event.getItemContainer().getItems();
-        }
+        this.replace(String.valueOf(item_container.getId()), items, item_container.size(), items_amount);
     }
 }

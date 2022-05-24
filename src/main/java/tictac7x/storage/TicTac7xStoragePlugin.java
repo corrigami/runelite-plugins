@@ -5,7 +5,7 @@ import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.InventoryID;
-import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
@@ -24,6 +24,10 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	tags = { "storage", "bank", "inventory" }
 )
 public class TicTac7xStoragePlugin extends Plugin {
+	public static final String INVENTORY = "93";
+	public static final String BANK = "95";
+	public static final String GLOBAL = "global";
+
 	@Inject
 	private Client client;
 
@@ -52,38 +56,50 @@ public class TicTac7xStoragePlugin extends Plugin {
 	private StorageManager storage_manager;
 	private StorageOverlay overlay_bank;
 	private StorageOverlay overlay_inventory;
+	private StorageOverlay overlay_global;
+	private FossilsStorage storage_fossils;
 
 	@Override
 	protected void startUp() {
 		if (bank == null) {
-			bank = new Storage(configs, items, client_thread, InventoryID.BANK, StorageConfig.bank, true, true);
-			inventory = new StorageInventory(configs, items, client_thread, InventoryID.INVENTORY, StorageConfig.inventory, config.isInventoryWhitelistEnabled(), true);
-			storage_manager = new StorageManager(client, inventory, bank);
+			storage_manager = new StorageManager(client, configs, config);
+			storage_fossils = new FossilsStorage(client, storage_manager);
 
-			overlay_bank = new StorageOverlay(client, config, bank, WidgetInfo.BANK_CONTAINER);
-			overlay_inventory = new StorageOverlayInventory(client, config, inventory);
+			overlay_bank = new StorageOverlay(client, client_thread, configs, items, config, storage_manager, "bank", BANK, WidgetInfo.BANK_CONTAINER);
+			overlay_inventory = new StorageOverlayInventory(client, client_thread, configs, items, config, storage_manager, "inventory", INVENTORY, WidgetInfo.INVENTORY);
+			overlay_global = new StorageOverlay(client, client_thread, configs, items, config, storage_manager, GLOBAL, GLOBAL, null);
 		}
 
-		overlays.add(overlay_bank);
+//		overlays.add(overlay_bank);
 		overlays.add(overlay_inventory);
+
+//		storage_manager.registerOverlay(BANK, overlay_bank);
+		storage_manager.registerOverlay(INVENTORY, overlay_inventory);
+//		storage_manager.registerOverlay(GLOBAL, overlay_global);
 	}
 
 	@Override
 	protected void shutDown() {
-		overlays.remove(overlay_bank);
+//		storage_manager.unregisterOverlay(BANK);
+		storage_manager.unregisterOverlay(INVENTORY);
+
+//		overlays.remove(overlay_bank);
 		overlays.remove(overlay_inventory);
 	}
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
 		storage_manager.onItemContainerChanged(event);
-		bank.onItemContainerChanged(event);
-		inventory.onItemContainerChanged(event);
 	}
 
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event) {
-		bank.onConfigChanged(event);
-		inventory.onConfigChanged(event);
+//		bank.onConfigChanged(event);
+//		inventory.onConfigChanged(event);
+	}
+
+	@Subscribe
+	public void onVarbitChanged(final VarbitChanged event) {
+		storage_fossils.onVarbitChanged(event);
 	}
 }

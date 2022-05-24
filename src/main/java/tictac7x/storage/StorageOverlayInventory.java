@@ -8,6 +8,9 @@ import javax.annotation.Nullable;
 
 import net.runelite.api.Client;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.components.ImageComponent;
@@ -27,17 +30,26 @@ public class StorageOverlayInventory extends StorageOverlay {
     @Nullable
     private Integer items_free = null;
 
-    public StorageOverlayInventory(final Client client, final StorageConfig config, final Storage storage) {
-        super(client, config, storage, WidgetInfo.INVENTORY);
+    public StorageOverlayInventory(
+        final Client client,
+        final ClientThread client_thread,
+        final ConfigManager configs,
+        final ItemManager items,
+        final StorageConfig config,
+        final StorageManager storages,
+        final String config_id,
+        final String storage_id,
+        final @Nullable WidgetInfo widget_info
+    ) {
+        super(client, client_thread, configs, items, config, storages, config_id, storage_id, widget_info);
         this.inventory_image = ImageUtil.getResourceStreamFromClass(getClass(), "inventory.png");
     }
 
     @Override
     void renderBefore() {
         if (
-            storage.storage_id.equals(StorageConfig.inventory) &&
             config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.TOP &&
-            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
+            (getEmpty() > 0 || config.showInventoryZeroSpaceLeft())
         ) {
             addFreeSlotsImageComponent();
         }
@@ -46,9 +58,8 @@ public class StorageOverlayInventory extends StorageOverlay {
     @Override
     void renderBeforeItems() {
         if (
-            storage.storage_id.equals(StorageConfig.inventory) &&
             config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.FIRST &&
-            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
+            (getEmpty() > 0 || config.showInventoryZeroSpaceLeft())
         ) {
             panel_items.getChildren().add(createInventoryItem());
         }
@@ -57,9 +68,8 @@ public class StorageOverlayInventory extends StorageOverlay {
     @Override
     void renderAfterItems() {
         if (
-            storage.storage_id.equals(StorageConfig.inventory) &&
             config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.LAST &&
-            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
+            (getEmpty() > 0 || config.showInventoryZeroSpaceLeft())
         ) {
             panel_items.getChildren().add(createInventoryItem());
         }
@@ -68,9 +78,8 @@ public class StorageOverlayInventory extends StorageOverlay {
     @Override
     void renderAfter() {
         if (
-            storage.storage_id.equals(StorageConfig.inventory) &&
             config.getInventoryEmptyStyle() == StorageConfig.InventoryEmpty.BOTTOM &&
-            (storage.getEmptySlotsCount() > 0 || config.showInventoryZeroSpaceLeft())
+            (getEmpty() > 0 || config.showInventoryZeroSpaceLeft())
         ) {
             addFreeSlotsImageComponent();
         }
@@ -78,7 +87,7 @@ public class StorageOverlayInventory extends StorageOverlay {
 
     private void addFreeSlotsImageComponent() {
         final int panel_items_width = panel_items.getBounds().width;
-        final int items_free = storage.getEmptySlotsCount();
+        final int items_free = getEmpty();
 
         if (
             panel_items.getBounds().width > 0 && (
@@ -88,7 +97,7 @@ public class StorageOverlayInventory extends StorageOverlay {
                 items_free != this.items_free
             )
         ) {
-            final String free = String.format(LABEL_FREE, storage.getEmptySlotsCount());
+            final String free = String.format(LABEL_FREE, getEmpty());
             this.panel_items_width = panel_items_width;
             this.items_free = items_free;
 
@@ -115,7 +124,7 @@ public class StorageOverlayInventory extends StorageOverlay {
     }
 
     private ImageComponent createInventoryItem() {
-        final String free = String.valueOf(storage.getEmptySlotsCount());
+        final String free = String.valueOf(getEmpty());
 
         // Make copy of inventory icon.
         final BufferedImage inventory_image = new BufferedImage(this.inventory_image.getWidth(), this.inventory_image.getHeight(), this.inventory_image.getType());
