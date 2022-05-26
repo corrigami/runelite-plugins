@@ -258,28 +258,26 @@ public class TicTac7xDailyPlugin extends Plugin {
     }
 
     private boolean showBucketsOfSlime() {
-        return true;
-//        return (
-//            config.showBucketsOfSlime() &&
-//            client.getVarbitValue(Varbits.DIARY_MORYTANIA_EASY) == 1 &&
-//            client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1 &&
-//            getBucketsOfSlimeAmount() > 0
-//        );
+        return (
+            config.showBucketsOfSlime() &&
+            client.getVarbitValue(Varbits.DIARY_MORYTANIA_EASY) == 1 &&
+            client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1 &&
+            getBucketsOfSlimeAmount() > 0
+        );
     }
 
     private int getBucketsOfSlimeAmount() {
-        return 26;
-//        int buckets_of_slime;
-//
-//        if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1) {
-//            if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_HARD) == 1) {
-//                if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_ELITE) == 1) {
-//                    buckets_of_slime = 39;
-//                } else buckets_of_slime = 26;
-//            } else buckets_of_slime = 13;
-//        } else buckets_of_slime = 0;
-//
-//        return buckets_of_slime - client.getVarbitValue(Varbits.DAILY_BONEMEAL_STATE);
+        int buckets_of_slime;
+
+        if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1) {
+            if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_HARD) == 1) {
+                if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_ELITE) == 1) {
+                    buckets_of_slime = 39;
+                } else buckets_of_slime = 26;
+            } else buckets_of_slime = 13;
+        } else buckets_of_slime = 0;
+
+        return buckets_of_slime - client.getVarbitValue(Varbits.DAILY_BONEMEAL_STATE);
     }
 
     private Color getDailyColor() {
