@@ -11,9 +11,10 @@ import net.runelite.client.config.ConfigGroup;
 public interface RooftopsConfig extends Config {
 	@ConfigItem(
 		keyName = "debug",
-		name = "debug",
-		description = "debug",
-		hidden = true
+		name = "Enable debug overlay",
+		description = "Enable debug overlay, if some marks of grace and the next obstacle are showing incorrectly. Create a new issue in GitHub with the details.",
+		hidden = false,
+		position = 100
 	) default boolean debugging() { return false; }
 
 	@Alpha

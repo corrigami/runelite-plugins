@@ -17,6 +17,7 @@ import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class RooftopsOverylayDebug extends Overlay {
     private final Client client;
+    private final RooftopsConfig config;
     private final Courses courses;
     private final PanelComponent panel = new PanelComponent();
 
@@ -26,14 +27,17 @@ public class RooftopsOverylayDebug extends Overlay {
     private static int idle;
     private static Integer obstacle;
 
-    public RooftopsOverylayDebug(final Client client, final Courses course_manager) {
+    public RooftopsOverylayDebug(final Client client, final RooftopsConfig config, final Courses course_manager) {
         this.client = client;
+        this.config = config;
         this.courses = course_manager;
         setPosition(OverlayPosition.TOP_LEFT);
     }
 
     @Override
     public Dimension render(Graphics2D graphics) {
+        if (!config.debugging()) return null;
+
         panel.getChildren().clear();
 
         String visited = "";
@@ -48,7 +52,7 @@ public class RooftopsOverylayDebug extends Overlay {
             visited = "-";
         }
         for (final MarkOfGrace m : courses.getMarkOfGraces()) {
-            mark += m.x + "_" + m.y + ", ";
+            mark += "x: " + m.x + "; y:" + m.y + ", ";
         }
         if (mark.length() > 0) {
             mark = mark.substring(0, mark.length() - 2);
@@ -70,28 +74,28 @@ public class RooftopsOverylayDebug extends Overlay {
                 obstacle = courses.getObstacleClicked();
                 if (obstacle != null) {
                     System.out.println();
-                    System.out.println("OBSTACLE: " + obstacle);
+//                    System.out.println("OBSTACLE: " + obstacle);
                 }
             }
             if (player.getAnimation() != animation) {
                 animation = player.getAnimation();
 
                 if (animation != -1) {
-                    System.out.println("Animation: " + animation);
+//                    System.out.println("Animation: " + animation);
                 }
             }
             if (player.getPoseAnimation() != pose) {
                 pose = player.getPoseAnimation();
 
                 if (pose != 813 && pose != 1205 && pose != 1206 && pose != 1207 && pose != 1208 && pose != 1209 && pose != 1210) {
-                    System.out.println("Pose: " + pose);
+//                    System.out.println("Pose: " + pose);
                 }
             }
             if (player.getIdlePoseAnimation() != idle) {
                 idle = player.getIdlePoseAnimation();
 
                 if (idle != 813) {
-                    System.out.println("Idle: " + idle);
+//                    System.out.println("Idle: " + idle);
                 }
             }
         }

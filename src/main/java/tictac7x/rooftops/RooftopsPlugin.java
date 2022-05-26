@@ -55,19 +55,17 @@ public class RooftopsPlugin extends Plugin {
 		overlay = new RooftopsOverlay(config, client, courses);
 		overlays.add(overlay);
 
-		if (config.debugging()) {
-			overlay_debug = new RooftopsOverylayDebug(client, courses);
-			overlays.add(overlay_debug);
+		if (overlay_debug == null) {
+			overlay_debug = new RooftopsOverylayDebug(client, config, courses);
 		}
+
+		overlays.add(overlay_debug);
 	}
 
 	@Override
 	protected void shutDown() {
 		overlays.remove(overlay);
-
-		if (config.debugging()) {
-			overlays.remove(overlay_debug);
-		}
+		overlays.remove(overlay_debug);
 	}
 
 	@Subscribe
@@ -112,7 +110,7 @@ public class RooftopsPlugin extends Plugin {
 
 	@Subscribe
 	public void onHitsplatApplied(final HitsplatApplied event) {
-		if (event.getActor() != client.getLocalPlayer()) {
+		if (event.getActor() == client.getLocalPlayer()) {
 			courses.onObstacleFailed();
 		}
 	}

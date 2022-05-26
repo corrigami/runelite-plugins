@@ -2,6 +2,7 @@ package tictac7x.rooftops.courses;
 
 import java.util.Arrays;
 import com.google.common.collect.ImmutableSet;
+import tictac7x.rooftops.MarkOfGrace;
 
 public class RooftopCourseVarrock extends Course {
     public RooftopCourseVarrock() {
@@ -58,7 +59,17 @@ public class RooftopCourseVarrock extends Course {
                 //
             ),
 
-            ImmutableSet.of()
+            ImmutableSet.of(
+                //
+                //
+                //
+                //
+                new MarkOfGrace(3186, 3395, 14834)
+                //
+                //
+                //
+                //
+            )
         );
     }
 }
