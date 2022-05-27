@@ -52,7 +52,7 @@ public class RooftopsOverylayDebug extends Overlay {
             visited = "-";
         }
         for (final MarkOfGrace m : courses.getMarkOfGraces()) {
-            mark += "x: " + m.x + "; y:" + m.y + ", ";
+            mark += m.x + "_" + m.y + ", ";
         }
         if (mark.length() > 0) {
             mark = mark.substring(0, mark.length() - 2);
@@ -66,39 +66,7 @@ public class RooftopsOverylayDebug extends Overlay {
         panel.getChildren().add(LineComponent.builder().left("NEXT").right(courses.getObstacleNext() != null ? courses.getObstacleNext() + "" : "-").build());
         panel.getChildren().add(LineComponent.builder().left("VISITED").right(visited).build());
         panel.getChildren().add(LineComponent.builder().left("MARK").right(mark).build());
-
-        final Player player = client.getLocalPlayer();
-        if (player != null) {
-            // For debugging and finding out course animations.
-            if (!Objects.equals(obstacle, courses.getObstacleClicked())) {
-                obstacle = courses.getObstacleClicked();
-                if (obstacle != null) {
-                    System.out.println();
-//                    System.out.println("OBSTACLE: " + obstacle);
-                }
-            }
-            if (player.getAnimation() != animation) {
-                animation = player.getAnimation();
-
-                if (animation != -1) {
-//                    System.out.println("Animation: " + animation);
-                }
-            }
-            if (player.getPoseAnimation() != pose) {
-                pose = player.getPoseAnimation();
-
-                if (pose != 813 && pose != 1205 && pose != 1206 && pose != 1207 && pose != 1208 && pose != 1209 && pose != 1210) {
-//                    System.out.println("Pose: " + pose);
-                }
-            }
-            if (player.getIdlePoseAnimation() != idle) {
-                idle = player.getIdlePoseAnimation();
-
-                if (idle != 813) {
-//                    System.out.println("Idle: " + idle);
-                }
-            }
-        }
+        panel.getChildren().add(LineComponent.builder().left("PLAYER").right(client.getLocalPlayer().getWorldLocation().getX() + "_" + client.getLocalPlayer().getWorldLocation().getY()).build());
 
         return panel.render(graphics);
     }
