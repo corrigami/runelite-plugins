@@ -155,7 +155,8 @@ public class TicTac7xDailyPlugin extends Plugin {
         final LocalDate date_favor = LocalDateTime.ofInstant(instant_favor, ZoneOffset.UTC).toLocalDate();
         final long days = Math.abs(DAYS.between(date_now, date_favor));
 
-        return (getMiscellaniaFavorVarbit() * 100 / MISCELLANIA_FAVOR_MAX) - days * favor_modifier;
+        // Round down, percentage cant go down 0%.
+        return Math.max(Math.floor((getMiscellaniaFavorVarbit() * 100 / MISCELLANIA_FAVOR_MAX) - days * favor_modifier), 0);
     }
 
     private int getMiscellaniaFavorVarbit() {
