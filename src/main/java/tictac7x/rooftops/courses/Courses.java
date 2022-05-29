@@ -127,33 +127,7 @@ public class Courses extends Overlay {
             ).findFirst();
 
             // Mark of grace predefined.
-            if (mark_of_grace.isPresent()) {
-                mark_of_graces.add(mark_of_grace.get());
-
-            // Create mark of grace dynamically.
-            } else {
-                int distance_min = Integer.MAX_VALUE;
-                TileObject mark_of_grace_obstacle = null;
-
-                for (final TileObject obstacle : obstacles) {
-                    final int distance = item.getTile().getWorldLocation().distanceTo(obstacle.getWorldLocation());
-
-                    // Distance smaller than from previously found obstacle.
-                    if (distance < distance_min) {
-                        distance_min = distance;
-                        mark_of_grace_obstacle = obstacle;
-                    }
-                }
-
-                // Obstacle was found, create MarkOfGrace object dynamically.
-                if (mark_of_grace_obstacle != null) {
-                    mark_of_graces.add(new MarkOfGrace(
-                        item.getTile().getWorldLocation().getX(),
-                        item.getTile().getWorldLocation().getY(),
-                        mark_of_grace_obstacle.getId()
-                    ));
-                }
-            }
+            mark_of_grace.ifPresent(mark_of_graces::add);
         }
     }
 
