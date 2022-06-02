@@ -1,5 +1,6 @@
 package tictac7x.daily;
 
+import net.runelite.api.*;
 import tictac7x.InfoBox;
 import tictac7x.Overlay;
 
@@ -17,11 +18,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 
-import net.runelite.api.Quest;
-import net.runelite.api.Client;
-import net.runelite.api.ItemID;
-import net.runelite.api.Varbits;
-import net.runelite.api.QuestState;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
@@ -288,7 +284,7 @@ public class TicTac7xDailyPlugin extends Plugin {
     @Subscribe
     public void onVarbitChanged(final VarbitChanged event) {
         // Miscellania Kingdom favor varbit updated.
-        if (getMiscellaniaFavorVarbit() != config.getMiscellaniaFavor()) {
+        if (getMiscellaniaFavorVarbit() != config.getMiscellaniaFavor() && client.getGameState() != GameState.LOGGING_IN) {
             configs.setConfiguration(DailyConfig.group, DailyConfig.miscellania_favor, getMiscellaniaFavorVarbit());
             configs.setConfiguration(DailyConfig.group, DailyConfig.miscellania_favor_date, Instant.now().toString());
         }
