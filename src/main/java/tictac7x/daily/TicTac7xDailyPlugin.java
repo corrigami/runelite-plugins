@@ -1,6 +1,5 @@
 package tictac7x.daily;
 
-import net.runelite.api.*;
 import tictac7x.InfoBox;
 import tictac7x.Overlay;
 
@@ -18,6 +17,12 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 
+import net.runelite.api.Quest;
+import net.runelite.api.Client;
+import net.runelite.api.ItemID;
+import net.runelite.api.Varbits;
+import net.runelite.api.GameState;
+import net.runelite.api.QuestState;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
