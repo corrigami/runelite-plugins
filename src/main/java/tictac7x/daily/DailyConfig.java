@@ -66,7 +66,7 @@ public interface DailyConfig extends Config {
         keyName = miscellania_favor,
         name = miscellania_favor,
         description = miscellania_favor,
-        hidden = true
+        hidden = false
     ) default int getMiscellaniaFavor() { return 0; }
 
     String miscellania_favor_date = "miscellania_favor_date";
@@ -75,6 +75,6 @@ public interface DailyConfig extends Config {
         keyName = miscellania_favor_date,
         name = miscellania_favor_date,
         description = miscellania_favor_date,
-        hidden = true
+        hidden = false
     ) default String getMiscellaniaFavorDate() { return null; }
 }

@@ -32,6 +32,10 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+import tictac7x.daily.infoboxes.Battlestaves;
+import tictac7x.daily.infoboxes.BucketsOfSand;
+import tictac7x.daily.infoboxes.BucketsOfSlime;
+import tictac7x.daily.infoboxes.PureEssence;
 
 @Slf4j
 @PluginDescriptor(
@@ -98,30 +102,29 @@ public class TicTac7xDailyPlugin extends Plugin {
         try { miscellania_date = Instant.parse(config.getMiscellaniaFavorDate()); }
         catch (final Exception ignored) {}
 
-        if (infobox_battlestaves == null) {
-            infobox_battlestaves = createInfoBoxBattlestaves();
-            infobox_buckets_of_sand = createInfoBoxBucketsOfSand();
-            infobox_pure_essence = createInfoBoxPureEssence();
-            infobox_buckets_of_slime = createInfoBoxBucketsOfSlime();
-            infobox_miscellania = createInfoBoxMiscellania();
-        }
-
+        infobox_battlestaves = new Battlestaves(client, config, items, this);
         infoboxes.addInfoBox(infobox_battlestaves);
+
+        infobox_buckets_of_sand = new BucketsOfSand(client, config, items, this);
         infoboxes.addInfoBox(infobox_buckets_of_sand);
+
+        infobox_pure_essence = new PureEssence(client, config, items, this);
         infoboxes.addInfoBox(infobox_pure_essence);
+
+        infobox_buckets_of_slime = new BucketsOfSlime(client, config, items, this);
         infoboxes.addInfoBox(infobox_buckets_of_slime);
+
+        infobox_miscellania = createInfoBoxMiscellania();
         infoboxes.addInfoBox(infobox_miscellania);
     }
 
     @Override
     protected void shutDown() {
-        if (infobox_battlestaves != null) {
-            infoboxes.removeInfoBox(infobox_battlestaves);
-            infoboxes.removeInfoBox(infobox_buckets_of_sand);
-            infoboxes.removeInfoBox(infobox_pure_essence);
-            infoboxes.removeInfoBox(infobox_buckets_of_slime);
-            infoboxes.removeInfoBox(infobox_miscellania);
-        }
+        infoboxes.removeInfoBox(infobox_battlestaves);
+        infoboxes.removeInfoBox(infobox_buckets_of_sand);
+        infoboxes.removeInfoBox(infobox_pure_essence);
+        infoboxes.removeInfoBox(infobox_buckets_of_slime);
+        infoboxes.removeInfoBox(infobox_miscellania);
     }
 
     private InfoBox createInfoBoxMiscellania() {
@@ -164,123 +167,6 @@ public class TicTac7xDailyPlugin extends Plugin {
         return client.getVarbitValue(Varbits.KINGDOM_APPROVAL);
     }
 
-    private InfoBox createInfoBoxBattlestaves() {
-        return new InfoBox(
-            DailyConfig.battlestaves_id,
-            items.getImage(ItemID.BATTLESTAFF),
-            this::showBattlestaves,
-            () -> String.valueOf(getBattlestavesAmount()),
-            () -> String.format(TOOLTIP_BATTLESTAVES, getBattlestavesAmount()),
-            this::getDailyColor,
-            this
-        );
-    }
-
-    private boolean showBattlestaves() {
-        return (
-            config.showBattlestaves() &&
-            client.getVarbitValue(Varbits.DAILY_STAVES_COLLECTED) == 0
-        );
-    }
-
-    private int getBattlestavesAmount() {
-        if (client.getVarbitValue(Varbits.DIARY_VARROCK_EASY) == 1) {
-            if (client.getVarbitValue(Varbits.DIARY_VARROCK_MEDIUM) == 1) {
-                if (client.getVarbitValue(Varbits.DIARY_VARROCK_HARD) == 1) {
-                    if (client.getVarbitValue(Varbits.DIARY_VARROCK_ELITE) == 1) {
-                        return 120;
-                    } else return 60;
-                } else return 30;
-            } else return 15;
-        } else return 5;
-    }
-
-    private InfoBox createInfoBoxBucketsOfSand() {
-        return new InfoBox(
-            DailyConfig.buckets_of_sand_id,
-            items.getImage(ItemID.BUCKET_OF_SAND),
-            this::showBucketsOfSand,
-            () -> String.valueOf(BUCKETS_OF_SAND_AMOUNT),
-            () -> String.format(TOOLTIP_BUCKETS_OF_SAND, BUCKETS_OF_SAND_AMOUNT),
-            this::getDailyColor,
-            this
-        );
-    }
-
-    private boolean showBucketsOfSand() {
-        return (
-            config.showBucketsOfSand() &&
-            client.getAccountType() != AccountType.ULTIMATE_IRONMAN &&
-            client.getVarbitValue(Varbits.QUEST_THE_HAND_IN_THE_SAND) >= BUCKETS_OF_SAND_QUEST_COMPLETE &&
-            client.getVarbitValue(Varbits.DAILY_SAND_COLLECTED) == 0
-        );
-    }
-
-    private InfoBox createInfoBoxPureEssence() {
-        return new InfoBox(
-            DailyConfig.pure_essence_id,
-            items.getImage(ItemID.PURE_ESSENCE),
-            this::showPureEssence,
-            () -> String.valueOf(getPureEssenceAmount()),
-            () -> String.format(TOOLTIP_PURE_ESSENCE, getPureEssenceAmount()),
-            this::getDailyColor,
-            this
-        );
-    }
-
-    private boolean showPureEssence() {
-        return (
-            config.showPureEssence() &&
-            client.getVarbitValue(Varbits.DIARY_ARDOUGNE_EASY) == 1 &&
-            client.getVarbitValue(Varbits.DIARY_ARDOUGNE_MEDIUM) == 1 &&
-            client.getVarbitValue(Varbits.DAILY_ESSENCE_COLLECTED) == 0
-        );
-    }
-
-    private int getPureEssenceAmount() {
-        if (client.getVarbitValue(Varbits.DIARY_ARDOUGNE_MEDIUM) == 1) {
-            if (client.getVarbitValue(Varbits.DIARY_ARDOUGNE_HARD) == 1) {
-                if (client.getVarbitValue(Varbits.DIARY_ARDOUGNE_ELITE) == 1) {
-                    return 250;
-                } return 150;
-            } return 100;
-        } return 0;
-    }
-
-    private InfoBox createInfoBoxBucketsOfSlime() {
-        return new InfoBox(
-            DailyConfig.buckets_of_slime_id,
-            items.getImage(ItemID.BUCKET_OF_SLIME),
-            this::showBucketsOfSlime,
-            () -> String.valueOf(getBucketsOfSlimeAmount()),
-            () -> String.format(TOOLTIP_BUCKETS_OF_SLIME, getBucketsOfSlimeAmount()),
-            this::getDailyColor,
-            this
-        );
-    }
-
-    private boolean showBucketsOfSlime() {
-        return (
-            config.showBucketsOfSlime() &&
-            client.getVarbitValue(Varbits.DIARY_MORYTANIA_EASY) == 1 &&
-            client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1 &&
-            getBucketsOfSlimeAmount() > 0
-        );
-    }
-
-    private int getBucketsOfSlimeAmount() {
-        int buckets_of_slime;
-
-        if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1) {
-            if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_HARD) == 1) {
-                if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_ELITE) == 1) {
-                    buckets_of_slime = 39;
-                } else buckets_of_slime = 26;
-            } else buckets_of_slime = 13;
-        } else buckets_of_slime = 0;
-
-        return buckets_of_slime - client.getVarbitValue(Varbits.DAILY_BONEMEAL_STATE);
-    }
 
     private Color getDailyColor() {
         return Overlay.color_red;
