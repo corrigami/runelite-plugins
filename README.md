@@ -12,7 +12,7 @@ Daily infoboxes to annoy you to do your tasks.
 - [x] Wizard Cromperty's pure essence.
 - [x] Bert's buckets of sand.
 - [ ] Exchange noted flax for bow strings.
-- [ ] Receive free ogre arrows from Rantz.
+- [x] Receive free ogre arrows from Rantz.
 - [x] Exchange bones into bonemeal and buckets of slime.
 - [ ] Claim random free runes from Lundail.
 - [ ] Purchase herb boxes from Nightmare Zone.

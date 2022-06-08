@@ -35,6 +35,7 @@ import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import tictac7x.daily.infoboxes.Battlestaves;
 import tictac7x.daily.infoboxes.BucketsOfSand;
 import tictac7x.daily.infoboxes.BucketsOfSlime;
+import tictac7x.daily.infoboxes.OgreArrows;
 import tictac7x.daily.infoboxes.PureEssence;
 
 @Slf4j
@@ -90,6 +91,9 @@ public class TicTac7xDailyPlugin extends Plugin {
     private InfoBox infobox_buckets_of_slime = null;
 
     @Nullable
+    private InfoBox infobox_ogre_arrows = null;
+
+    @Nullable
     private InfoBox infobox_miscellania = null;
 
     @Provides
@@ -114,6 +118,9 @@ public class TicTac7xDailyPlugin extends Plugin {
         infobox_buckets_of_slime = new BucketsOfSlime(client, config, items, this);
         infoboxes.addInfoBox(infobox_buckets_of_slime);
 
+        infobox_ogre_arrows = new OgreArrows(client, config, items, this);
+        infoboxes.addInfoBox(infobox_ogre_arrows);
+
         infobox_miscellania = createInfoBoxMiscellania();
         infoboxes.addInfoBox(infobox_miscellania);
     }
@@ -124,6 +131,7 @@ public class TicTac7xDailyPlugin extends Plugin {
         infoboxes.removeInfoBox(infobox_buckets_of_sand);
         infoboxes.removeInfoBox(infobox_pure_essence);
         infoboxes.removeInfoBox(infobox_buckets_of_slime);
+        infoboxes.removeInfoBox(infobox_ogre_arrows);
         infoboxes.removeInfoBox(infobox_miscellania);
     }
 

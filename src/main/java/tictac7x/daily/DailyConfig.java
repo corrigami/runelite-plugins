@@ -10,6 +10,16 @@ import java.util.Date;
 public interface DailyConfig extends Config {
     String group = "tictac7x-daily";
 
+    String ogre_arrows_id = "ogre_arrows";
+    String ogre_arrows_name = "Rantz ogre arrows";
+    String ogre_arrows_description = "Reminds you to collect ogre arrows from Rantz near Feldip Hills cave.";
+
+    @ConfigItem(
+        keyName = ogre_arrows_id,
+        name = ogre_arrows_name,
+        description = ogre_arrows_description
+    ) default boolean showOgreArrows() { return true; }
+
     String battlestaves_id = "battlestaves";
     String battlestaves_name = "Zaff's battlestaves";
     String battlestaves_description = "Reminds you to buy battlestaves from Zaff at Varrock.";
