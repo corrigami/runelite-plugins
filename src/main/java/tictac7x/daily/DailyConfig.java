@@ -60,6 +60,16 @@ public interface DailyConfig extends Config {
         description = buckets_of_slime_description
     ) default boolean showBucketsOfSlime() { return true; }
 
+    String bow_strings_id = "bow_strings";
+    String bow_strings_name = "Flax Keeper's bow strings";
+    String bow_strings_description = "Reminds you to exchange flax for Bow Strings from the Flax Keeper at Seers Village.";
+
+    @ConfigItem(
+        keyName = bow_strings_id,
+        name = bow_strings_name,
+        description = bow_strings_description
+    ) default boolean showBowStrings() { return true; }
+
     String miscellania_id = "miscellania";
     String miscellania_name = "Miscellania favor";
     String miscellania_description = "Reminds you to keep favor of Miscellania people at 100%.";
