@@ -11,7 +11,7 @@ Daily infoboxes to annoy you to do your tasks.
 - [x] Zaff's battlestaves.
 - [x] Wizard Cromperty's pure essence.
 - [x] Bert's buckets of sand.
-- [ ] Exchange noted flax for bow strings.
+- [x] Exchange noted flax for bow strings.
 - [x] Receive free ogre arrows from Rantz.
 - [x] Exchange bones into bonemeal and buckets of slime.
 - [ ] Claim random free runes from Lundail.
