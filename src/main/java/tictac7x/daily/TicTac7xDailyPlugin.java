@@ -37,6 +37,7 @@ import tictac7x.daily.infoboxes.BucketsOfSand;
 import tictac7x.daily.infoboxes.BucketsOfSlime;
 import tictac7x.daily.infoboxes.OgreArrows;
 import tictac7x.daily.infoboxes.PureEssence;
+import tictac7x.daily.infoboxes.BowStrings;
 
 @Slf4j
 @PluginDescriptor(
@@ -96,6 +97,9 @@ public class TicTac7xDailyPlugin extends Plugin {
     @Nullable
     private InfoBox infobox_miscellania = null;
 
+    @Nullable
+    private InfoBox infobox_bow_strings = null;
+
     @Provides
     DailyConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(DailyConfig.class);
@@ -123,6 +127,9 @@ public class TicTac7xDailyPlugin extends Plugin {
 
         infobox_miscellania = createInfoBoxMiscellania();
         infoboxes.addInfoBox(infobox_miscellania);
+
+        infobox_bow_strings = new BowStrings(client, config, items, this);
+        infoboxes.addInfoBox(infobox_bow_strings);
     }
 
     @Override
@@ -133,6 +140,7 @@ public class TicTac7xDailyPlugin extends Plugin {
         infoboxes.removeInfoBox(infobox_buckets_of_slime);
         infoboxes.removeInfoBox(infobox_ogre_arrows);
         infoboxes.removeInfoBox(infobox_miscellania);
+        infoboxes.removeInfoBox(infobox_bow_strings);
     }
 
     private InfoBox createInfoBoxMiscellania() {
