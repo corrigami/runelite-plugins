@@ -1,29 +1,18 @@
 package tictac7x.daily;
 
+import net.runelite.client.callback.ClientThread;
 import tictac7x.InfoBox;
-import tictac7x.Overlay;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import java.awt.Color;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 
-import net.runelite.api.Quest;
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
-import net.runelite.api.Varbits;
 import net.runelite.api.GameState;
-import net.runelite.api.QuestState;
-import net.runelite.api.vars.AccountType;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
 import net.runelite.api.events.VarbitChanged;
@@ -35,6 +24,7 @@ import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import tictac7x.daily.infoboxes.Battlestaves;
 import tictac7x.daily.infoboxes.BucketsOfSand;
 import tictac7x.daily.infoboxes.BucketsOfSlime;
+import tictac7x.daily.infoboxes.KingdomOfMiscellania;
 import tictac7x.daily.infoboxes.OgreArrows;
 import tictac7x.daily.infoboxes.PureEssence;
 import tictac7x.daily.infoboxes.BowStrings;
@@ -47,25 +37,11 @@ import tictac7x.daily.infoboxes.BowStrings;
 
 )
 public class TicTac7xDailyPlugin extends Plugin {
-    private static final String TOOLTIP_BATTLESTAVES = "Buy %d battlestaves from Zaff at Varrock";
-    private static final String TOOLTIP_BUCKETS_OF_SAND = "Collect %d buckets of sand from Bert at Yanille";
-    private static final String TOOLTIP_PURE_ESSENCE = "Collect %d pure essence from Wizard Cromperty at East-Ardougne";
-    private static final String TOOLTIP_BUCKETS_OF_SLIME = "Exchange bones for %d buckets of slime and bonemeal from Robin at Porty Phasmatys";
-    private static final String TOOLTIP_MISCELLANIA_PERCENTAGE = "%.0f%%";
-    private static final String TOOLTIP_MISCELLANIA = "You need to work harder to increase your kingdom of Miscellania favor: " + TOOLTIP_MISCELLANIA_PERCENTAGE;
-
-    private static final int BUCKETS_OF_SAND_QUEST_COMPLETE = 160;
-    private static final int BUCKETS_OF_SAND_AMOUNT = 84;
-    private static final double MISCELLANIA_FAVOR_MAX = 127;
-
-    private final Quest throne_of_miscellania = Quest.THRONE_OF_MISCELLANIA;
-    private final Quest royal_trouble = Quest.ROYAL_TROUBLE;
-
-    @Nullable
-    private Instant miscellania_date = null;
-
     @Inject
     private Client client;
+
+    @Inject
+    private ClientThread client_thread;
 
     @Inject
     private ConfigManager configs;
@@ -95,10 +71,10 @@ public class TicTac7xDailyPlugin extends Plugin {
     private InfoBox infobox_ogre_arrows = null;
 
     @Nullable
-    private InfoBox infobox_miscellania = null;
+    private InfoBox infobox_bow_strings = null;
 
     @Nullable
-    private InfoBox infobox_bow_strings = null;
+    private KingdomOfMiscellania infobox_miscellania_favor = null;
 
     @Provides
     DailyConfig provideConfig(ConfigManager configManager) {
@@ -107,9 +83,6 @@ public class TicTac7xDailyPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-        try { miscellania_date = Instant.parse(config.getMiscellaniaFavorDate()); }
-        catch (final Exception ignored) {}
-
         infobox_battlestaves = new Battlestaves(client, config, items, this);
         infoboxes.addInfoBox(infobox_battlestaves);
 
@@ -125,11 +98,11 @@ public class TicTac7xDailyPlugin extends Plugin {
         infobox_ogre_arrows = new OgreArrows(client, config, items, this);
         infoboxes.addInfoBox(infobox_ogre_arrows);
 
-        infobox_miscellania = createInfoBoxMiscellania();
-        infoboxes.addInfoBox(infobox_miscellania);
-
         infobox_bow_strings = new BowStrings(client, config, items, this);
         infoboxes.addInfoBox(infobox_bow_strings);
+
+        infobox_miscellania_favor = new KingdomOfMiscellania(client, client_thread, config, configs, items, this);
+        infoboxes.addInfoBox(infobox_miscellania_favor);
     }
 
     @Override
@@ -139,70 +112,17 @@ public class TicTac7xDailyPlugin extends Plugin {
         infoboxes.removeInfoBox(infobox_pure_essence);
         infoboxes.removeInfoBox(infobox_buckets_of_slime);
         infoboxes.removeInfoBox(infobox_ogre_arrows);
-        infoboxes.removeInfoBox(infobox_miscellania);
         infoboxes.removeInfoBox(infobox_bow_strings);
-    }
-
-    private InfoBox createInfoBoxMiscellania() {
-        return new InfoBox(
-            DailyConfig.miscellania_id,
-            items.getImage(ItemID.CASKET),
-            this::showMiscellania,
-            () -> String.format(TOOLTIP_MISCELLANIA_PERCENTAGE, getMiscellaniaFavorPercentage()),
-            () -> String.format(TOOLTIP_MISCELLANIA, getMiscellaniaFavorPercentage()),
-            this::getDailyColor,
-            this
-        );
-    }
-
-    private boolean showMiscellania() {
-        return (
-            config.showMiscellania() &&
-            throne_of_miscellania.getState(client) == QuestState.FINISHED &&
-            getMiscellaniaFavorPercentage() < 100
-        );
-    }
-
-    private double getMiscellaniaFavorPercentage() {
-        if (miscellania_date == null) return 0;
-
-        final double favor_modifier = royal_trouble.getState(client) == QuestState.FINISHED ? 1.0 : 2.5;
-
-        final Instant instant_now = Instant.now();
-        final Instant instant_favor = miscellania_date;
-
-        final LocalDate date_now = LocalDateTime.ofInstant(instant_now, ZoneOffset.UTC).toLocalDate();
-        final LocalDate date_favor = LocalDateTime.ofInstant(instant_favor, ZoneOffset.UTC).toLocalDate();
-        final long days = Math.abs(DAYS.between(date_now, date_favor));
-
-        // Round down, percentage cant go down 0%.
-        return Math.max(Math.floor((getMiscellaniaFavorVarbit() * 100 / MISCELLANIA_FAVOR_MAX) - days * favor_modifier), 0);
-    }
-
-    private int getMiscellaniaFavorVarbit() {
-        return client.getVarbitValue(Varbits.KINGDOM_APPROVAL);
-    }
-
-
-    private Color getDailyColor() {
-        return Overlay.color_red;
+        infoboxes.removeInfoBox(infobox_miscellania_favor);
     }
 
     @Subscribe
     public void onVarbitChanged(final VarbitChanged event) {
-        // Miscellania Kingdom favor varbit updated.
-        if (getMiscellaniaFavorVarbit() != config.getMiscellaniaFavor() && client.getGameState() != GameState.LOGGING_IN) {
-            configs.setConfiguration(DailyConfig.group, DailyConfig.miscellania_favor, getMiscellaniaFavorVarbit());
-            configs.setConfiguration(DailyConfig.group, DailyConfig.miscellania_favor_date, Instant.now().toString());
-        }
+        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onVarbitChanged(event);
     }
 
     @Subscribe
     public void onConfigChanged(final ConfigChanged event) {
-        // Miscellania Kingdom favor date changed.
-        if (event.getGroup().equals(DailyConfig.group) && event.getKey().equals(DailyConfig.miscellania_favor_date)) {
-            try { miscellania_date = Instant.parse(event.getNewValue()); }
-            catch (final Exception ignored) {}
-        }
+        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onConfigChanged(event);
     }
 }

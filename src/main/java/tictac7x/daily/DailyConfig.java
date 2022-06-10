@@ -4,8 +4,6 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-import java.util.Date;
-
 @ConfigGroup(DailyConfig.group)
 public interface DailyConfig extends Config {
     String group = "tictac7x-daily";
@@ -70,24 +68,24 @@ public interface DailyConfig extends Config {
         description = bow_strings_description
     ) default boolean showBowStrings() { return true; }
 
-    String miscellania_id = "miscellania";
-    String miscellania_name = "Miscellania favor";
-    String miscellania_description = "Reminds you to keep favor of Miscellania people at 100%.";
+    String kingdom_of_miscellania_id = "kingdom_of_miscellania";
+    String kingdom_of_miscellania_name = "Miscellania favor";
+    String kingdom_of_miscellania_description = "Reminds you to keep favor of Miscellania people at 100%.";
 
     @ConfigItem(
-        keyName = miscellania_id,
-        name = miscellania_name,
-        description = miscellania_description
+        keyName = kingdom_of_miscellania_id,
+        name = kingdom_of_miscellania_name,
+        description = kingdom_of_miscellania_description
     ) default boolean showMiscellania() { return true; }
 
-    String miscellania_favor = "miscellania_favor";
+    String kingdom_of_miscellania_favor = "kingdom_of_miscellania_favor";
 
     @ConfigItem(
-        keyName = miscellania_favor,
-        name = miscellania_favor,
-        description = miscellania_favor,
+        keyName = kingdom_of_miscellania_favor,
+        name = kingdom_of_miscellania_favor,
+        description = kingdom_of_miscellania_favor,
         hidden = false
-    ) default int getMiscellaniaFavor() { return 0; }
+    ) default int getKingdomOfMiscellaniaFavor() { return 0; }
 
     String miscellania_favor_date = "miscellania_favor_date";
 
@@ -96,5 +94,5 @@ public interface DailyConfig extends Config {
         name = miscellania_favor_date,
         description = miscellania_favor_date,
         hidden = false
-    ) default String getMiscellaniaFavorDate() { return null; }
+    ) default String getKingdomOfMiscellaniaFavorDate() { return null; }
 }
