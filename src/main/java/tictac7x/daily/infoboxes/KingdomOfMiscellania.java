@@ -75,33 +75,41 @@ public class KingdomOfMiscellania extends DailyInfobox {
         return () -> String.format(tooltip, favor_percentage);
     }
 
-    public void onVarbitChanged(final VarbitChanged event) {
-        // Miscellania Kingdom favor varbit updated.
-        if (
-            getMiscellaniaFavorVarbit() != config.getKingdomOfMiscellaniaFavor() &&
-            client.getGameState() != GameState.LOGGING_IN &&
-            inRegion()
-        ) {
-            configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, getMiscellaniaFavorVarbit());
-            configs.setConfiguration(DailyConfig.group, DailyConfig.miscellania_favor_date, Instant.now().toString());
-        }
+    public void onVarbitChanged() {
+        client_thread.invokeLater(() -> {
+            // Miscellania Kingdom favor varbit updated.
+            if (
+                getMiscellaniaFavorVarbit() != config.getKingdomOfMiscellaniaFavor() &&
+                client.getGameState() != GameState.LOGGING_IN &&
+                inRegion()
+            ) {
+                configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, getMiscellaniaFavorVarbit());
+                configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, Instant.now().toString());
+            }
+        });
     }
 
     public void onConfigChanged(final ConfigChanged event) {
-        // Miscellania Kingdom favor date changed.
-        if (event.getGroup().equals(DailyConfig.group) && event.getKey().equals(DailyConfig.miscellania_favor_date)) {
-            try {
-                favor_date = Instant.parse(event.getNewValue());
+        if (event.getGroup().equals(DailyConfig.group)) {
+            // Miscellania Kingdom favor date changed.
+            if (event.getKey().equals(DailyConfig.kingdom_of_miscellania_favor_date)) {
+                try {favor_date = Instant.parse(event.getNewValue()); }
+                catch (final Exception ignored) {}
+            }
+
+            if (
+                event.getKey().equals(DailyConfig.kingdom_of_miscellania_favor) ||
+                event.getKey().equals(DailyConfig.kingdom_of_miscellania_favor_date)
+            ) {
                 updateMiscellaniaFavorPercentage();
             }
-            catch (final Exception ignored) {}
         }
     }
 
     private void updateMiscellaniaFavorPercentage() {
         if (favor_date == null) return;
 
-        client_thread.invoke(() -> {
+        client_thread.invokeLater(() -> {
             final double favor_modifier = quest_royal_trouble.getState(client) == QuestState.FINISHED ? 1.0 : 2.5;
 
             final Instant instant_now = Instant.now();
@@ -115,7 +123,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
             favor_percentage = Math.max(
                 // Calculated favor.
                 Math.floor(
-                        ((double) getMiscellaniaFavorVarbit() * 100 / FAVOR_MAX) - days * favor_modifier
+                    ((double) config.getKingdomOfMiscellaniaFavor() * 100 / FAVOR_MAX) - days * favor_modifier
                 ),
 
                 0 // Min value.

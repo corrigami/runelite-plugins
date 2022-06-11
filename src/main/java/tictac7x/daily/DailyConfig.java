@@ -84,15 +84,15 @@ public interface DailyConfig extends Config {
         keyName = kingdom_of_miscellania_favor,
         name = kingdom_of_miscellania_favor,
         description = kingdom_of_miscellania_favor,
-        hidden = false
+        hidden = true
     ) default int getKingdomOfMiscellaniaFavor() { return 0; }
 
-    String miscellania_favor_date = "miscellania_favor_date";
+    String kingdom_of_miscellania_favor_date = "miscellania_favor_date";
 
     @ConfigItem(
-        keyName = miscellania_favor_date,
-        name = miscellania_favor_date,
-        description = miscellania_favor_date,
-        hidden = false
+        keyName = kingdom_of_miscellania_favor_date,
+        name = kingdom_of_miscellania_favor_date,
+        description = kingdom_of_miscellania_favor_date,
+        hidden = true
     ) default String getKingdomOfMiscellaniaFavorDate() { return null; }
 }

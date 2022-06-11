@@ -118,7 +118,7 @@ public class TicTac7xDailyPlugin extends Plugin {
 
     @Subscribe
     public void onVarbitChanged(final VarbitChanged event) {
-        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onVarbitChanged(event);
+        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onVarbitChanged();
     }
 
     @Subscribe
