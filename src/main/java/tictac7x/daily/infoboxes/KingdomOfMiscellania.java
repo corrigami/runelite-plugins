@@ -123,7 +123,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
             favor_percentage = Math.max(
                 // Calculated favor.
                 Math.floor(
-                    ((double) config.getKingdomOfMiscellaniaFavor() * 100 / FAVOR_MAX) - days * favor_modifier
+                    ((double) config.getKingdomOfMiscellaniaFavor() * 100 / FAVOR_MAX) * Math.pow((100 - favor_modifier) * 0.01, days)
                 ),
 
                 0 // Min value.
