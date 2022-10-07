@@ -1,12 +1,10 @@
 package tictac7x.daily.infoboxes;
 
-import com.google.common.collect.ImmutableSet;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 import net.runelite.api.Varbits;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
@@ -19,7 +17,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -34,8 +31,6 @@ public class KingdomOfMiscellania extends DailyInfobox {
     private final Quest quest_royal_trouble = Quest.ROYAL_TROUBLE;
 
     private final static int FAVOR_MAX = 127;
-
-    private final Set<Integer> regions = ImmutableSet.of(9787, 9788, 9789, 10043, 10044, 10045, 10299, 10300, 10301, 10555, 10556, 10557);
 
     @Nullable
     private LocalDate date_favor = null;

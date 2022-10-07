@@ -2,10 +2,7 @@ package tictac7x.daily.infoboxes;
 
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
-import net.runelite.api.Quest;
-import net.runelite.api.QuestState;
 import net.runelite.api.Varbits;
-import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
 import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
