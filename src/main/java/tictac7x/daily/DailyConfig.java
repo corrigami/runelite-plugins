@@ -63,7 +63,7 @@ public interface DailyConfig extends Config {
         name = kingdom_of_miscellania_name,
         description = kingdom_of_miscellania_description,
         position = 5
-    ) default boolean showMiscellania() { return true; }
+    ) default boolean showKingdomOfMiscellaniaFavor() { return true; }
 
     @ConfigItem(
         keyName = kingdom_of_miscellania_favor,

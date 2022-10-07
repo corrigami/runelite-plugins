@@ -11,7 +11,7 @@ import tictac7x.daily.TicTac7xDailyPlugin;
 import java.util.function.Supplier;
 
 public class BucketsOfSlime extends DailyInfobox {
-    private final String tooltip = "Exchange bones to %d buckets of slime and bonemeal from Robin at Porty Phasmatys";
+    private final String tooltip = "Exchange %d bones to buckets of slime and bonemeal from Robin at Porty Phasmatys";
 
     public BucketsOfSlime(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
         super(client, config, DailyConfig.pure_essence_id, items.getImage(ItemID.BUCKET_OF_SLIME), plugin);
@@ -38,7 +38,7 @@ public class BucketsOfSlime extends DailyInfobox {
     }
 
     private int getBucketsOfSlimeAmount() {
-        int buckets_of_slime;
+        final int buckets_of_slime;
 
         if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1) {
             if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_HARD) == 1) {

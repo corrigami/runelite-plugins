@@ -1,5 +1,7 @@
 package tictac7x.daily;
 
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.client.callback.ClientThread;
 import tictac7x.InfoBox;
 
@@ -39,9 +41,6 @@ import tictac7x.daily.infoboxes.BowStrings;
 public class TicTac7xDailyPlugin extends Plugin {
     @Inject
     private Client client;
-
-    @Inject
-    private ClientThread client_thread;
 
     @Inject
     private ConfigManager configs;
@@ -101,7 +100,7 @@ public class TicTac7xDailyPlugin extends Plugin {
         infobox_bow_strings = new BowStrings(client, config, items, this);
         infoboxes.addInfoBox(infobox_bow_strings);
 
-        infobox_miscellania_favor = new KingdomOfMiscellania(client, client_thread, config, configs, items, this);
+        infobox_miscellania_favor = new KingdomOfMiscellania(client, config, configs, items, this);
         infoboxes.addInfoBox(infobox_miscellania_favor);
     }
 
@@ -117,12 +116,12 @@ public class TicTac7xDailyPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onVarbitChanged(final VarbitChanged event) {
-        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onVarbitChanged();
+    public void onConfigChanged(final ConfigChanged event) {
+        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onConfigChanged(event);
     }
 
     @Subscribe
-    public void onConfigChanged(final ConfigChanged event) {
-        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onConfigChanged(event);
+    public void onGameTick(final GameTick event) {
+        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onGameTick();
     }
 }

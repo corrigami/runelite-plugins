@@ -11,7 +11,7 @@ import net.runelite.client.game.ItemManager;
 import java.util.function.Supplier;
 
 public class Battlestaves extends DailyInfobox {
-    private final String tooltip = "Buy %d battlestaves from Zaff at Varrock";
+    private final String tooltip = "Buy %d battlestaves from Zaff at Varrock for %d,000 coins";
 
     public Battlestaves(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
         super(client, config, DailyConfig.battlestaves_id, items.getImage(ItemID.BATTLESTAFF), plugin);
@@ -32,7 +32,7 @@ public class Battlestaves extends DailyInfobox {
 
     @Override
     public Supplier<String> getTooltipSupplier() {
-        return () -> String.format(tooltip, getBattlestavesAmount());
+        return () -> String.format(tooltip, getBattlestavesAmount(), getBattlestavesAmount() * 7);
     }
 
     private int getBattlestavesAmount() {
