@@ -96,10 +96,8 @@ public class KingdomOfMiscellania extends DailyInfobox {
         final LocalDate date_now = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate();
         final long days = Math.abs(DAYS.between(date_now, date_favor));
 
-        // Round down, percentage can't go below 0%.
         favor_percentage = Math.floor(
             ((double) config.getKingdomOfMiscellaniaFavor() * Math.pow(favor_modifier, days) * 100 / FAVOR_MAX)
-        )
-        ;
+        );
     }
 }
