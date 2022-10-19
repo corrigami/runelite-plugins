@@ -1,9 +1,5 @@
 package tictac7x.daily;
 
-import net.runelite.api.events.VarbitChanged;
-import tictac7x.InfoBox;
-
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +14,15 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
+
+import tictac7x.InfoBox;
+import tictac7x.daily.infoboxes.BowStrings;
+import tictac7x.daily.infoboxes.OgreArrows;
+import tictac7x.daily.infoboxes.PureEssence;
 import tictac7x.daily.infoboxes.Battlestaves;
 import tictac7x.daily.infoboxes.BucketsOfSand;
 import tictac7x.daily.infoboxes.BucketsOfSlime;
 import tictac7x.daily.infoboxes.KingdomOfMiscellania;
-import tictac7x.daily.infoboxes.OgreArrows;
-import tictac7x.daily.infoboxes.PureEssence;
-import tictac7x.daily.infoboxes.BowStrings;
 
 @Slf4j
 @PluginDescriptor(

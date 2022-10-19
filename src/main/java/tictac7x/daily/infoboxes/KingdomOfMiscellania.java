@@ -1,23 +1,25 @@
 package tictac7x.daily.infoboxes;
 
-import com.google.common.collect.ImmutableSet;
-import net.runelite.api.*;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ItemManager;
-import tictac7x.daily.DailyConfig;
-import tictac7x.daily.DailyInfobox;
-import tictac7x.daily.TicTac7xDailyPlugin;
-
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Set;
 import java.util.function.Supplier;
-
 import static java.time.temporal.ChronoUnit.DAYS;
+
+import net.runelite.api.Quest;
+import net.runelite.api.Client;
+import net.runelite.api.ItemID;
+import net.runelite.api.Varbits;
+import net.runelite.api.QuestState;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.events.ConfigChanged;
+
+import tictac7x.daily.DailyConfig;
+import tictac7x.daily.DailyInfobox;
+import tictac7x.daily.TicTac7xDailyPlugin;
 
 public class KingdomOfMiscellania extends DailyInfobox {
     private final ConfigManager configs;
@@ -66,7 +68,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
     public void onConfigChanged(final ConfigChanged event) {
         // Miscellania Kingdom favor date changed.
         if (event.getGroup().equals(DailyConfig.group) && event.getKey().equals(DailyConfig.kingdom_of_miscellania_favor_date)) {
-            try {date_favor = LocalDateTime.ofInstant(Instant.parse(event.getNewValue()), ZoneOffset.UTC).toLocalDate(); }
+            try { date_favor = LocalDateTime.ofInstant(Instant.parse(event.getNewValue()), ZoneOffset.UTC).toLocalDate(); }
             catch (final Exception ignored) {}
             updateMiscellaniaFavorPercentage();
         }
