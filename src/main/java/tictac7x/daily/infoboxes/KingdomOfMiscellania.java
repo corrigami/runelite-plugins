@@ -1,10 +1,7 @@
 package tictac7x.daily.infoboxes;
 
-import net.runelite.api.Client;
-import net.runelite.api.ItemID;
-import net.runelite.api.Quest;
-import net.runelite.api.QuestState;
-import net.runelite.api.Varbits;
+import com.google.common.collect.ImmutableSet;
+import net.runelite.api.*;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
@@ -17,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -31,6 +29,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
     private final Quest quest_royal_trouble = Quest.ROYAL_TROUBLE;
 
     private final static int FAVOR_MAX = 127;
+    private final Set<Integer> regions = ImmutableSet.of(9787, 9788, 9789, 10043, 10044, 10045, 10299, 10300, 10301, 10555, 10556, 10557);
 
     @Nullable
     private LocalDate date_favor = null;
@@ -86,6 +85,32 @@ public class KingdomOfMiscellania extends DailyInfobox {
             configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, kingdom_favor_varbit);
             configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, Instant.now().toString());
         }
+    }
+
+    public void onVarbitChanged() {
+        // Miscellania Kingdom favor varbit updated.
+        if (
+            getMiscellaniaFavorVarbit() != config.getKingdomOfMiscellaniaFavor() &&
+            client.getGameState() != GameState.LOGGING_IN &&
+            inRegion()
+        ) {
+            configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, getMiscellaniaFavorVarbit());
+            configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, Instant.now().toString());
+        }
+    }
+
+    private boolean inRegion() {
+        for (final int region : client.getMapRegions()) {
+            if (regions.contains(region)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int getMiscellaniaFavorVarbit() {
+        return client.getVarbitValue(Varbits.KINGDOM_APPROVAL);
     }
 
     private void updateMiscellaniaFavorPercentage() {

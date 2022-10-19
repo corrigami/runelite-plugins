@@ -1,5 +1,6 @@
 package tictac7x.daily;
 
+import net.runelite.api.events.VarbitChanged;
 import tictac7x.InfoBox;
 
 import javax.annotation.Nullable;
@@ -107,6 +108,11 @@ public class TicTac7xDailyPlugin extends Plugin {
         infoboxes.removeInfoBox(infobox_ogre_arrows);
         infoboxes.removeInfoBox(infobox_bow_strings);
         infoboxes.removeInfoBox(infobox_miscellania_favor);
+    }
+
+    @Subscribe
+    public void onVarbitChanged(final VarbitChanged event) {
+        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onVarbitChanged();
     }
 
     @Subscribe
