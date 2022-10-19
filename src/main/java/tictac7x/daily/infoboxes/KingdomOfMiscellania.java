@@ -29,7 +29,6 @@ public class KingdomOfMiscellania extends DailyInfobox {
     private final Quest quest_royal_trouble = Quest.ROYAL_TROUBLE;
 
     private final static int FAVOR_MAX = 127;
-    private final Set<Integer> regions = ImmutableSet.of(9787, 9788, 9789, 10043, 10044, 10045, 10299, 10300, 10301, 10555, 10556, 10557);
 
     @Nullable
     private LocalDate date_favor = null;
@@ -50,7 +49,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
         return () -> (
             config.showKingdomOfMiscellaniaFavor() &&
             quest_throne_of_miscellania.getState(client) == QuestState.FINISHED &&
-            favor_percentage !=  null && favor_percentage < 100
+            favor_percentage != null && favor_percentage < 100
         );
     }
 
@@ -67,8 +66,9 @@ public class KingdomOfMiscellania extends DailyInfobox {
     public void onConfigChanged(final ConfigChanged event) {
         // Miscellania Kingdom favor date changed.
         if (event.getGroup().equals(DailyConfig.group) && event.getKey().equals(DailyConfig.kingdom_of_miscellania_favor_date)) {
-            try { date_favor = LocalDateTime.ofInstant(Instant.parse(event.getNewValue()), ZoneOffset.UTC).toLocalDate(); }
+            try {date_favor = LocalDateTime.ofInstant(Instant.parse(event.getNewValue()), ZoneOffset.UTC).toLocalDate(); }
             catch (final Exception ignored) {}
+            updateMiscellaniaFavorPercentage();
         }
     }
 
@@ -85,32 +85,6 @@ public class KingdomOfMiscellania extends DailyInfobox {
             configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, kingdom_favor_varbit);
             configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, Instant.now().toString());
         }
-    }
-
-    public void onVarbitChanged() {
-        // Miscellania Kingdom favor varbit updated.
-        if (
-            getMiscellaniaFavorVarbit() != config.getKingdomOfMiscellaniaFavor() &&
-            client.getGameState() != GameState.LOGGING_IN &&
-            inRegion()
-        ) {
-            configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, getMiscellaniaFavorVarbit());
-            configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, Instant.now().toString());
-        }
-    }
-
-    private boolean inRegion() {
-        for (final int region : client.getMapRegions()) {
-            if (regions.contains(region)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private int getMiscellaniaFavorVarbit() {
-        return client.getVarbitValue(Varbits.KINGDOM_APPROVAL);
     }
 
     private void updateMiscellaniaFavorPercentage() {

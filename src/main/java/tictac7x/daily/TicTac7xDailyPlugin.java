@@ -49,26 +49,15 @@ public class TicTac7xDailyPlugin extends Plugin {
     @Inject
     private ItemManager items;
 
-    @Nullable
-    private InfoBox infobox_battlestaves = null;
+    private InfoBox
+        infobox_battlestaves,
+        infobox_buckets_of_sand,
+        infobox_pure_essence,
+        infobox_buckets_of_slime,
+        infobox_ogre_arrows,
+        infobox_bow_strings;
 
-    @Nullable
-    private InfoBox infobox_buckets_of_sand = null;
-
-    @Nullable
-    private InfoBox infobox_pure_essence = null;
-
-    @Nullable
-    private InfoBox infobox_buckets_of_slime = null;
-
-    @Nullable
-    private InfoBox infobox_ogre_arrows = null;
-
-    @Nullable
-    private InfoBox infobox_bow_strings = null;
-
-    @Nullable
-    private KingdomOfMiscellania infobox_miscellania_favor = null;
+    private KingdomOfMiscellania infobox_miscellania_favor;
 
     @Provides
     DailyConfig provideConfig(ConfigManager configManager) {
@@ -111,17 +100,12 @@ public class TicTac7xDailyPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onVarbitChanged(final VarbitChanged event) {
-        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onVarbitChanged();
-    }
-
-    @Subscribe
     public void onConfigChanged(final ConfigChanged event) {
-        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onConfigChanged(event);
+        infobox_miscellania_favor.onConfigChanged(event);
     }
 
     @Subscribe
     public void onGameTick(final GameTick event) {
-        if (infobox_miscellania_favor != null) infobox_miscellania_favor.onGameTick();
+        infobox_miscellania_favor.onGameTick();
     }
 }
