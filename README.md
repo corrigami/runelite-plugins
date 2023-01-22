@@ -6,4 +6,4 @@
 * [Storage - v0.3.3](../../tree/plugin-storage)
 * [Sulliuscep run - v0.1](../../tree/plugin-sulliuscep)
 * [Tithe Farm Improvements - v0.3.3](../../tree/plugin-tithe)
-
+* [Charges Improved - v0.2](../../tree/plugin-charges)
