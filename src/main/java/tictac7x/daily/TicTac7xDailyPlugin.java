@@ -15,8 +15,8 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 
-import tictac7x.InfoBox;
 import tictac7x.daily.infoboxes.BowStrings;
+import tictac7x.daily.infoboxes.Hespori;
 import tictac7x.daily.infoboxes.OgreArrows;
 import tictac7x.daily.infoboxes.PureEssence;
 import tictac7x.daily.infoboxes.Battlestaves;
@@ -47,15 +47,7 @@ public class TicTac7xDailyPlugin extends Plugin {
     @Inject
     private ItemManager items;
 
-    private InfoBox
-        infobox_battlestaves,
-        infobox_buckets_of_sand,
-        infobox_pure_essence,
-        infobox_buckets_of_slime,
-        infobox_ogre_arrows,
-        infobox_bow_strings;
-
-    private KingdomOfMiscellania infobox_miscellania_favor;
+    private DailyInfobox[] infoboxes_daily;
 
     @Provides
     DailyConfig provideConfig(ConfigManager configManager) {
@@ -64,46 +56,40 @@ public class TicTac7xDailyPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-        infobox_battlestaves = new Battlestaves(client, config, items, this);
-        infoboxes.addInfoBox(infobox_battlestaves);
+        infoboxes_daily = new DailyInfobox[]{
+            new Battlestaves(client, config, items, this),
+            new BucketsOfSand(client, config, items, this),
+            new PureEssence(client, config, items, this),
+            new BucketsOfSlime(client, config, items, this),
+            new OgreArrows(client, config, items, this),
+            new BowStrings(client, config, items, this),
+            new KingdomOfMiscellania(client, config, configs, items, this),
+            new Hespori(client, config, items, this),
+        };
 
-        infobox_buckets_of_sand = new BucketsOfSand(client, config, items, this);
-        infoboxes.addInfoBox(infobox_buckets_of_sand);
-
-        infobox_pure_essence = new PureEssence(client, config, items, this);
-        infoboxes.addInfoBox(infobox_pure_essence);
-
-        infobox_buckets_of_slime = new BucketsOfSlime(client, config, items, this);
-        infoboxes.addInfoBox(infobox_buckets_of_slime);
-
-        infobox_ogre_arrows = new OgreArrows(client, config, items, this);
-        infoboxes.addInfoBox(infobox_ogre_arrows);
-
-        infobox_bow_strings = new BowStrings(client, config, items, this);
-        infoboxes.addInfoBox(infobox_bow_strings);
-
-        infobox_miscellania_favor = new KingdomOfMiscellania(client, config, configs, items, this);
-        infoboxes.addInfoBox(infobox_miscellania_favor);
+        for (final DailyInfobox infobox : infoboxes_daily) {
+            infoboxes.addInfoBox(infobox);
+        }
     }
 
     @Override
     protected void shutDown() {
-        infoboxes.removeInfoBox(infobox_battlestaves);
-        infoboxes.removeInfoBox(infobox_buckets_of_sand);
-        infoboxes.removeInfoBox(infobox_pure_essence);
-        infoboxes.removeInfoBox(infobox_buckets_of_slime);
-        infoboxes.removeInfoBox(infobox_ogre_arrows);
-        infoboxes.removeInfoBox(infobox_bow_strings);
-        infoboxes.removeInfoBox(infobox_miscellania_favor);
+        for (final DailyInfobox infobox : infoboxes_daily) {
+            infoboxes.removeInfoBox(infobox);
+        }
     }
 
     @Subscribe
     public void onConfigChanged(final ConfigChanged event) {
-        infobox_miscellania_favor.onConfigChanged(event);
+        for (final DailyInfobox infobox : infoboxes_daily) {
+            infobox.onConfigChanged(event);
+        }
     }
 
     @Subscribe
     public void onGameTick(final GameTick event) {
-        infobox_miscellania_favor.onGameTick();
+        for (final DailyInfobox infobox : infoboxes_daily) {
+            infobox.onGameTick();
+        }
     }
 }

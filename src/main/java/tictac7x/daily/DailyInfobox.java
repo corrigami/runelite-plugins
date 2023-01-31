@@ -1,8 +1,9 @@
 package tictac7x.daily;
 
 import net.runelite.api.Client;
-import tictac7x.InfoBox;
-import tictac7x.Overlay;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.ui.overlay.infobox.InfoBox;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -13,10 +14,10 @@ public abstract class DailyInfobox extends InfoBox {
     protected final DailyConfig config;
     protected final String id;
     protected final BufferedImage image;
-    protected final TicTac7xDailyPlugin plugin;
+    protected final Plugin plugin;
 
-    public DailyInfobox(final Client client, final DailyConfig config, final String id, final BufferedImage image, final TicTac7xDailyPlugin plugin) {
-        super(id, image, null, null, null, null, plugin);
+    public DailyInfobox(final Client client, final DailyConfig config, final String id, final BufferedImage image, final Plugin plugin) {
+        super(image, plugin);
         this.client = client;
         this.config = config;
         this.id = id;
@@ -24,11 +25,22 @@ public abstract class DailyInfobox extends InfoBox {
         this.plugin = plugin;
     }
 
-    public abstract Supplier<Boolean> getRenderSupplier();
+    @Override
+    public String getName() {
+        return super.getName() + "_" + this.id;
+    }
 
-    public abstract Supplier<String> getTextSupplier();
+    public Supplier<Boolean> getRenderSupplier() {
+        return () -> false;
+    }
 
-    public abstract Supplier<String> getTooltipSupplier();
+    public Supplier<String> getTextSupplier() {
+        return () -> null;
+    };
+
+    public Supplier<String> getTooltipSupplier() {
+        return () -> null;
+    };
 
     @Override
     public boolean render() {
@@ -47,6 +59,10 @@ public abstract class DailyInfobox extends InfoBox {
 
     @Override
     public Color getTextColor() {
-        return Overlay.color_red;
+        return Color.red;
     }
+
+    public void onConfigChanged(final ConfigChanged event) {}
+
+    public void onGameTick() {}
 }

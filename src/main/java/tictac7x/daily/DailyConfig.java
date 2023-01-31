@@ -100,4 +100,15 @@ public interface DailyConfig extends Config {
         description = pure_essence_description,
         position = 7
     ) default boolean showPureEssence() { return true; }
+
+    String hespori_id = "hespori";
+    String hespori_name = "Hespori";
+    String hespori_description = "Reminds you to plant and kill Hespori.";
+
+    @ConfigItem(
+        keyName = hespori_id,
+        name = hespori_name,
+        description = hespori_description,
+        position = 8
+    ) default boolean showHespori() { return true; }
 }

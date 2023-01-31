@@ -65,6 +65,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
         return () -> String.format(tooltip, favor_percentage);
     }
 
+    @Override
     public void onConfigChanged(final ConfigChanged event) {
         // Miscellania Kingdom favor date changed.
         if (event.getGroup().equals(DailyConfig.group) && event.getKey().equals(DailyConfig.kingdom_of_miscellania_favor_date)) {
@@ -74,6 +75,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
         }
     }
 
+    @Override
     public void onGameTick() {
         // Find favor percentage on first game tick.
         if (favor_percentage == null) {
