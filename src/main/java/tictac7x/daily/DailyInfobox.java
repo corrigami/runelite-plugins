@@ -13,15 +13,13 @@ public abstract class DailyInfobox extends InfoBox {
     protected final Client client;
     protected final DailyConfig config;
     protected final String id;
-    protected final BufferedImage image;
     protected final Plugin plugin;
 
-    public DailyInfobox(final Client client, final DailyConfig config, final String id, final BufferedImage image, final Plugin plugin) {
+    public DailyInfobox(final String id, final BufferedImage image, final Client client, final DailyConfig config, final Plugin plugin) {
         super(image, plugin);
+        this.id = id;
         this.client = client;
         this.config = config;
-        this.id = id;
-        this.image = image;
         this.plugin = plugin;
     }
 

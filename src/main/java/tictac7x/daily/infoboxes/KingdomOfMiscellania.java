@@ -39,7 +39,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
     private Double favor_percentage = null;
 
     public KingdomOfMiscellania(final Client client, final DailyConfig config, final ConfigManager configs, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(client, config, DailyConfig.kingdom_of_miscellania_id, items.getImage(ItemID.CASKET), plugin);
+        super(DailyConfig.kingdom_of_miscellania_id, items.getImage(ItemID.CASKET), client, config, plugin);
         this.configs = configs;
 
         try { date_favor = LocalDateTime.ofInstant(Instant.parse(config.getKingdomOfMiscellaniaFavorDate()), ZoneOffset.UTC).toLocalDate();

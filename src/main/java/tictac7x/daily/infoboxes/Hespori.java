@@ -16,7 +16,7 @@ public class Hespori extends DailyInfobox {
     private final String tooltip_ready_to_harvest = "Hespori is ready to be harvested";
 
     public Hespori(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(client, config, DailyConfig.bow_strings_id, items.getImage(ItemID.HESPORI_SEED), plugin);
+        super(DailyConfig.bow_strings_id, items.getImage(ItemID.HESPORI_SEED), client, config, plugin);
     }
 
     @Override
