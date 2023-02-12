@@ -1,12 +1,27 @@
 package tictac7x.tithe;
 
-import net.runelite.client.config.*;
+import net.runelite.client.config.Config;
+import net.runelite.client.config.Alpha;
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 import tictac7x.Overlay;
 import java.awt.Color;
 
 @ConfigGroup(TitheConfig.group)
 public interface TitheConfig extends Config {
 	String group = "tictac7x-tithe";
+	String version = "version";
+
+	@ConfigItem(
+		position = 1,
+		keyName = version,
+		name = "Version",
+		description = "Plugin version",
+		hidden = true
+	) default String getVersion() {
+		return "0";
+	}
 
 	@ConfigSection(
 		position = 1,

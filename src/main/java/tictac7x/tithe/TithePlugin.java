@@ -2,19 +2,23 @@ package tictac7x.tithe;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import javax.inject.Inject;
+
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.GameState;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.chat.ChatColorType;
+import net.runelite.client.chat.ChatMessageBuilder;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
-import com.google.common.collect.ImmutableSet;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.config.ConfigManager;
@@ -30,6 +34,13 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	conflicts = "Tithe Farm"
 )
 public class TithePlugin extends Plugin {
+	private String plugin_version = "0.3.4";
+	private String plugin_message = "" +
+		"<colHIGHLIGHT>Tithe Farm Improved v0.3.4:<br>" +
+		"<colHIGHLIGHT>* Correctly detect whether player is inside the Tithe farm<br>" +
+		"<colHIGHLIGHT>* Add support for farmers outfit female version<br>" +
+		"<colHIGHLIGHT>* Remove support for water can and charges";
+
 	private boolean in_tithe_farm = false;
 
 	public final Map<LocalPoint, TithePlant> plants = new HashMap<>();
@@ -55,6 +66,9 @@ public class TithePlugin extends Plugin {
 
 	@Inject
 	private ConfigManager configs;
+
+	@Inject
+	private ChatMessageManager chat_messages;
 
 	@Provides
 	TitheConfig provideConfig(final ConfigManager configs) {
@@ -127,16 +141,26 @@ public class TithePlugin extends Plugin {
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		if (event.getGameState() != GameState.LOADING) return;
+		// Plugin update message.
+		if (event.getGameState() == GameState.LOGGED_IN && !config.getVersion().equals(plugin_version)) {
+			configs.setConfiguration(TitheConfig.group, TitheConfig.version, plugin_version);
+			chat_messages.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(plugin_message)
+				.build()
+			);
+		}
 
 		// When entering tithe farm, this check fails first time, since the widget is loaded later.
 		// This check is needed for when loading happens while in the tithe farm.
 		// Or when you leave from the farm.
-		final Widget widget_tithe = client.getWidget(WidgetInfo.TITHE_FARM);
-		this.in_tithe_farm = widget_tithe != null;
+		if (event.getGameState() == GameState.LOADING) {
+			final Widget widget_tithe = client.getWidget(WidgetInfo.TITHE_FARM);
+			this.in_tithe_farm = widget_tithe != null;
 
-		if (!this.in_tithe_farm) {
-			this.plants.clear();
+			if (!this.in_tithe_farm) {
+				this.plants.clear();
+			}
 		}
 	}
 
