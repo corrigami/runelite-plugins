@@ -23,8 +23,6 @@ Improve overall experience for Tithe farm.
 ## Points widget
 * Shows total points
 * Show how many points will be added this run
-* Shows how many fruits have you harvested
-* Number of harvested fruits color changes based on how good/bad you are doing
 
 ![](./img/points.png)
 

@@ -159,7 +159,7 @@ public class TithePlugin extends Plugin {
 	}
 
 	public boolean inTitheFarm() {
-		return in_tithe_farm;
+		return in_tithe_farm || seedsInInventory() > 0;
 	}
 
 	public int seedsInInventory() {
