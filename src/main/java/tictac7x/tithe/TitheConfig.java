@@ -37,7 +37,7 @@ public interface TitheConfig extends Config {
 			description = "Highlight dry plants that need to be watered.",
 			section = section_patches
 		) default Color getPlantsDryColor() {
-			return Overlay.getColor(Overlay.color_red, Overlay.alpha_vibrant);
+			return Overlay.getColor(new Color(255, 180, 0), 100);
 		}
 
 		@Alpha
@@ -48,7 +48,7 @@ public interface TitheConfig extends Config {
 			description = "Highlight watered plants",
 			section = section_patches
 		) default Color getPlantsWateredColor() {
-			return Overlay.getColor(Overlay.color_green, Overlay.alpha_vibrant);
+			return Overlay.getColor(new Color(60, 240, 255), 100);
 		}
 
 		@Alpha
@@ -59,7 +59,7 @@ public interface TitheConfig extends Config {
 			description = "Highlight grown plants",
 			section = section_patches
 		) default Color getPlantsGrownColor() {
-			return Overlay.getColor(Overlay.color_yellow, Overlay.alpha_vibrant);
+			return Overlay.getColor(Color.green, 100);
 		}
 
 		@Alpha
@@ -70,7 +70,7 @@ public interface TitheConfig extends Config {
 			description = "Highlight blighted plants",
 			section = section_patches
 		) default Color getPlantsBlightedColor() {
-			return Overlay.getColor(Overlay.color_gray, Overlay.alpha_vibrant);
+			return Overlay.getColor(Color.lightGray, 100);
 		}
 
 		@Alpha
@@ -81,7 +81,7 @@ public interface TitheConfig extends Config {
 			description = "Highlight farm patches on hover",
 			section = section_patches
 		) default Color getPatchesHighlightOnHoverColor() {
-			return Overlay.getColor(Overlay.color_gray, Overlay.alpha_normal);
+			return Overlay.getColor(Color.lightGray, 60);
 		}
 
 	@ConfigSection(
@@ -115,7 +115,7 @@ public interface TitheConfig extends Config {
 			description = "Highlight seeds",
 			section = section_inventory
 		) default Color getHighlightSeedsColor() {
-			return Overlay.getColor(Overlay.color_green, Overlay.alpha_normal);
+			return Overlay.getColor(Color.green, 80);
 		}
 
 		@Alpha
@@ -126,6 +126,6 @@ public interface TitheConfig extends Config {
 			description = "Highlight farmer outfit when you only have fruits in inventory",
 			section = section_inventory
 		) default Color getHighlightFarmersOutfitColor() {
-			return Overlay.getColor(Color.red, Overlay.alpha_normal);
+			return Overlay.getColor(Color.red, 80);
 		}
 }

@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import net.runelite.api.TileObject;
 import net.runelite.api.GameObject;
-import net.runelite.api.coords.WorldPoint;
 
 public class TithePlant extends Overlay {
     // Tithe empty patch.
@@ -52,10 +51,9 @@ public class TithePlant extends Overlay {
     protected static final int LOGAVANO_GROWN_BLIGHTED = 27416;
 
     // One plant cycle duration in game ticks.
-    private final double DURATION_CYCLE_GAME_TICKS = 100;
+    private final double DURATION_CYCLE_GAME_TICKS = 101;
 
     public enum State {
-        EMPTY,
         SEEDLING_DRY,
         SEEDLING_WATERED,
         PLANT_1_DRY,
@@ -67,82 +65,93 @@ public class TithePlant extends Overlay {
     }
 
     private final TitheConfig config;
-    private GameObject cycle_patch;
-    public State cycle_state;
-    private int cycle_ticks;
+    private GameObject game_object;
 
-    public TithePlant(final GameObject seedling, final TitheConfig config) {
+    // First state can't be anything else than dry seedling.
+    public State state = State.SEEDLING_DRY;
+
+    // Number of ticks to render the progress pie.
+    private int ticks = 0;
+
+    public TithePlant(final TitheConfig config, final GameObject seedling) {
         this.config = config;
-        this.cycle_patch = seedling;
-
-        // First state can't be anything else than dry seedling.
-        this.cycle_state = State.SEEDLING_DRY;
-
-        this.cycle_ticks = 0;
+        this.game_object = seedling;
     }
 
-    public void setCyclePatch(final GameObject cycle_patch) {
-        if (isPatch(cycle_patch)) this.cycle_patch = cycle_patch;
+    public void setGameObject(final GameObject game_object) {
+        // Not seedling or plant.
+        if (!isPatch(game_object)) return;
 
-        if (isWatered(cycle_patch)) {
-            if (cycle_state == State.SEEDLING_DRY) {
-                cycle_state = State.SEEDLING_WATERED;
-            } else if (cycle_state == State.PLANT_1_DRY) {
-                cycle_state = State.PLANT_1_WATERED;
-            } else if (cycle_state == State.PLANT_2_DRY) {
-                cycle_state = State.PLANT_2_WATERED;
+        // Update game object reference.
+        this.game_object = game_object;
+
+        // Plant watered.
+        if (isWatered(game_object)) {
+            switch (this.state) {
+                case SEEDLING_DRY:
+                    this.state = State.SEEDLING_WATERED;
+                    return;
+                case PLANT_1_DRY:
+                    this.state = State.PLANT_1_WATERED;
+                    return;
+                case PLANT_2_DRY:
+                    this.state = State.PLANT_2_WATERED;
+                    return;
             }
+        }
+
+    }
+
+    /**
+     * Update how many ticks the cycle has lasted.
+     * We need to update the state based on game ticks, because based on game object spawns doesn't work (too far away).
+     */
+    public void onGameTick() {
+        this.ticks++;
+        if (this.ticks != DURATION_CYCLE_GAME_TICKS) return;
+
+        // Reset progress pie.
+        this.ticks = 0;
+
+        // Cycle complete, update the state.
+        switch (this.state) {
+            case SEEDLING_DRY:
+            case PLANT_1_DRY:
+            case PLANT_2_DRY:
+            case GROWN:
+                this.state = State.BLIGHTED;
+                return;
+            case SEEDLING_WATERED:
+                this.state = State.PLANT_1_DRY;
+                return;
+            case PLANT_1_WATERED:
+                this.state = State.PLANT_2_DRY;
+                return;
+            case PLANT_2_WATERED:
+                this.state = State.GROWN;
+                return;
         }
     }
 
-    public void onGameTick() {
-        cycle_ticks++;
-    }
-
     public boolean isBlighted() {
-        return isBlighted(this.cycle_patch);
+        return isBlighted(this.game_object);
     }
 
     @Override
     public Dimension render(final Graphics2D graphics) {
-        updateState();
-
         final Color color = getCycleColor();
-        if (color != null) renderPie(graphics, cycle_patch, getCycleColor(), (float) getCycleProgress());
+        if (color != null) renderPie(graphics, game_object, getCycleColor(), (float) getCycleProgress());
         return null;
     }
 
-    private void updateState() {
-        if (cycle_state != State.EMPTY && cycle_ticks == DURATION_CYCLE_GAME_TICKS + 1) {
-            if (
-                cycle_state == State.SEEDLING_DRY
-                || cycle_state == State.PLANT_1_DRY
-                || cycle_state == State.PLANT_2_DRY
-                || cycle_state == State.GROWN
-            ) {
-                cycle_state = State.BLIGHTED;
-            } else if (cycle_state == State.SEEDLING_WATERED) {
-                cycle_state = State.PLANT_1_DRY;
-            } else if (cycle_state == State.PLANT_1_WATERED) {
-                cycle_state = State.PLANT_2_DRY;
-            } else if (cycle_state == State.PLANT_2_WATERED) {
-                cycle_state = State.GROWN;
-            } else if (cycle_state == State.BLIGHTED) {
-                cycle_state = State.EMPTY;
-            }
-
-            cycle_ticks = 0;
-        }
-    }
-
     private Color getCycleColor() {
-        if (cycle_state == State.SEEDLING_DRY || cycle_state == State.PLANT_1_DRY || cycle_state == State.PLANT_2_DRY) {
+        if (state == State.SEEDLING_DRY || state == State.PLANT_1_DRY || state == State.PLANT_2_DRY) {
             return config.getPlantsDryColor();
-        } else if (cycle_state == State.GROWN) {
+        } else if (state == State.GROWN) {
             return config.getPlantsGrownColor();
-        } else if (cycle_state == State.SEEDLING_WATERED || cycle_state == State.PLANT_1_WATERED || cycle_state == State.PLANT_2_WATERED) {
+        } else if (state == State.SEEDLING_WATERED || state == State.PLANT_1_WATERED || state == State.PLANT_2_WATERED) {
             return config.getPlantsWateredColor();
-        } else if (cycle_state == State.BLIGHTED) {
+        } else if (state == State.BLIGHTED) {
             return config.getPlantsBlightedColor();
         }
 
@@ -150,7 +159,7 @@ public class TithePlant extends Overlay {
     }
 
     private double getCycleProgress() {
-        return -1 + (cycle_ticks / (DURATION_CYCLE_GAME_TICKS + 1));
+        return -1 + (ticks / (DURATION_CYCLE_GAME_TICKS));
     }
 
     public static boolean isSeedling(final TileObject patch) {

@@ -37,17 +37,11 @@ public class TithePlugin extends Plugin {
 	private String plugin_version = "0.3.4";
 	private String plugin_message = "" +
 		"<colHIGHLIGHT>Tithe Farm Improved v0.3.4:<br>" +
-		"<colHIGHLIGHT>* Correctly detect whether player is inside the Tithe farm<br>" +
-		"<colHIGHLIGHT>* Add support for farmers outfit female version<br>" +
-		"<colHIGHLIGHT>* Remove support for water can and charges";
+		"<colHIGHLIGHT>* Correctly detect whether player is in the Tithe farm<br>" +
+		"<colHIGHLIGHT>* Added support for farmers outfit female version<br>" +
+		"<colHIGHLIGHT>* Removed support for water can and charges";
 
 	private boolean in_tithe_farm = false;
-
-	public final Map<LocalPoint, TithePlant> plants = new HashMap<>();
-	public int points_total = 0;
-	public int fruits_sack = 0;
-	public int fruits_inventory = 0;
-	public int seeds_inventory = 0;
 
 	@Inject
 	private TitheConfig config;
@@ -112,7 +106,7 @@ public class TithePlugin extends Plugin {
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
-		overlay_points.onItemContainerChanged(event);
+		overlay_inventory.onItemContainerChanged(event);
 	}
 
 	@Subscribe
@@ -159,12 +153,24 @@ public class TithePlugin extends Plugin {
 			this.in_tithe_farm = widget_tithe != null;
 
 			if (!this.in_tithe_farm) {
-				this.plants.clear();
+				this.overlay_plants.plants.clear();
 			}
 		}
 	}
 
 	public boolean inTitheFarm() {
 		return in_tithe_farm;
+	}
+
+	public int seedsInInventory() {
+		return overlay_inventory.seeds_inventory;
+	}
+
+	public int fruitsInInventory() {
+		return overlay_inventory.fruits_inventory;
+	}
+
+	public int nonBlightedPlants() {
+		return (int) overlay_plants.plants.values().stream().filter(plant -> !plant.isBlighted()).count();
 	}
 }

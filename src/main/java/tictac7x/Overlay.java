@@ -22,15 +22,6 @@ import java.awt.Shape;
 import java.util.Map;
 
 public abstract class Overlay extends OverlayPanel {
-    public static final int clickbox_stroke_width = 1;
-    public static final Color color_red    = new Color(255, 0, 0);
-    public static final Color color_green  = new Color(0, 255, 0);
-    public static final Color color_yellow = new Color(255, 180, 0);
-    public static final Color color_orange = new Color(255, 120, 30);
-    public static final Color color_gray   = new Color(200, 200, 200);
-    public static final int alpha_vibrant = 140;
-    public static final int alpha_normal = 80;
-
     private boolean isValidColor(final Color color) {
         return (color != null && color.getAlpha() > 0);
     }
@@ -49,7 +40,7 @@ public abstract class Overlay extends OverlayPanel {
         try {
             // Area border.
             graphics.setColor(darkenColor(color));
-            graphics.setStroke(new BasicStroke(clickbox_stroke_width));
+            graphics.setStroke(new BasicStroke(1));
             graphics.draw(shape);
 
             // Area fill.
@@ -72,23 +63,6 @@ public abstract class Overlay extends OverlayPanel {
             progressPieComponent.setBorderColor(darkenColor(color));
             progressPieComponent.setFill(color);
             progressPieComponent.render(graphics);
-        } catch (Exception ignored) {}
-    }
-
-    public void highlightInventoryItem(final Client client, final Graphics2D graphics, final int item_id, final Color color) {
-        if (!isValidColor(color)) return;
-
-        try {
-            final Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
-            if (inventory == null || inventory.isHidden()) return;
-
-            for (final WidgetItem item : inventory.getWidgetItems()) {
-                if (item.getId() == item_id) {
-                    final Rectangle bounds = item.getCanvasBounds(false);
-                    graphics.setColor(color);
-                    graphics.fill(bounds);
-                }
-            }
         } catch (Exception ignored) {}
     }
 

@@ -3,6 +3,9 @@ package tictac7x.tithe;
 import tictac7x.Overlay;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.AnimationID;
@@ -16,6 +19,7 @@ public class TitheOverlayPlants extends Overlay {
     private final TithePlugin plugin;
     private final TitheConfig config;
 
+    public final Map<LocalPoint, TithePlant> plants = new HashMap<>();
     private WorldPoint location_player_planting_seed;
 
     public TitheOverlayPlants(final TithePlugin plugin, final TitheConfig config, final Client client) {
@@ -27,6 +31,10 @@ public class TitheOverlayPlants extends Overlay {
         setLayer(OverlayLayer.UNDER_WIDGETS);
     }
 
+    /**
+     * Update plant state to watered based on the game object.
+     * @param game_object - Tithe plant.
+     */
     public void onGameObjectSpawned(final GameObject game_object) {
         if (!plugin.inTitheFarm()) return;
 
@@ -35,16 +43,16 @@ public class TitheOverlayPlants extends Overlay {
 
             // Empty patch, plant completed.
             if (game_object.getId() == TithePlant.TITHE_EMPTY_PATCH) {
-                plugin.plants.remove(location_patch);
+                this.plants.remove(location_patch);
 
             // Update plant state.
-            } else if (plugin.plants.containsKey(location_patch)) {
-                plugin.plants.get(location_patch).setCyclePatch(game_object);
+            } else if (this.plants.containsKey(location_patch)) {
+                this.plants.get(location_patch).setGameObject(game_object);
             }
 
             // GameObject is seedling and player is next to the seedling.
             if (TithePlant.isSeedling(game_object) && isPlayerNextToSeedling(game_object, location_player_planting_seed)) {
-                plugin.plants.put(location_patch, new TithePlant(game_object, config));
+                this.plants.put(location_patch, new TithePlant(config, game_object));
             }
         }
     }
@@ -58,7 +66,7 @@ public class TitheOverlayPlants extends Overlay {
         }
 
         // Update plants progress.
-        for (final TithePlant plant : plugin.plants.values()) {
+        for (final TithePlant plant : this.plants.values()) {
             plant.onGameTick();
         }
     }
@@ -67,7 +75,7 @@ public class TitheOverlayPlants extends Overlay {
     public Dimension render(final Graphics2D graphics) {
         if (!plugin.inTitheFarm()) return null;
 
-        for (final TithePlant plant : plugin.plants.values()) {
+        for (final TithePlant plant : this.plants.values()) {
             plant.render(graphics);
         }
 
