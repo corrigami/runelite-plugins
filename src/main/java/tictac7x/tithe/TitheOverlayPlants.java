@@ -1,8 +1,6 @@
 package tictac7x.tithe;
 
 import tictac7x.Overlay;
-import java.util.Map;
-import java.util.HashMap;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import net.runelite.api.Client;
@@ -19,7 +17,6 @@ public class TitheOverlayPlants extends Overlay {
     private final TitheConfig config;
 
     private WorldPoint location_player_planting_seed;
-    public final Map<LocalPoint, TithePlant> plants = new HashMap<>();
 
     public TitheOverlayPlants(final TithePlugin plugin, final TitheConfig config, final Client client) {
         this.plugin = plugin;
@@ -31,46 +28,60 @@ public class TitheOverlayPlants extends Overlay {
     }
 
     public void onGameObjectSpawned(final GameObject game_object) {
-        // Game object is some sort of tithe patch.
+        if (!plugin.inTitheFarm()) return;
+
         if (TithePlant.isPatch(game_object)) {
             final LocalPoint location_patch = game_object.getLocalLocation();
 
             // Empty patch, plant completed.
             if (game_object.getId() == TithePlant.TITHE_EMPTY_PATCH) {
-                plants.remove(location_patch);
+                plugin.plants.remove(location_patch);
 
             // Update plant state.
-            } else if (plants.containsKey(location_patch)) {
-                plants.get(location_patch).setCyclePatch(game_object);
+            } else if (plugin.plants.containsKey(location_patch)) {
+                plugin.plants.get(location_patch).setCyclePatch(game_object);
             }
 
             // GameObject is seedling and player is next to the seedling.
-            if (TithePlant.isSeedling(game_object) && TithePlant.isPlayerNear(game_object, location_player_planting_seed)) {
-                plants.put(location_patch, new TithePlant(game_object, config));
+            if (TithePlant.isSeedling(game_object) && isPlayerNextToSeedling(game_object, location_player_planting_seed)) {
+                plugin.plants.put(location_patch, new TithePlant(game_object, config));
             }
         }
     }
 
     public void onGameTick() {
+        if (!plugin.inTitheFarm()) return;
+
         // Save local point where player did seed planting animation.
         if (client.getLocalPlayer() != null && client.getLocalPlayer().getAnimation() == AnimationID.FARMING_PLANT_SEED) {
-            location_player_planting_seed = client.getLocalPlayer().getWorldLocation();
+            this.location_player_planting_seed = client.getLocalPlayer().getWorldLocation();
         }
 
         // Update plants progress.
-        for (final TithePlant plant : plants.values()) {
+        for (final TithePlant plant : plugin.plants.values()) {
             plant.onGameTick();
         }
     }
 
     @Override
     public Dimension render(final Graphics2D graphics) {
-        if (plugin.inTitheFarm()) {
-            for (TithePlant plant : plants.values()) {
-                plant.render(graphics);
-            }
+        if (!plugin.inTitheFarm()) return null;
+
+        for (final TithePlant plant : plugin.plants.values()) {
+            plant.render(graphics);
         }
 
         return null;
+    }
+
+    private boolean isPlayerNextToSeedling(final GameObject seedling, final WorldPoint location_player) {
+        return (
+            seedling != null
+            && location_player != null
+            && location_player.getX() + 2 >= seedling.getWorldLocation().getX()
+            && location_player.getX() - 2 <= seedling.getWorldLocation().getX()
+            && location_player.getY() + 2 >= seedling.getWorldLocation().getY()
+            && location_player.getY() - 2 <= seedling.getWorldLocation().getY()
+        );
     }
 }

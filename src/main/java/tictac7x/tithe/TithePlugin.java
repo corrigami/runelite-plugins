@@ -1,5 +1,6 @@
 package tictac7x.tithe;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.GameState;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.WidgetInfo;
@@ -24,12 +26,12 @@ import net.runelite.client.ui.overlay.OverlayManager;
 @PluginDescriptor(
 	name = "Tithe Farm Improved",
 	description = "Improve overall experience for Tithe farm",
-	tags = { "tithe", "farm", "farmer", "golovanova", "bologano", "logavano", "gricoller" },
+	tags = { "tithe", "farm" },
 	conflicts = "Tithe Farm"
 )
 public class TithePlugin extends Plugin {
-	private final Set<Integer> REGIONS = ImmutableSet.of(6966, 6967, 7222, 7223);
-	private boolean in_tithe_farm;
+	private boolean in_tithe_farm = false;
+	public final Map<LocalPoint, TithePlant> plants = new HashMap<>();
 
 	@Inject
 	private TitheConfig config;
@@ -54,55 +56,45 @@ public class TithePlugin extends Plugin {
 		return configs.getConfig(tictac7x.tithe.TitheConfig.class);
 	}
 
-	private WateringCansRegular   watering_cans;
-	private WateringCanGricollers gricollers_can;
-	private TitheOverlayWater     overlay_water;
 	private TitheOverlayPlants    overlay_plants;
 	private TitheOverlayPoints    overlay_points;
 	private TitheOverlayPatches   overlay_patches;
 
-	private TitheOverlayInventory overlay_inventory;
-
 	@Override
 	protected void startUp() {
-		if (watering_cans == null) {
-			watering_cans     = new WateringCansRegular();
-			gricollers_can    = new WateringCanGricollers(this, config, watering_cans, client, configs);
-			overlay_water     = new TitheOverlayWater(this, config, watering_cans, gricollers_can);
-			overlay_plants    = new TitheOverlayPlants(this, config, client);
-			overlay_points    = new TitheOverlayPoints(this, config, client);
-			overlay_patches   = new TitheOverlayPatches(this, config, client);
-			overlay_inventory = new TitheOverlayInventory(this, config, gricollers_can, client);
-		}
+		overlay_points = new TitheOverlayPoints(this, config, client);
+		overlay_patches = new TitheOverlayPatches(this, config, client);
+		overlay_plants = new TitheOverlayPlants(this, config, client);
 
-		overlays.add(overlay_water);
-		overlays.add(overlay_plants);
 		overlays.add(overlay_points);
 		overlays.add(overlay_patches);
-		overlays.add(overlay_inventory);
+		overlays.add(overlay_plants);
+
+		overlay_points.startUp();
 	}
 
 	@Override
 	protected void shutDown() {
-		overlays.remove(overlay_water);
-		overlays.remove(overlay_plants);
+		overlay_points.shutDown();
+
 		overlays.remove(overlay_points);
 		overlays.remove(overlay_patches);
-		overlays.remove(overlay_inventory);
-		client_thread.invokeLater(() -> overlay_points.shutDown());
+		overlays.remove(overlay_plants);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
 		overlay_plants.onGameObjectSpawned(event.getGameObject());
-		gricollers_can.onGameObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
-		watering_cans.onItemContainerChanged(event);
-		gricollers_can.onItemContainerChanged(event);
 		overlay_points.onItemContainerChanged(event);
+	}
+
+	@Subscribe
+	public void onVarbitChanged(final VarbitChanged event) {
+		overlay_points.onVarbitChanged(event);
 	}
 
 	@Subscribe
@@ -111,71 +103,35 @@ public class TithePlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onChatMessage(final ChatMessage event) {
-		gricollers_can.onChatMessage(event);
-	}
-
-	@Subscribe
-	public void onVarbitChanged(final VarbitChanged event) {
-		overlay_points.onVarbitChanged();
-	}
-
-	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
 		if (event.getGroupId() == WidgetInfo.TITHE_FARM.getGroupId()) {
-			if (config.showCustomPoints()) {
-				overlay_points.hideNativePoints();
-			} else {
-				overlay_points.showNativePoints();
-			}
+			this.in_tithe_farm = true;
 		}
+
+		overlay_points.onWidgetLoaded(event);
 	}
 
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event) {
-		if (event.getGroup().equals(config.group) && event.getKey().equals(config.points)) {
-			client_thread.invokeLater(() -> {
-				if (config.showCustomPoints()) {
-					overlay_points.hideNativePoints();
-				} else {
-					overlay_points.showNativePoints();
-				}
-			});
-		}
+		overlay_points.onConfigChanged(event);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		if (event.getGameState() == GameState.LOADING) {
-			updateInTitheFarm();
+		if (event.getGameState() != GameState.LOADING) return;
+
+		// When entering tithe farm, this check fails first time, since the widget is loaded later.
+		// This check is needed for when loading happens while in the tithe farm.
+		// Or when you leave from the farm.
+		final Widget widget_tithe = client.getWidget(WidgetInfo.TITHE_FARM);
+		this.in_tithe_farm = widget_tithe != null;
+
+		if (!this.in_tithe_farm) {
+			this.plants.clear();
 		}
 	}
 
 	public boolean inTitheFarm() {
 		return in_tithe_farm;
-	}
-
-	private void updateInTitheFarm() {
-		final int[] regions = client.getMapRegions();
-
-		for (final int region : regions) {
-			if (REGIONS.contains(region)) {
-				in_tithe_farm = true;
-				return;
-			}
-		}
-
-		in_tithe_farm = false;
-	}
-
-	public Map<LocalPoint, TithePlant> getPlayerPlants() {
-		return overlay_plants.plants;
-	}
-
-	public int countPlayerPlantsNotBlighted() {
-		return (int) getPlayerPlants().values().stream().filter(plant ->
-			plant.cycle_state != TithePlant.State.BLIGHTED &&
-			plant.cycle_state != TithePlant.State.EMPTY
-		).count();
 	}
 }

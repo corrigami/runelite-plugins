@@ -1,6 +1,11 @@
 package tictac7x.tithe;
 
+import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.client.events.ConfigChanged;
 import tictac7x.Overlay;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import net.runelite.api.ItemID;
@@ -14,13 +19,11 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public class TitheOverlayPoints extends Overlay {
     private final TithePlugin plugin;
     private final TitheConfig config;
     private final Client client;
-    private final PanelComponent panel = new PanelComponent();
 
     private final static int TITHE_FARM_POINTS = Varbits.TITHE_FARM_POINTS;
     private final static int TITHE_FARM_SACK = Varbits.TITHE_FARM_SACK_AMOUNT;
@@ -39,7 +42,25 @@ public class TitheOverlayPoints extends Overlay {
 
         setPosition(OverlayPosition.TOP_LEFT);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
-        makePanelResizeable(panelComponent, panel);
+    }
+
+    public void onWidgetLoaded(final WidgetLoaded event) {
+        // Not tithe points widget.
+        if (!plugin.inTitheFarm() || event.getGroupId() != WidgetInfo.TITHE_FARM.getGroupId()) return;
+
+        if (config.showCustomPoints()) {
+            this.hideNativePoints();
+        } else {
+            this.showNativePoints();
+        }
+    }
+
+    public void onConfigChanged(final ConfigChanged event) {
+        // Wrong config changed.
+        if (!plugin.inTitheFarm() || !event.getGroup().equals(TitheConfig.group) || !event.getKey().equals(TitheConfig.points)) return;
+
+        // Correct config changed.
+        this.checkWidget();
     }
 
     public void showNativePoints() {
@@ -52,65 +73,67 @@ public class TitheOverlayPoints extends Overlay {
         if (widget_tithe != null) widget_tithe.setHidden(true);
     }
 
+    public void startUp() {
+        this.checkWidget();
+    }
+
     public void shutDown() {
         showNativePoints();
     }
 
-    public void onVarbitChanged() {
-        final int points = client.getVarbitValue(TITHE_FARM_POINTS);
-        final int sack = client.getVarbitValue(TITHE_FARM_SACK);
-
-        // Amount of points.
-        if (this.points_total != points) {
-            this.points_total = points;
+    private void checkWidget() {
+        if (config.showCustomPoints()) {
+            this.hideNativePoints();
+        } else {
+            this.showNativePoints();
         }
+    }
 
-        // Amount of fruit in the sack.
-        if (this.fruits_sack != sack) {
-            this.fruits_sack = sack;
+    public void onVarbitChanged(final VarbitChanged event) {
+        if (!plugin.inTitheFarm()) return;
+
+        switch (event.getVarbitId()) {
+            case TITHE_FARM_POINTS:
+                this.points_total = event.getValue();
+                return;
+            case TITHE_FARM_SACK:
+                this.fruits_sack = event.getValue();
+                return;
         }
     }
 
     public void onItemContainerChanged(final ItemContainerChanged event) {
         if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
             final ItemContainer inventory = event.getItemContainer();
-            fruits_inventory = inventory.count(ItemID.GOLOVANOVA_FRUIT) + inventory.count(ItemID.BOLOGANO_FRUIT) + inventory.count(ItemID.LOGAVANO_FRUIT);
-            seeds_inventory = inventory.count(ItemID.GOLOVANOVA_SEED) + inventory.count(ItemID.BOLOGANO_SEED) + inventory.count(ItemID.LOGAVANO_SEED);
+            this.fruits_inventory = inventory.count(ItemID.GOLOVANOVA_FRUIT) + inventory.count(ItemID.BOLOGANO_FRUIT) + inventory.count(ItemID.LOGAVANO_FRUIT);
+            this.seeds_inventory = inventory.count(ItemID.GOLOVANOVA_SEED) + inventory.count(ItemID.BOLOGANO_SEED) + inventory.count(ItemID.LOGAVANO_SEED);
         }
     }
 
     @Override
     public Dimension render(final Graphics2D graphics) {
-        if (plugin.inTitheFarm() && config.showCustomPoints()) {
-            final int fruits = fruits_sack + fruits_inventory;
-            final int fruits_possible = fruits + seeds_inventory + plugin.countPlayerPlantsNotBlighted();
-            final int points_added = Math.max(0, fruits - TITHE_FARM_POINTS_BREAK);
+        if (!plugin.inTitheFarm() || !config.showCustomPoints()) return null;
 
-            panel.getChildren().clear();
+        final int fruits = fruits_sack + fruits_inventory;
+        final int fruits_possible = fruits + seeds_inventory + (int) plugin.plants.values().stream().filter(plant -> !plant.isBlighted()).count();
+        final int points_earned = Math.max(0, fruits - TITHE_FARM_POINTS_BREAK);
 
-            // Total points.
-            panel.getChildren().add(LineComponent.builder()
-                .left("Points:").leftColor(color_gray)
-                .right((points_total - Math.max(0, fruits_sack - TITHE_FARM_POINTS_BREAK)) + (points_added > 0 ? " + " + points_added : "")).rightColor(color_orange)
-                .build()
-            );
+        panelComponent.getChildren().clear();
 
-            // Fruits.
-            panel.getChildren().add(LineComponent.builder()
-                .left("Fruits:").leftColor(color_gray)
-                .right((fruits_sack + fruits_inventory) + "/" + TITHE_FARM_SACK_TOTAL)
-                .rightColor(
-                    fruits_possible == TITHE_FARM_SACK_TOTAL ? color_green :
-                    fruits_possible > 76 ? color_yellow :
-                    color_red)
-                .build()
-            );
+        // Total points.
+        panelComponent.getChildren().add(LineComponent.builder()
+            .left("Total Points:").leftColor(color_gray)
+            .right(String.valueOf(points_total)).rightColor(color_orange)
+            .build()
+        );
 
-            panelComponent.getChildren().clear();
-            panelComponent.getChildren().add(panel);
-            return super.render(graphics);
-        }
+        // Points earned.
+        panelComponent.getChildren().add(LineComponent.builder()
+            .left("Points earned:").leftColor(color_gray)
+            .right(String.valueOf(points_earned)).rightColor(fruits <= TITHE_FARM_POINTS_BREAK ? Color.red : fruits == 100 ? Color.green : Color.yellow)
+            .build()
+        );
 
-        return null;
+        return super.render(graphics);
     }
 }

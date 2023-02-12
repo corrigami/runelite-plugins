@@ -71,82 +71,6 @@ public interface TitheConfig extends Config {
 
 	@ConfigSection(
 		position = 2,
-		name = "Inventory",
-		description = "Highlight items needed for the tithe farming in the inventory"
-	) String section_inventory = "inventory";
-
-		@Alpha
-		@ConfigItem(
-			position = 1,
-			keyName = "seeds",
-			name = "Seeds",
-			description = "Highlight seeds",
-			section = section_inventory
-		) default Color getHighlightSeedsColor() {
-			return Overlay.getColor(Overlay.color_green, Overlay.alpha_normal);
-		}
-
-		@Alpha
-		@ConfigItem(
-			position = 2,
-			keyName = "farmer_outfit",
-			name = "Farmer outfit",
-			description = "Highlight farmer outfit when you only have fruits in inventory",
-			section = section_inventory
-		) default Color getHighlightFarmersOutfitColor() {
-		return Overlay.getColor(Color.red, Overlay.alpha_normal);
-	}
-
-		@ConfigItem(
-			position = 3,
-			keyName = "watering_cans",
-			name = "Highlight watering cans",
-			description = "Highlight watering cans based on how much water they contain",
-			section = section_inventory
-		) default boolean highlightWateringCans() {
-			return true;
-		}
-
-	@ConfigSection(
-		position = 3,
-		name = "Water",
-		description = "Show amount of available and total waters"
-	) String section_water = "water";
-
-		@ConfigItem(
-			position = 1,
-			keyName = "water",
-			name = "Show amount of water",
-			description = "Show total and available amount of water in watering cans",
-			section = section_water
-		) default boolean showWaterAmount() {
-			return true;
-		}
-
-		String gricollers_can_charges = "gricollers_can_charges";
-		@ConfigItem(
-			position = 2,
-			keyName = gricollers_can_charges,
-			name = "Gricoller's can charges",
-			description = "Hold amount of charges left in Gricoller's can",
-			section = section_water,
-			hidden = true
-		) default int getGricollersCanCharges() {
-			return 0;
-		}
-
-		@ConfigItem(
-			position = 3,
-			keyName = "gricollers_can_charges_high",
-			name = "Gricoller's can high charges amount",
-			description = "Minimum number of charges to show water as high",
-			section = section_water
-		) default int getGricollersCanHighChargesAmount() {
-		return 75;
-	}
-
-	@ConfigSection(
-		position = 4,
 		name = "Points",
 		description = "Show custom information about tithe farm points"
 	) String section_points = "points";
@@ -159,6 +83,6 @@ public interface TitheConfig extends Config {
 			description = "Show total, earned points and harvested fruits.",
 			section = section_points
 		) default boolean showCustomPoints() {
-		return true;
-	}
+			return true;
+		}
 }

@@ -78,8 +78,7 @@ public class TithePlant extends Overlay {
         // First state can't be anything else than dry seedling.
         this.cycle_state = State.SEEDLING_DRY;
 
-        // -1, because the first cycle would be 99 ticks otherwise.
-        this.cycle_ticks = -1;
+        this.cycle_ticks = 0;
     }
 
     public void setCyclePatch(final GameObject cycle_patch) {
@@ -100,6 +99,10 @@ public class TithePlant extends Overlay {
         cycle_ticks++;
     }
 
+    public boolean isBlighted() {
+        return isBlighted(this.cycle_patch);
+    }
+
     @Override
     public Dimension render(final Graphics2D graphics) {
         updateState();
@@ -110,7 +113,7 @@ public class TithePlant extends Overlay {
     }
 
     private void updateState() {
-        if (cycle_state != State.EMPTY && cycle_ticks == DURATION_CYCLE_GAME_TICKS) {
+        if (cycle_state != State.EMPTY && cycle_ticks == DURATION_CYCLE_GAME_TICKS + 1) {
             if (
                 cycle_state == State.SEEDLING_DRY
                 || cycle_state == State.PLANT_1_DRY
@@ -147,7 +150,7 @@ public class TithePlant extends Overlay {
     }
 
     private double getCycleProgress() {
-        return -1 + (cycle_ticks / DURATION_CYCLE_GAME_TICKS);
+        return -1 + (cycle_ticks / (DURATION_CYCLE_GAME_TICKS + 1));
     }
 
     public static boolean isSeedling(final TileObject patch) {
@@ -158,7 +161,7 @@ public class TithePlant extends Overlay {
     public static boolean isDry(final TileObject patch) {
         final int id = patch.getId();
         return (
-            id == GOLOVANOVA_SEEDLING
+               id == GOLOVANOVA_SEEDLING
             || id == GOLOVANOVA_PLANT_1
             || id == GOLOVANOVA_PLANT_2
             || id == BOLOGANO_SEEDLING
@@ -173,7 +176,7 @@ public class TithePlant extends Overlay {
     public static boolean isWatered(final TileObject patch) {
         final int id = patch.getId();
         return (
-            id == GOLOVANOVA_SEEDLING_WATERED
+               id == GOLOVANOVA_SEEDLING_WATERED
             || id == GOLOVANOVA_PLANT_1_WATERED
             || id == GOLOVANOVA_PLANT_2_WATERED
             || id == BOLOGANO_SEEDLING_WATERED
@@ -188,7 +191,7 @@ public class TithePlant extends Overlay {
     public static boolean isGrown(final TileObject patch) {
         final int id = patch.getId();
         return (
-            id == GOLOVANOVA_GROWN
+               id == GOLOVANOVA_GROWN
             || id == BOLOGANO_GROWN
             || id == LOGAVANO_GROWN
         );
@@ -197,7 +200,7 @@ public class TithePlant extends Overlay {
     public static boolean isBlighted(final TileObject patch) {
         final int id = patch.getId();
         return (
-            id == GOLOVANOVA_SEEDLING_BLIGHTED
+               id == GOLOVANOVA_SEEDLING_BLIGHTED
             || id == GOLOVANOVA_PLANT_1_BLIGHTED
             || id == GOLOVANOVA_PLANT_2_BLIGHTED
             || id == GOLOVANOVA_GROWN_BLIGHTED
@@ -218,16 +221,5 @@ public class TithePlant extends Overlay {
 
     public static boolean isPatch(final TileObject patch) {
         return isDry(patch) || isWatered(patch) || isGrown(patch) || isBlighted(patch) || isEmptyPatch(patch);
-    }
-
-    public static boolean isPlayerNear(final GameObject plant, final WorldPoint location_player) {
-        return (
-            plant != null
-            && location_player != null
-            && location_player.getX() + 2 >= plant.getWorldLocation().getX()
-            && location_player.getX() - 2 <= plant.getWorldLocation().getX()
-            && location_player.getY() + 2 >= plant.getWorldLocation().getY()
-            && location_player.getY() - 2 <= plant.getWorldLocation().getY()
-        );
     }
 }

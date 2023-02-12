@@ -1,4 +1,4 @@
-# Tithe Farm Improved - v0.3.3
+# Tithe Farm Improved - v0.3.4
 Improve overall experience for Tithe farm.
 
 ## Plants progress
