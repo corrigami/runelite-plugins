@@ -30,11 +30,6 @@ public class TitheOverlayPoints extends Overlay {
     private final static int TITHE_FARM_SACK_TOTAL = 100;
     private final static int TITHE_FARM_POINTS_BREAK = 74;
 
-    private int points_total = 0;
-    private int fruits_sack = 0;
-    private int fruits_inventory = 0;
-    private int seeds_inventory = 0;
-
     public TitheOverlayPoints(final TithePlugin plugin, final TitheConfig config, final Client client) {
         this.plugin = plugin;
         this.config = config;
@@ -94,10 +89,10 @@ public class TitheOverlayPoints extends Overlay {
 
         switch (event.getVarbitId()) {
             case TITHE_FARM_POINTS:
-                this.points_total = event.getValue();
+                plugin.points_total = event.getValue();
                 return;
             case TITHE_FARM_SACK:
-                this.fruits_sack = event.getValue();
+                plugin.fruits_sack = event.getValue();
                 return;
         }
     }
@@ -105,8 +100,8 @@ public class TitheOverlayPoints extends Overlay {
     public void onItemContainerChanged(final ItemContainerChanged event) {
         if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
             final ItemContainer inventory = event.getItemContainer();
-            this.fruits_inventory = inventory.count(ItemID.GOLOVANOVA_FRUIT) + inventory.count(ItemID.BOLOGANO_FRUIT) + inventory.count(ItemID.LOGAVANO_FRUIT);
-            this.seeds_inventory = inventory.count(ItemID.GOLOVANOVA_SEED) + inventory.count(ItemID.BOLOGANO_SEED) + inventory.count(ItemID.LOGAVANO_SEED);
+            plugin.fruits_inventory = inventory.count(ItemID.GOLOVANOVA_FRUIT) + inventory.count(ItemID.BOLOGANO_FRUIT) + inventory.count(ItemID.LOGAVANO_FRUIT);
+            plugin.seeds_inventory = inventory.count(ItemID.GOLOVANOVA_SEED) + inventory.count(ItemID.BOLOGANO_SEED) + inventory.count(ItemID.LOGAVANO_SEED);
         }
     }
 
@@ -114,8 +109,8 @@ public class TitheOverlayPoints extends Overlay {
     public Dimension render(final Graphics2D graphics) {
         if (!plugin.inTitheFarm() || !config.showCustomPoints()) return null;
 
-        final int fruits = fruits_sack + fruits_inventory;
-        final int fruits_possible = fruits + seeds_inventory + (int) plugin.plants.values().stream().filter(plant -> !plant.isBlighted()).count();
+        final int fruits = plugin.fruits_sack + plugin.fruits_inventory;
+        final int fruits_possible = fruits + plugin.seeds_inventory + (int) plugin.plants.values().stream().filter(plant -> !plant.isBlighted()).count();
         final int points_earned = Math.max(0, fruits - TITHE_FARM_POINTS_BREAK);
 
         panelComponent.getChildren().clear();
@@ -123,14 +118,14 @@ public class TitheOverlayPoints extends Overlay {
         // Total points.
         panelComponent.getChildren().add(LineComponent.builder()
             .left("Total Points:").leftColor(color_gray)
-            .right(String.valueOf(points_total)).rightColor(color_orange)
+            .right(String.valueOf(plugin.points_total)).rightColor(color_orange)
             .build()
         );
 
         // Points earned.
         panelComponent.getChildren().add(LineComponent.builder()
             .left("Points earned:").leftColor(color_gray)
-            .right(String.valueOf(points_earned)).rightColor(fruits <= TITHE_FARM_POINTS_BREAK ? Color.red : fruits == 100 ? Color.green : Color.yellow)
+            .right(String.valueOf(points_earned)).rightColor(fruits_possible == TITHE_FARM_SACK_TOTAL ? Color.green : fruits_possible <= TITHE_FARM_POINTS_BREAK ? Color.red : Color.yellow)
             .build()
         );
 

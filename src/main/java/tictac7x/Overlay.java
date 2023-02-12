@@ -10,11 +10,16 @@ import net.runelite.api.TileObject;
 import net.runelite.api.WallObject;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetItem;
 
+import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.util.Map;
 
 public abstract class Overlay extends OverlayPanel {
     public static final int clickbox_stroke_width = 1;
@@ -67,6 +72,23 @@ public abstract class Overlay extends OverlayPanel {
             progressPieComponent.setBorderColor(darkenColor(color));
             progressPieComponent.setFill(color);
             progressPieComponent.render(graphics);
+        } catch (Exception ignored) {}
+    }
+
+    public void highlightInventoryItem(final Client client, final Graphics2D graphics, final int item_id, final Color color) {
+        if (!isValidColor(color)) return;
+
+        try {
+            final Widget inventory = client.getWidget(WidgetInfo.INVENTORY);
+            if (inventory == null || inventory.isHidden()) return;
+
+            for (final WidgetItem item : inventory.getWidgetItems()) {
+                if (item.getId() == item_id) {
+                    final Rectangle bounds = item.getCanvasBounds(false);
+                    graphics.setColor(color);
+                    graphics.fill(bounds);
+                }
+            }
         } catch (Exception ignored) {}
     }
 

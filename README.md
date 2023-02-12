@@ -14,19 +14,9 @@ Improve overall experience for Tithe farm.
 
 ## Inventory highlights
 * Highlights seeds
-* Highlights watering cans
 * Highlight farmers outfit when it's time to deposit the fruits
 
-![](./img/inventory.png)  
 ![](./img/farmers_outfit.png)
-
-<br>
-
-## Water widget
-* Shows amount of water left in watering cans
-* Shows total amount of water that watering cans can hold
-
-![](./img/water.png)
 
 <br>
 

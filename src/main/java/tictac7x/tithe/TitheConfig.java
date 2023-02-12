@@ -85,4 +85,32 @@ public interface TitheConfig extends Config {
 		) default boolean showCustomPoints() {
 			return true;
 		}
+
+	@ConfigSection(
+		position = 3,
+		name = "Inventory",
+		description = "Highlight items needed for the tithe farming in the inventory"
+	) String section_inventory = "inventory";
+
+		@Alpha
+		@ConfigItem(
+			position = 1,
+			keyName = "seeds",
+			name = "Seeds",
+			description = "Highlight seeds",
+			section = section_inventory
+		) default Color getHighlightSeedsColor() {
+			return Overlay.getColor(Overlay.color_green, Overlay.alpha_normal);
+		}
+
+		@Alpha
+		@ConfigItem(
+			position = 2,
+			keyName = "farmer_outfit",
+			name = "Farmer outfit",
+			description = "Highlight farmer outfit when you only have fruits in inventory",
+			section = section_inventory
+		) default Color getHighlightFarmersOutfitColor() {
+			return Overlay.getColor(Color.red, Overlay.alpha_normal);
+		}
 }

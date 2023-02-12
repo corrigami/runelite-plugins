@@ -31,7 +31,12 @@ import net.runelite.client.ui.overlay.OverlayManager;
 )
 public class TithePlugin extends Plugin {
 	private boolean in_tithe_farm = false;
+
 	public final Map<LocalPoint, TithePlant> plants = new HashMap<>();
+	public int points_total = 0;
+	public int fruits_sack = 0;
+	public int fruits_inventory = 0;
+	public int seeds_inventory = 0;
 
 	@Inject
 	private TitheConfig config;
@@ -56,19 +61,22 @@ public class TithePlugin extends Plugin {
 		return configs.getConfig(tictac7x.tithe.TitheConfig.class);
 	}
 
-	private TitheOverlayPlants    overlay_plants;
-	private TitheOverlayPoints    overlay_points;
-	private TitheOverlayPatches   overlay_patches;
+	private TitheOverlayPlants overlay_plants;
+	private TitheOverlayPoints overlay_points;
+	private TitheOverlayPatches overlay_patches;
+	private TitheOverlayInventory overlay_inventory;
 
 	@Override
 	protected void startUp() {
 		overlay_points = new TitheOverlayPoints(this, config, client);
 		overlay_patches = new TitheOverlayPatches(this, config, client);
 		overlay_plants = new TitheOverlayPlants(this, config, client);
+		overlay_inventory = new TitheOverlayInventory(this, config);
 
 		overlays.add(overlay_points);
 		overlays.add(overlay_patches);
 		overlays.add(overlay_plants);
+		overlays.add(overlay_inventory);
 
 		overlay_points.startUp();
 	}
@@ -80,6 +88,7 @@ public class TithePlugin extends Plugin {
 		overlays.remove(overlay_points);
 		overlays.remove(overlay_patches);
 		overlays.remove(overlay_plants);
+		overlays.remove(overlay_inventory);
 	}
 
 	@Subscribe
