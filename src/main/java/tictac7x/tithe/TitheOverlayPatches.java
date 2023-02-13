@@ -1,8 +1,19 @@
 package tictac7x.tithe;
 
-import tictac7x.Overlay;
+import net.runelite.api.DecorativeObject;
+import net.runelite.api.GameObject;
+import net.runelite.api.GroundObject;
+import net.runelite.api.Scene;
+import net.runelite.api.Tile;
+import net.runelite.api.WallObject;
+import net.runelite.client.ui.overlay.OverlayPanel;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Shape;
+
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
@@ -10,7 +21,7 @@ import net.runelite.api.TileObject;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-public class TitheOverlayPatches extends Overlay {
+public class TitheOverlayPatches extends OverlayPanel {
     private final Client client;
     private final TithePlugin plugin;
     private final TitheConfig config;
@@ -43,5 +54,55 @@ public class TitheOverlayPatches extends Overlay {
         }
 
         return null;
+    }
+
+    private TileObject findTileObject(final Client client, final int x, final int y, final int id) {
+        try {
+            final Scene scene = client.getScene();
+            final Tile[][][] tiles = scene.getTiles();
+            final Tile tile = tiles[client.getPlane()][x][y];
+
+            if (tile != null) {
+                for (GameObject game_object : tile.getGameObjects()) {
+                    if (game_object != null && game_object.getId() == id) {
+                        return game_object;
+                    }
+                }
+
+                final WallObject wall_object = tile.getWallObject();
+                if (wall_object != null && wall_object.getId() == id) {
+                    return wall_object;
+                }
+
+                final DecorativeObject decorative_object = tile.getDecorativeObject();
+                if (decorative_object != null && decorative_object.getId() == id) {
+                    return decorative_object;
+                }
+
+                final GroundObject ground_object = tile.getGroundObject();
+                if (ground_object != null && ground_object.getId() == id) {
+                    return ground_object;
+                }
+            }
+        } catch (Exception ignored) {}
+
+        return null;
+    }
+
+    private void renderTile(final Graphics2D graphics, final TileObject object, final Color color) {
+        if (color == null || color.getAlpha() == 0) return;
+
+        try {
+            final Shape shape = object.getCanvasTilePoly();
+
+            // Area border.
+            graphics.setColor(color.darker());
+            graphics.setStroke(new BasicStroke(1));
+            graphics.draw(shape);
+
+            // Area fill.
+            graphics.setColor(color);
+            graphics.fill(shape);
+        } catch (Exception ignored) {}
     }
 }

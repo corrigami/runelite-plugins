@@ -1,6 +1,9 @@
 package tictac7x.tithe;
 
-import tictac7x.Overlay;
+import net.runelite.api.TileObject;
+import net.runelite.client.ui.overlay.OverlayPanel;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.HashMap;
@@ -13,8 +16,9 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
-public class TitheOverlayPlants extends Overlay {
+public class TitheOverlayPlants extends OverlayPanel {
     private final Client client;
     private final TithePlugin plugin;
     private final TitheConfig config;
@@ -76,7 +80,7 @@ public class TitheOverlayPlants extends Overlay {
         if (!plugin.inTitheFarm()) return null;
 
         for (final TithePlant plant : this.plants.values()) {
-            plant.render(graphics);
+            renderPie(graphics, plant.getGameObject(), plant.getCycleColor(), plant.getCycleProgress());
         }
 
         return null;
@@ -91,5 +95,18 @@ public class TitheOverlayPlants extends Overlay {
             && location_player.getY() + 2 >= seedling.getWorldLocation().getY()
             && location_player.getY() - 2 <= seedling.getWorldLocation().getY()
         );
+    }
+
+    private void renderPie(final Graphics2D graphics, final TileObject object, final Color color, final float progress) {
+        if (color == null || color.getAlpha() == 0) return;
+
+        try {
+            final ProgressPieComponent progressPieComponent = new ProgressPieComponent();
+            progressPieComponent.setPosition(object.getCanvasLocation(0));
+            progressPieComponent.setProgress(-progress);
+            progressPieComponent.setBorderColor(color.darker());
+            progressPieComponent.setFill(color);
+            progressPieComponent.render(graphics);
+        } catch (Exception ignored) {}
     }
 }

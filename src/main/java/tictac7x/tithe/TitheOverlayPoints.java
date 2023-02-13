@@ -3,24 +3,21 @@ package tictac7x.tithe;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.events.ConfigChanged;
-import tictac7x.Overlay;
+import net.runelite.client.ui.overlay.OverlayPanel;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import net.runelite.api.ItemID;
+
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemContainer;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 
-public class TitheOverlayPoints extends Overlay {
+public class TitheOverlayPoints extends OverlayPanel {
     private final static int TITHE_FARM_POINTS = Varbits.TITHE_FARM_POINTS;
     private final static int TITHE_FARM_SACK = Varbits.TITHE_FARM_SACK_AMOUNT;
     private final static int TITHE_FARM_SACK_TOTAL = 100;

@@ -1,13 +1,15 @@
 package tictac7x.tithe;
 
-import tictac7x.Overlay;
+import net.runelite.client.ui.overlay.OverlayPanel;
+import net.runelite.client.ui.overlay.components.ProgressPieComponent;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import net.runelite.api.TileObject;
 import net.runelite.api.GameObject;
 
-public class TithePlant extends Overlay {
+public class TithePlant {
     // Tithe empty patch.
     protected static final int TITHE_EMPTY_PATCH = 27383;
 
@@ -78,6 +80,10 @@ public class TithePlant extends Overlay {
         this.game_object = seedling;
     }
 
+    public GameObject getGameObject() {
+        return this.game_object;
+    }
+
     public void setGameObject(final GameObject game_object) {
         // Not seedling or plant.
         if (!isPatch(game_object)) return;
@@ -137,14 +143,7 @@ public class TithePlant extends Overlay {
         return isBlighted(this.game_object);
     }
 
-    @Override
-    public Dimension render(final Graphics2D graphics) {
-        final Color color = getCycleColor();
-        if (color != null) renderPie(graphics, game_object, getCycleColor(), (float) getCycleProgress());
-        return null;
-    }
-
-    private Color getCycleColor() {
+    public Color getCycleColor() {
         if (state == State.SEEDLING_DRY || state == State.PLANT_1_DRY || state == State.PLANT_2_DRY) {
             return config.getPlantsDryColor();
         } else if (state == State.GROWN) {
@@ -158,8 +157,8 @@ public class TithePlant extends Overlay {
         return null;
     }
 
-    private double getCycleProgress() {
-        return -1 + (ticks / (DURATION_CYCLE_GAME_TICKS));
+    public float getCycleProgress() {
+        return -1 + (float) (ticks / (DURATION_CYCLE_GAME_TICKS));
     }
 
     public static boolean isSeedling(final TileObject patch) {
