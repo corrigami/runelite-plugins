@@ -5,7 +5,6 @@ import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.InventoryID;
-import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
@@ -52,8 +51,8 @@ public class StoragePlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		storages = new Storage[]{
-			new Storage(StorageConfig.inventory, InventoryID.INVENTORY, client_thread, configs, items),
-			new Storage(StorageConfig.bank, InventoryID.BANK, client_thread, configs, items)
+			new StorageInventory(StorageConfig.inventory, InventoryID.INVENTORY, WidgetInfo.INVENTORY, client, client_thread, configs, config, items),
+			new Storage(StorageConfig.bank, InventoryID.BANK, WidgetInfo.BANK_CONTAINER, client, client_thread, configs, config, items)
 		};
 
 		for (final Storage storage : storages) {

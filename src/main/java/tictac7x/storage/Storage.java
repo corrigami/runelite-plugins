@@ -3,11 +3,14 @@ package tictac7x.storage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
@@ -17,36 +20,52 @@ import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ComponentOrientation;
 import net.runelite.client.ui.overlay.components.ImageComponent;
+import net.runelite.client.ui.overlay.components.PanelComponent;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class Storage extends OverlayPanel {
     private final String storage_id;
-    private final int item_container_id;
+    protected final int item_container_id;
+    private final WidgetInfo widget_info;
+    private final Client client;
     private final ClientThread client_thread;
     private final ConfigManager configs;
+    protected final StorageConfig config;
     private final ItemManager items;
 
-    private final int PLACEHOLDER = 14401;
+    private final int PLACEHOLDER_TEMPLATE_ID = 14401;
+    protected final PanelComponent itemsPanelComponent = new PanelComponent();
     private final List<ImageComponent> images = new ArrayList<>();
     private final JsonParser parser = new JsonParser();
 
-    public Storage(final String storage_id, final InventoryID item_container_id, final ClientThread client_thread, final ConfigManager configs, final ItemManager items) {
+    public Storage(final String storage_id, final InventoryID item_container_id, final WidgetInfo widget_info, final Client client, final ClientThread client_thread, final ConfigManager configs, final StorageConfig config, final ItemManager items) {
         this.storage_id = storage_id;
         this.item_container_id = item_container_id.getId();
+        this.widget_info = widget_info;
+        this.client = client;
         this.client_thread = client_thread;
         this.configs = configs;
+        this.config = config;
         this.items = items;
 
         // Overlay configuration.
         setPreferredPosition(OverlayPosition.BOTTOM_RIGHT);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
-        panelComponent.setWrap(true);
-        panelComponent.setOrientation(ComponentOrientation.HORIZONTAL);
+        panelComponent.setGap(new Point(0, 10));
+        panelComponent.setOrientation(ComponentOrientation.VERTICAL);
+        panelComponent.setBorder(new Rectangle(10, 10, 6, 10));
+        itemsPanelComponent.setWrap(true);
+        itemsPanelComponent.setBackgroundColor(null);
+        itemsPanelComponent.setGap(new Point(6, 4));
+        itemsPanelComponent.setOrientation(ComponentOrientation.HORIZONTAL);
+        itemsPanelComponent.setBorder(new Rectangle(0,0,0,0));
 
         // Generate images based on config.
         this.client_thread.invokeLater(() -> this.updateImages(configs.getConfiguration(StorageConfig.group, storage_id)));
@@ -64,7 +83,7 @@ public class Storage extends OverlayPanel {
             if (item.getId() == -1 || item.getQuantity() == 0) continue;
 
             // Placeholder.
-            if (items.getItemComposition(item.getId()).getPlaceholderTemplateId() == PLACEHOLDER) continue;
+            if (items.getItemComposition(item.getId()).getPlaceholderTemplateId() == PLACEHOLDER_TEMPLATE_ID) continue;
 
             // Save item.
             final String id = String.valueOf(item.getId());
@@ -79,7 +98,9 @@ public class Storage extends OverlayPanel {
     public void onConfigChanged(final ConfigChanged event) {
         if (
             !event.getGroup().equals(StorageConfig.group) |
-            !event.getKey().equals(this.storage_id) && !event.getKey().equals(this.storage_id + "_whitelist")
+                !event.getKey().equals(this.storage_id) &&
+                !event.getKey().equals(this.storage_id + "_" + StorageConfig.visible) &&
+                !event.getKey().equals(this.storage_id + "_" + StorageConfig.hidden)
         ) return;
 
         this.client_thread.invokeLater(() -> this.updateImages(configs.getConfiguration(StorageConfig.group, this.storage_id)));
@@ -94,9 +115,8 @@ public class Storage extends OverlayPanel {
             final int item_id = Integer.parseInt(entry.getKey());
             final int item_quantity = entry.getValue().getAsInt();
 
-
             // Item not shown.
-            if (!isWhitelisted(item_id)) continue;
+            if (!isVisible(item_id) || isHidden(item_id)) continue;
 
             images.add(new ImageComponent(this.items.getImage(item_id, item_quantity, true)));
         }
@@ -106,38 +126,90 @@ public class Storage extends OverlayPanel {
         this.images.addAll(images);
     }
 
-    private String[] getWhitelist() {
-        String[] whitelist = new String[]{};
-        try { whitelist = configs.getConfiguration(StorageConfig.group, this.storage_id + "_whitelist").split(",");
+    private String[] getVisibleItems() {
+        String[] visible = new String[]{};
+        try { visible = configs.getConfiguration(StorageConfig.group, this.storage_id + "_" + StorageConfig.visible).split(",");
         } catch (final Exception ignored) {}
 
-        return whitelist;
+        return visible;
     }
 
-    private boolean isWhitelisted(final int item_id) {
-        final String[] whitelist = this.getWhitelist();
+    private String[] getHiddenItems() {
+        String[] hidden = new String[]{};
+        try { hidden = configs.getConfiguration(StorageConfig.group, this.storage_id + "_" + StorageConfig.hidden).split(",");
+        } catch (final Exception ignored) {}
+
+        return hidden;
+    }
+
+    private boolean isVisible(final int item_id) {
+        final String[] visible = this.getVisibleItems();
         final ItemComposition item = this.items.getItemComposition(item_id);
 
-        // Whitelist not used.
-        if (whitelist.length == 0 || whitelist.length == 1 && whitelist[0].equals("")) return true;
+        // Visible list not used.
+        if (visible.length == 0 || visible.length == 1 && visible[0].equals("")) return true;
 
-        // Check if whitelisted.
-        for (final String name : whitelist) {
+        // Check if visible.
+        for (final String name : visible) {
             if (item.getName().contains(name)) {
                 return true;
             }
         }
 
-        // Not whitelisted.
+        // Not visible.
         return false;
+    }
+
+    private boolean isHidden(final int item_id) {
+        final String[] hidden = this.getHiddenItems();
+        final ItemComposition item = this.items.getItemComposition(item_id);
+
+        // Hidden list not used.
+        if (hidden.length == 0 || hidden.length == 1 && hidden[0].equals("")) return false;
+
+        // Check if hidden.
+        for (final String name : hidden) {
+            if (item.getName().contains(name)) {
+                return true;
+            }
+        }
+
+        // Not Hidden.
+        return false;
+    }
+
+    private boolean show() {
+        return Boolean.parseBoolean(configs.getConfiguration(StorageConfig.group, this.storage_id + "_" + StorageConfig.show));
+    }
+
+    private boolean autoHide() {
+        return Boolean.parseBoolean(configs.getConfiguration(StorageConfig.group, this.storage_id + "_" + StorageConfig.auto_hide));
+    }
+
+    private boolean isWidgetVisible() {
+        final Widget widget = client.getWidget(this.widget_info);
+        return (widget != null && !widget.isHidden());
     }
 
     @Override
     public Dimension render(final Graphics2D graphics) {
-        if (this.images.size() == 0) return null;
+        if (!show()) return null;
+        if (autoHide() && isWidgetVisible()) return null;
 
         panelComponent.getChildren().clear();
-        this.images.forEach(image -> panelComponent.getChildren().add(image));
+        itemsPanelComponent.getChildren().clear();
+
+        renderBefore();
+
+        this.images.forEach(image -> itemsPanelComponent.getChildren().add(image));
+        panelComponent.getChildren().add(itemsPanelComponent);
+
+        renderAfter();
+
+        if (panelComponent.getChildren().size() == 0) return null;
         return super.render(graphics);
     }
+
+    protected void renderBefore() {}
+    protected void renderAfter() {}
 }

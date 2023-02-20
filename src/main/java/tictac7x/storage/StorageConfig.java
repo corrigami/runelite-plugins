@@ -8,9 +8,12 @@ import net.runelite.client.config.ConfigSection;
 @ConfigGroup(StorageConfig.group)
 public interface StorageConfig extends Config {
 	String group = "tictac7x-storage";
+	String visible = "visible";
+	String hidden = "hidden";
+	String show = "show";
+	String auto_hide = "auto_hide";
 
 	enum InventoryEmpty { TOP, FIRST, LAST, BOTTOM, HIDDEN }
-	enum InventoryDensity { COMPACT, REGULAR }
 
 	@ConfigSection(
 		name = "Inventory",
@@ -22,8 +25,49 @@ public interface StorageConfig extends Config {
 			keyName = inventory,
 			name = inventory,
 			description = inventory,
-			section = inventory
+			section = inventory,
+			hidden = true
 		) default String getInventory() { return "{}"; }
+
+		@ConfigItem(
+			keyName = inventory + "_" + show,
+			name = "Show inventory overlay",
+			description = "Show inventory overlay",
+			section = inventory,
+			position = 1
+		) default boolean showInventory() { return true; }
+
+		@ConfigItem(
+			keyName = inventory + "_" + auto_hide,
+			name = "Auto-hide when inventory is open",
+			description = "Hide inventory overlay if inventory tab is open",
+			section = inventory,
+			position = 2
+		) default boolean hideInventory() { return true; }
+
+		@ConfigItem(
+			keyName = inventory + "_" + visible,
+			name = "Visible items",
+			description = "Names of the items to show in the inventory overlay (all if empty)",
+			section = inventory,
+			position = 3
+		) default String getInventoryVisible() { return ""; }
+
+		@ConfigItem(
+			keyName = inventory + "_" + hidden,
+			name = "Hidden items",
+			description = "Names of the items to hide in the inventory overlay",
+			section = inventory,
+			position = 4
+		) default String getInventoryHidden() { return ""; }
+
+		@ConfigItem(
+			keyName = inventory + "_empty",
+			name = "Empty slots",
+			description = "Show the amount of free space in the inventory",
+			section = inventory,
+			position = 5
+		) default InventoryEmpty getInventoryEmpty() { return InventoryEmpty.FIRST; }
 
 	@ConfigSection(
 		name = "Bank",
@@ -35,13 +79,39 @@ public interface StorageConfig extends Config {
 			keyName = bank,
 			name = bank,
 			description = bank,
-			section = bank
+			section = bank,
+			hidden = true
 		) default String getBank() { return "{}"; }
 
 		@ConfigItem(
-			keyName = bank + "_whitelist",
-			name = "Whitelist",
-			description = "Names of items to show in bank overlay",
-			section = bank
-		) default String getBankWhitelist() { return "Coins"; }
+			keyName = bank + "_" + show,
+			name = "Show bank overlay",
+			description = "Show bank overlay",
+			section = bank,
+			position = 1
+		) default boolean showBank() { return true; }
+
+		@ConfigItem(
+			keyName = bank + "_" + auto_hide,
+			name = "Auto-hide when bank is open",
+			description = "Hide bank overlay if bank is open",
+			section = bank,
+			position = 2
+		) default boolean hideBank() { return true; }
+
+		@ConfigItem(
+			keyName = bank + "_" + visible,
+			name = "Visible items",
+			description = "Names of the items to show in the bank overlay (all if empty)",
+			section = bank,
+			position = 3
+		) default String getBankVisible() { return "Coins"; }
+
+		@ConfigItem(
+			keyName = bank + "_" + hidden,
+			name = "Hidden items",
+			description = "Names of the items to hide in the bank overlay",
+			section = bank,
+			position = 4
+		) default String getBankHidden() { return ""; }
 }

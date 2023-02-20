@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'tictac7x-storage'
-version = '0.3.3'
+version = '0.4'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
