@@ -5,7 +5,7 @@ import net.runelite.client.externalplugins.ExternalPluginManager;
 
 public class StoragePluginTest {
 	public static void main(String[] args) throws Exception {
-		ExternalPluginManager.loadBuiltin(TicTac7xStoragePlugin.class);
+		ExternalPluginManager.loadBuiltin(StoragePlugin.class);
 		RuneLite.main(args);
 	}
 }

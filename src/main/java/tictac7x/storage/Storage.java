@@ -1,251 +1,143 @@
 package tictac7x.storage;
 
-import java.util.Map;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.ArrayList;
-import javax.annotation.Nullable;
-
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonElement;
-
 import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
-import net.runelite.client.game.ItemManager;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPanel;
+import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.components.ComponentOrientation;
 import net.runelite.client.ui.overlay.components.ImageComponent;
 
-public class Storage {
-    private final ConfigManager configs;
-    private final StorageConfig config;
-    private final ItemManager items;
-    private final ClientThread client_thread;
-    private final JsonParser json_parser;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-    public final String storage_id;
+public class Storage extends OverlayPanel {
+    private final String storage_id;
     private final int item_container_id;
-    boolean whitelist_enabled;
-    private final boolean blacklist_enabled;
-    private int empty_slots_count = 0;
+    private final ClientThread client_thread;
+    private final ConfigManager configs;
+    private final ItemManager items;
 
-    private JsonObject storage;
-    private String[] whitelist, blacklist;
+    private final int PLACEHOLDER = 14401;
     private final List<ImageComponent> images = new ArrayList<>();
+    private final JsonParser parser = new JsonParser();
 
-    public Storage(final ConfigManager configs, final StorageConfig config, final ItemManager items, final ClientThread client_thread, final InventoryID item_container_id, final String storage_id, final boolean whitelist_enabled, final boolean blacklist_enabled) {
-        this.configs = configs;
-        this.config = config;
-        this.items = items;
-        this.client_thread = client_thread;
-        this.json_parser = new JsonParser();
-
+    public Storage(final String storage_id, final InventoryID item_container_id, final ClientThread client_thread, final ConfigManager configs, final ItemManager items) {
         this.storage_id = storage_id;
         this.item_container_id = item_container_id.getId();
-        this.whitelist_enabled = whitelist_enabled;
-        this.blacklist_enabled = blacklist_enabled;
+        this.client_thread = client_thread;
+        this.configs = configs;
+        this.items = items;
 
-        loadStorage();
-        loadWhitelist();
-        loadBlacklist();
-        updateStorageImages();
+        // Overlay configuration.
+        setPreferredPosition(OverlayPosition.BOTTOM_RIGHT);
+        setLayer(OverlayLayer.ABOVE_WIDGETS);
+        panelComponent.setWrap(true);
+        panelComponent.setOrientation(ComponentOrientation.HORIZONTAL);
+
+        // Generate images based on config.
+        this.client_thread.invokeLater(() -> this.updateImages(configs.getConfiguration(StorageConfig.group, storage_id)));
+
     }
 
-    public List<ImageComponent> getStorageImages() {
-        return images;
-    }
-
-    void updateStorageImages() {
-        // Images need to be created on the client thread.
-        client_thread.invoke(() -> {
-            // Clear old images.
-            images.clear();
-
-            // Order by whitelist.
-            if (whitelist_enabled) {
-                for (final String whitelist : whitelist) {
-                    if (whitelist.length() > 0) {
-                        updateStorageImagesBasedOnWhitelist(whitelist);
-                    }
-                }
-
-            // Order by item container.
-            } else {
-                updateStorageImagesBasedOnWhitelist(null);
-            }
-        });
-    }
-
-    private void updateStorageImagesBasedOnWhitelist(@Nullable final String whitelist) {
-        for (final Map.Entry<String, JsonElement> item : storage.entrySet()) {
-            final int id = Integer.parseInt(item.getKey());
-            final String name = items.getItemComposition(id).getName();
-            final int quantity = item.getValue().getAsInt();
-
-            // Placeholder check.
-            if (quantity < 1 || name == null) continue;
-
-            // Blacklist check.
-            if (blacklist_enabled && blacklist != null) {
-                boolean blacklisted = false;
-
-                for (final String blacklist : blacklist) {
-                    if (blacklist == null || blacklist.length() == 0) continue;
-
-                    // Item blacklisted.
-                    if (name.contains(blacklist)) {
-                        blacklisted = true;
-                        break;
-                    }
-                }
-
-                if (blacklisted) continue;
-            }
-
-            // Whitelist disabled or item whitelisted.
-            if (!whitelist_enabled || whitelist != null && name.contains(whitelist)) {
-                images.add(new ImageComponent(items.getImage(id, quantity, true)));
-            }
-        }
-    }
-
-    public boolean show() {
-        return configs.getConfiguration(StorageConfig.group, storage_id + "_show").equals("true");
-    }
-
-    private String getWhitelistID() {
-        return storage_id + "_whitelist";
-    }
-
-    private String getBlacklistID() {
-        return storage_id + "_blacklist";
-    }
-
-    public boolean hideWithOverlay() {
-        return configs.getConfiguration(StorageConfig.group, storage_id + "_hide").equals("true");
-    }
-
-    /**
-     * Save storage json to config.
-     */
-    private void saveStorageToConfig() {
-        final JsonObject storages = json_parser.parse(config.getStorages()).getAsJsonObject();
-        storages.add(storage_id, storage);
-
-        configs.setConfiguration(StorageConfig.group, StorageConfig.storages, storages.toString());
-    }
-
-    /**
-     * Get storage from config. Needed on first-run to restore state from previous session.
-     * @return json of storage.
-     */
-    private void loadStorage() {
-        final JsonObject storage = json_parser.parse(config.getStorages()).getAsJsonObject().getAsJsonObject(storage_id);
-        this.storage = storage != null ? storage : new JsonObject();
-    }
-
-    /**
-     * Get comma separated whitelist from config.
-     */
-    void loadWhitelist() {
-        final String whitelist = configs.getConfiguration(StorageConfig.group, getWhitelistID());
-
-        if (whitelist != null) {
-            this.whitelist = whitelist.replace("\n", "").replace("\r", "").split(",");
-        } else {
-            this.whitelist = new String[]{};
-        }
-    }
-
-    /**
-     * Get comma separated blacklist from config.
-     */
-    private void loadBlacklist() {
-        final String blacklist = configs.getConfiguration(StorageConfig.group, getBlacklistID());
-
-        if (blacklist != null) {
-            this.blacklist = blacklist.replace("\n", "").replace("\r", "").split(",");
-        } else {
-            this.blacklist = new String[]{};
-        }
-    }
-
-    /**
-     * Dynamically deposit items stored in json to the storage.
-     * For example needed when depositing to bank with deposit box without opening the actual bank interface.
-     * @param deposit - json of items to deposit.
-     */
-    public void deposit(final JsonObject deposit) {
-        if (deposit != null) {
-            for (final String id : deposit.keySet()) {
-                if (storage.has(id)) {
-                    storage.addProperty(id, storage.get(id).getAsInt() + deposit.get(id).getAsInt());
-                } else {
-                    storage.addProperty(id, deposit.get(id).getAsInt());
-                }
-            }
-            saveStorageToConfig();
-            updateStorageImages();
-        }
-    }
-
-    /**
-     * If config changed, check if this storage white- or blacklist was changed.
-     * @param event - ConfigChanged.
-     */
-    public void onConfigChanged(final ConfigChanged event) {
-        if (!Objects.equals(event.getGroup(), StorageConfig.group)) return;
-
-        // Update whitelist.
-        if (Objects.equals(event.getKey(), getWhitelistID())) {
-            loadWhitelist();
-            this.updateStorageImages();
-
-        // Update blacklist.
-        } else if (Objects.equals(event.getKey(), getBlacklistID())) {
-            loadBlacklist();
-            this.updateStorageImages();
-        }
-    }
-
-    /**
-     * If item container changed, check if this item container belongs to this storage to update the storage and config.
-     * @param event - ItemContainerChanged.
-     */
     public void onItemContainerChanged(final ItemContainerChanged event) {
+        if (event.getContainerId() != this.item_container_id) return;
+
         final ItemContainer item_container = event.getItemContainer();
+        final JsonObject json = new JsonObject();
 
-        if (item_container != null && item_container.getId() == item_container_id) {
-            this.empty_slots_count = getStorageSize(item_container);
+        for (final Item item : item_container.getItems()) {
+            // Empty item.
+            if (item.getId() == -1 || item.getQuantity() == 0) continue;
 
-            final JsonObject storage = new JsonObject();
-            Arrays.stream(item_container.getItems()).filter(
-                    item -> item != null && item.getId() != -1
-            ).forEach(item -> {
-                final String id = String.valueOf(item.getId());
-                if (storage.has(id)) {
-                    storage.addProperty(id, storage.get(id).getAsInt() + item.getQuantity());
-                } else {
-                    storage.addProperty(id, item.getQuantity());
-                }
-                this.empty_slots_count -= 1;
-            });
+            // Placeholder.
+            if (items.getItemComposition(item.getId()).getPlaceholderTemplateId() == PLACEHOLDER) continue;
 
-            this.storage = storage;
-            saveStorageToConfig();
-            updateStorageImages();
+            // Save item.
+            final String id = String.valueOf(item.getId());
+            if (!json.has(id)) {
+                json.addProperty(id, item_container.count(item.getId()));
+            }
         }
+
+        configs.setConfiguration(StorageConfig.group, this.storage_id, json.toString());
     }
 
-    int getStorageSize(final ItemContainer item_container) {
-        return item_container.size();
+    public void onConfigChanged(final ConfigChanged event) {
+        if (
+            !event.getGroup().equals(StorageConfig.group) |
+            !event.getKey().equals(this.storage_id) && !event.getKey().equals(this.storage_id + "_whitelist")
+        ) return;
+
+        this.client_thread.invokeLater(() -> this.updateImages(configs.getConfiguration(StorageConfig.group, this.storage_id)));
     }
 
-    public int getEmptySlotsCount() {
-        return empty_slots_count;
+    private void updateImages(final String items) {
+        // List of images to render.
+        List<ImageComponent> images = new ArrayList<>();
+
+        final JsonObject json = parser.parse(items).getAsJsonObject();
+        for (final Map.Entry<String, JsonElement> entry : json.entrySet()) {
+            final int item_id = Integer.parseInt(entry.getKey());
+            final int item_quantity = entry.getValue().getAsInt();
+
+
+            // Item not shown.
+            if (!isWhitelisted(item_id)) continue;
+
+            images.add(new ImageComponent(this.items.getImage(item_id, item_quantity, true)));
+        }
+
+        // Replace old images with new ones.
+        this.images.clear();
+        this.images.addAll(images);
+    }
+
+    private String[] getWhitelist() {
+        String[] whitelist = new String[]{};
+        try { whitelist = configs.getConfiguration(StorageConfig.group, this.storage_id + "_whitelist").split(",");
+        } catch (final Exception ignored) {}
+
+        return whitelist;
+    }
+
+    private boolean isWhitelisted(final int item_id) {
+        final String[] whitelist = this.getWhitelist();
+        final ItemComposition item = this.items.getItemComposition(item_id);
+
+        // Whitelist not used.
+        if (whitelist.length == 0 || whitelist.length == 1 && whitelist[0].equals("")) return true;
+
+        // Check if whitelisted.
+        for (final String name : whitelist) {
+            if (item.getName().contains(name)) {
+                return true;
+            }
+        }
+
+        // Not whitelisted.
+        return false;
+    }
+
+    @Override
+    public Dimension render(final Graphics2D graphics) {
+        if (this.images.size() == 0) return null;
+
+        panelComponent.getChildren().clear();
+        this.images.forEach(image -> panelComponent.getChildren().add(image));
+        return super.render(graphics);
     }
 }
