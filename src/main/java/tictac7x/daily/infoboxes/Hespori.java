@@ -3,6 +3,7 @@ package tictac7x.daily.infoboxes;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.game.ItemManager;
 import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
@@ -45,5 +46,13 @@ public class Hespori extends DailyInfobox {
 
     private boolean hesporiReadyToHarvest() {
         return client.getVarbitValue(Varbits.FARMING_7908) == 8;
+    }
+
+    @Override
+    public void onVarbitChanged(VarbitChanged event) {
+        if (event.getVarbitId() != Varbits.FARMING_7908) return;
+
+        if (config.getHesporiPlantedDate() == null) {
+        }
     }
 }

@@ -4,6 +4,8 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
+import java.util.Date;
+
 @ConfigGroup(DailyConfig.group)
 public interface DailyConfig extends Config {
     String group = "tictac7x-daily";
@@ -104,6 +106,7 @@ public interface DailyConfig extends Config {
     String hespori_id = "hespori";
     String hespori_name = "Hespori";
     String hespori_description = "Reminds you to plant and kill Hespori.";
+    String hespori_planted_date = "hesporti_planted_date";
 
     @ConfigItem(
         keyName = hespori_id,
@@ -111,4 +114,10 @@ public interface DailyConfig extends Config {
         description = hespori_description,
         position = 8
     ) default boolean showHespori() { return true; }
+
+    @ConfigItem(
+        keyName = hespori_planted_date,
+        name = hespori_planted_date,
+        description = hespori_planted_date
+    ) default String getHesporiPlantedDate() { return ""; }
 }

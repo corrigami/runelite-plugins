@@ -7,6 +7,7 @@ import com.google.inject.Provides;
 
 import net.runelite.api.Client;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -90,6 +91,13 @@ public class TicTac7xDailyPlugin extends Plugin {
     public void onGameTick(final GameTick event) {
         for (final DailyInfobox infobox : infoboxes_daily) {
             infobox.onGameTick();
+        }
+    }
+
+    @Subscribe
+    public void onVarbitChanged(final VarbitChanged event) {
+        for (final DailyInfobox infobox : infoboxes_daily) {
+            infobox.onVarbitChanged(event);
         }
     }
 }

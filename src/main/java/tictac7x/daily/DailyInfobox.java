@@ -1,6 +1,7 @@
 package tictac7x.daily;
 
 import net.runelite.api.Client;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.overlay.infobox.InfoBox;
@@ -63,4 +64,6 @@ public abstract class DailyInfobox extends InfoBox {
     public void onConfigChanged(final ConfigChanged event) {}
 
     public void onGameTick() {}
+
+    public void onVarbitChanged(final VarbitChanged event) {}
 }
