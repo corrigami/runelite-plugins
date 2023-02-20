@@ -1,11 +1,17 @@
 package tictac7x.storage;
 
 import javax.inject.Inject;
+
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -23,6 +29,12 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	tags = { "storage", "bank", "inventory", "item" }
 )
 public class StoragePlugin extends Plugin {
+	private String plugin_version = "0.4";
+	private String plugin_message = "" +
+			"<colHIGHLIGHT>Storage v0.4:<br>" +
+			"<colHIGHLIGHT>* Bank placeholders not showing as items<br>" +
+			"<colHIGHLIGHT>* Settings simplified";
+
 	@Inject
 	private Client client;
 
@@ -40,6 +52,9 @@ public class StoragePlugin extends Plugin {
 
 	@Inject
 	private OverlayManager overlays;
+
+	@Inject
+	private ChatMessageManager chat_messages;
 
 	@Provides
 	StorageConfig provideConfig(ConfigManager configManager) {
@@ -80,4 +95,18 @@ public class StoragePlugin extends Plugin {
 			storage.onConfigChanged(event);
 		}
 	}
+
+	@Subscribe
+	public void onGameStateChanged(final GameStateChanged event) {
+		// Plugin update message.
+		if (event.getGameState() == GameState.LOGGED_IN && !config.getVersion().equals(plugin_version)) {
+			configs.setConfiguration(StorageConfig.group, StorageConfig.version, plugin_version);
+			chat_messages.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(plugin_message)
+				.build()
+			);
+		}
+	}
+
 }

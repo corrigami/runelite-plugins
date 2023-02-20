@@ -12,8 +12,18 @@ public interface StorageConfig extends Config {
 	String hidden = "hidden";
 	String show = "show";
 	String auto_hide = "auto_hide";
+	String version = "version";
 
 	enum InventoryEmpty { TOP, FIRST, LAST, BOTTOM, HIDDEN }
+
+	@ConfigItem(
+		keyName = version,
+		name = "Version",
+		description = "Plugin version",
+		hidden = true
+	) default String getVersion() {
+		return "0";
+	}
 
 	@ConfigSection(
 		name = "Inventory",
