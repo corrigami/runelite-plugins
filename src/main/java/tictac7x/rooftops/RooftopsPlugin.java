@@ -53,12 +53,9 @@ public class RooftopsPlugin extends Plugin {
 	protected void startUp() {
 		courses = new Courses(config, client);
 		overlay = new RooftopsOverlay(config, client, courses);
+		overlay_debug = new RooftopsOverylayDebug(client, config, courses);
+
 		overlays.add(overlay);
-
-		if (overlay_debug == null) {
-			overlay_debug = new RooftopsOverylayDebug(client, config, courses);
-		}
-
 		overlays.add(overlay_debug);
 	}
 

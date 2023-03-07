@@ -1,6 +1,12 @@
 package tictac7x.rooftops.courses;
 
-import tictac7x.Overlay;
+import net.runelite.api.DecorativeObject;
+import net.runelite.api.GameObject;
+import net.runelite.api.GroundObject;
+import net.runelite.api.Scene;
+import net.runelite.api.Tile;
+import net.runelite.api.WallObject;
+import net.runelite.client.ui.overlay.Overlay;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -119,11 +125,8 @@ public class Courses extends Overlay {
     public void onItemSpawned(final ItemSpawned item) {
         if (item.getItem().getId() == ItemID.MARK_OF_GRACE && course != null) {
             final Optional<MarkOfGrace> mark_of_grace = course.getMarkOfGraces().stream().filter(
-                    m ->
-                            m.x == item.getTile().getWorldLocation().getX() &&
-                                    m.y == item.getTile().getWorldLocation().getY()
-
-                    // Mark of grace hardcoded.
+                m -> m.x == item.getTile().getWorldLocation().getX() && m.y == item.getTile().getWorldLocation().getY()
+            // Mark of grace hardcoded.
             ).findFirst();
 
             // Mark of grace predefined.
@@ -352,6 +355,39 @@ public class Courses extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
+        return null;
+    }
+
+    private TileObject findTileObject(final Client client, final int x, final int y, final int id) {
+        try {
+            final Scene scene = client.getScene();
+            final Tile[][][] tiles = scene.getTiles();
+            final Tile tile = tiles[client.getPlane()][x][y];
+
+            if (tile != null) {
+                for (final GameObject game_object : tile.getGameObjects()) {
+                    if (game_object != null && game_object.getId() == id) {
+                        return game_object;
+                    }
+                }
+
+                final WallObject wall_object = tile.getWallObject();
+                if (wall_object != null && wall_object.getId() == id) {
+                    return wall_object;
+                }
+
+                final DecorativeObject decorative_object = tile.getDecorativeObject();
+                if (decorative_object != null && decorative_object.getId() == id) {
+                    return decorative_object;
+                }
+
+                final GroundObject ground_object = tile.getGroundObject();
+                if (ground_object != null && ground_object.getId() == id) {
+                    return ground_object;
+                }
+            }
+        } catch (Exception ignored) {}
+
         return null;
     }
 }

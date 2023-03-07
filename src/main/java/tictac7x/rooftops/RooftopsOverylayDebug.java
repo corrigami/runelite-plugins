@@ -1,21 +1,17 @@
 package tictac7x.rooftops;
 
-import tictac7x.Overlay;
-import tictac7x.rooftops.courses.Courses;
-
-import java.util.Objects;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Dimension;
-
 import net.runelite.api.Client;
-import net.runelite.api.Player;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
+import tictac7x.rooftops.courses.Courses;
 
-public class RooftopsOverylayDebug extends Overlay {
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+
+public class RooftopsOverylayDebug extends OverlayPanel {
     private final Client client;
     private final RooftopsConfig config;
     private final Courses courses;
@@ -60,8 +56,8 @@ public class RooftopsOverylayDebug extends Overlay {
             mark = "-";
         }
 
-        panel.getChildren().add(LineComponent.builder().left("XP:").right(courses.isXpDrop() ? "true" : "false").rightColor(courses.isXpDrop() ? Color.green : color_red).build());
-        panel.getChildren().add(LineComponent.builder().left("ANIMATING:").right(courses.isDoingObstacle() ? "true" : "false").rightColor(courses.isDoingObstacle() ? color_green : color_red).build());
+        panel.getChildren().add(LineComponent.builder().left("XP:").right(courses.isXpDrop() ? "true" : "false").rightColor(courses.isXpDrop() ? Color.green : Color.red).build());
+        panel.getChildren().add(LineComponent.builder().left("ANIMATING:").right(courses.isDoingObstacle() ? "true" : "false").rightColor(courses.isDoingObstacle() ? Color.green : Color.red).build());
         panel.getChildren().add(LineComponent.builder().left("CLICKED:").right(courses.getObstacleClicked() != null ? courses.getObstacleClicked() + "" : "-").build());
         panel.getChildren().add(LineComponent.builder().left("NEXT").right(courses.getObstacleNext() != null ? courses.getObstacleNext() + "" : "-").build());
         panel.getChildren().add(LineComponent.builder().left("VISITED").right(visited).build());

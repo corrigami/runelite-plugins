@@ -10,7 +10,7 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.8.21'
+def runeLiteVersion = '1.9.11.2'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'tictac7x-rooftops'
-version = '0.4.8.1'
+version = 'v0.4.8.2'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {

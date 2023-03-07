@@ -1,8 +1,9 @@
 package tictac7x.rooftops;
 
-import tictac7x.Overlay;
+import net.runelite.client.ui.overlay.Overlay;
 import tictac7x.rooftops.courses.Courses;
 
+import java.awt.BasicStroke;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+
 
 public class RooftopsOverlay extends Overlay {
     private final Courses courses;
@@ -81,14 +83,14 @@ public class RooftopsOverlay extends Overlay {
                 final Optional<MarkOfGrace> mark = courses.getMarkOfGracesPredefined().stream().filter(m -> m.x == mark_of_grace.getWorldLocation().getX() && m.y == mark_of_grace.getWorldLocation().getY()).findFirst();
 
                 if (mark.isPresent()) {
-                    renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor());
+                    renderShape(graphics, mark_of_grace.getItemLayer().getCanvasTilePoly(), config.getMarkOfGraceColor());
                 } else {
-                    renderItem(graphics, mark_of_grace, Color.MAGENTA);
+                    renderShape(graphics, mark_of_grace.getItemLayer().getCanvasTilePoly(), Color.MAGENTA);
                 }
 
-            // Production.
+                // Production.
             } else {
-                renderItem(graphics, mark_of_grace, config.getMarkOfGraceColor());
+                renderShape(graphics, mark_of_grace.getItemLayer().getCanvasTilePoly(), config.getMarkOfGraceColor());
             }
         }
 
@@ -99,5 +101,18 @@ public class RooftopsOverlay extends Overlay {
         }
 
         return null;
+    }
+
+    private void renderShape(final Graphics2D graphics, final Shape shape, final Color color) {
+        try {
+            // Area border.
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            graphics.setStroke(new BasicStroke(1));
+            graphics.draw(shape);
+
+            // Area fill.
+            graphics.setColor(color);
+            graphics.fill(shape);
+        } catch (final Exception ignored) {}
     }
 }
