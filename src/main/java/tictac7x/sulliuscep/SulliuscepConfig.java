@@ -1,67 +1,73 @@
 package tictac7x.sulliuscep;
 
-import tictac7x.Overlay;
-
 import java.awt.Color;
 
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.ConfigSection;
 
 @ConfigGroup("tictac7x-sulliuscep")
 public interface SulliuscepConfig extends Config {
-	@ConfigItem(
-		keyName = "sulliuscep",
-		name = "Highlight sulliuscep",
-		description = "Highlight sulliuscep that needs to be cut.",
+	@ConfigSection(
+		name = "Sulliusceps",
+		description = "Sulliusceps",
 		position = 1
-	) default boolean highlightSulliuscep() { return true; }
+	) String sulliusceps = "sulliusceps";
 
-	@ConfigItem(
-		keyName = "sulliuscep_color",
-		name = "Sulliuscep",
-		description = "Choose the color of the sulliuscep.",
-		position = 2
-	) default Color getSulliuscepColor() { return Overlay.color_green; }
+		@Alpha
+		@ConfigItem(
+			keyName = "sulliuscep",
+			name = "Sulliuscep color",
+			description = "Choose the color of the sulliuscep.",
+			position = 1,
+			section = sulliusceps
+		) default Color getSulliuscepColor() { return new Color(0, 255, 0, 40); }
 
-	enum Obstacles {
-		ALL,
-		NEXT,
-		NONE
-	}
-
-	@ConfigItem(
-		keyName = "obstacles",
-		name = "Highlight obstacles",
-		description = "Highlight obstacles that need to be cleared.",
-		position = 3
-	) default Obstacles highlightObstacles() { return Obstacles.ALL; }
-
-	@ConfigItem(
-		keyName = "obstacles_color",
+	@ConfigSection(
 		name = "Obstacles",
-		description = "Choose the color of the obstacles.",
-		position = 4
-	) default Color getObstaclesColor() { return Overlay.color_yellow; }
+		description = "Obstacles",
+		position = 2
+	) String obstacles = "obstacles";
 
-	@ConfigItem(
-		keyName = "mud_pit",
-		name = "Highlight mud pit",
-		description = "Highlight mud pit that needs to be filled with mushrooms.",
-		position = 5
-	) default boolean highlightMudPit() { return true; }
+		@ConfigItem(
+			keyName = "obstacles",
+			name = "Highlighted obstacles",
+			description = "Select which obstacles to highlight.",
+			position = 1,
+			section = obstacles
+		) default Obstacles highlightObstacles() { return Obstacles.ALL; }
 
-	@ConfigItem(
-		keyName = "mud_pit_color",
+		@Alpha
+		@ConfigItem(
+			keyName = "obstacles_color",
+			name = "Obstacles",
+			description = "Choose the color of the obstacles.",
+			position = 2,
+			section = obstacles
+		) default Color getObstaclesColor() { return new Color(255, 150, 0, 40); }
+
+	@ConfigSection(
 		name = "Mud pit",
-		description = "Choose the color of the mud pit.",
-		position = 6
-	) default Color getMudPitColor() { return Overlay.color_red; }
+		description = "Mudpit",
+		position = 3
+	) String mudpit = "mudpit";
 
-	@ConfigItem(
-		keyName = "mud_pit_widget",
-		name = "Show mud pit widget",
-		description = "Show warning if the mud pit is empty and needs to be filled with mushrooms.",
-		position = 7
-	) default boolean showMudPitWidget() { return true; }
+		@ConfigItem(
+			keyName = "mudpit_widget",
+			name = "Show empty warning",
+			description = "Show warning if the mud pit is empty and needs to be filled with mushrooms.",
+			position = 1,
+			section = mudpit
+		) default boolean showMudPitWidget() { return true; }
+
+		@Alpha
+		@ConfigItem(
+			keyName = "mudpit_color",
+			name = "Mud pit color",
+			description = "Choose the color of the mud pit.",
+			position = 2,
+			section = mudpit
+		) default Color getMudPitColor() { return new Color(255, 0, 0, 40); }
 }

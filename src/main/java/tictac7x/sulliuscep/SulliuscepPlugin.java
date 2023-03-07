@@ -46,11 +46,9 @@ public class SulliuscepPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		if (tar_swamp == null) {
-			tar_swamp = new TarSwamp(client);
-			tar_swamp_overlay = new TarSwampOverlay(config, tar_swamp);
-			tar_swamp_widget = new TarSwampWidget(config, tar_swamp);
-		}
+		tar_swamp = new TarSwamp(client);
+		tar_swamp_overlay = new TarSwampOverlay(config, tar_swamp);
+		tar_swamp_widget = new TarSwampWidget(config, tar_swamp);
 
 		overlays.add(tar_swamp_overlay);
 		overlays.add(tar_swamp_widget);

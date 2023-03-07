@@ -1,20 +1,21 @@
 package tictac7x.sulliuscep;
 
-import tictac7x.Overlay;
+import net.runelite.api.TileObject;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Shape;
 import java.util.Optional;
 import java.util.Set;
 import java.util.HashSet;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import javax.annotation.Nullable;
 
-import net.runelite.api.Client;
-import net.runelite.api.ObjectID;
 import net.runelite.api.GameState;
 import net.runelite.api.GameObject;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
@@ -124,12 +125,12 @@ public class TarSwampOverlay extends Overlay {
 
         // Sulliuscep.
         final Optional<GameObject> sulliuscep = getSulliuscep();
-        if (config.highlightSulliuscep() && sulliuscep.isPresent()) {
+        if (sulliuscep.isPresent()) {
             renderClickbox(graphics, sulliuscep.get(), config.getSulliuscepColor());
         }
 
         // Mud pit.
-        if (config.highlightMudPit() && pit.isPresent() && !tar_swamp.isPitFilled()) {
+        if (pit.isPresent() && !tar_swamp.isPitFilled()) {
             renderClickbox(graphics, pit.get(), config.getMudPitColor());
         }
 
@@ -139,5 +140,20 @@ public class TarSwampOverlay extends Overlay {
         }
 
         return null;
+    }
+
+    private void renderClickbox(final Graphics2D graphics, final TileObject object, final Color color) {
+        try {
+            final Shape clickbox = object.getClickbox();
+
+            // Area border.
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 30));
+            graphics.setStroke(new BasicStroke(1));
+            graphics.draw(clickbox);
+
+            // Area fill.
+            graphics.setColor(color);
+            graphics.fill(clickbox);
+        } catch (final Exception ignored) {}
     }
 }

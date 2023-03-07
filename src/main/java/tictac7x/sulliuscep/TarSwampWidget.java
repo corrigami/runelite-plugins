@@ -1,19 +1,18 @@
 package tictac7x.sulliuscep;
 
-import tictac7x.Overlay;
-
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 
 import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
-public class TarSwampWidget extends Overlay {
+public class TarSwampWidget extends OverlayPanel {
     private final SulliuscepConfig config;
     private final TarSwamp tar_swamp;
-    private final PanelComponent panel = panelComponent;
 
     public TarSwampWidget(final SulliuscepConfig config, final TarSwamp tar_swamp) {
         this.config = config;
@@ -26,10 +25,10 @@ public class TarSwampWidget extends Overlay {
     @Override
     public Dimension render(Graphics2D graphics) {
         if (config.showMudPitWidget() && tar_swamp.inRegion() && !tar_swamp.isPitFilled()) {
-            panel.getChildren().clear();
-            panel.setBackgroundColor(getPanelBackgroundColor(color_red));
+            panelComponent.getChildren().clear();
+            panelComponent.setBackgroundColor(config.getMudPitColor());
 
-            panel.getChildren().add(
+            panelComponent.getChildren().add(
                 TitleComponent.builder()
                 .text("MUD PIT EMPTY!")
                 .build()
