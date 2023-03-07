@@ -32,7 +32,6 @@ public class TarSwampWidget extends Overlay {
             panel.getChildren().add(
                 TitleComponent.builder()
                 .text("MUD PIT EMPTY!")
-//                .color(color_red)
                 .build()
             );
 
