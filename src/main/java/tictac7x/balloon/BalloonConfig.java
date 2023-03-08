@@ -4,11 +4,13 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.Range;
+import net.runelite.client.config.Units;
 
 @ConfigGroup(BalloonConfig.group)
 public interface BalloonConfig extends Config {
 	String group = "tictac7x-balloon";
-	enum Show { NEAR_THE_BALLOON, ALL_THE_TIME }
+	enum Show { RECENTLY_USED, NEAR_THE_BALLOON, ALL_THE_TIME }
 
 	@ConfigSection(
 		name = "Infoboxes",
@@ -22,7 +24,17 @@ public interface BalloonConfig extends Config {
 			description = "Show storage logs amounts all the time.",
 			position = 1,
 			section = infoboxes
-		) default Show show() { return Show.NEAR_THE_BALLOON; }
+		) default Show show() { return Show.RECENTLY_USED; }
+
+		@Units("min")
+		@Range(min = 1, max = 60)
+		@ConfigItem(
+			keyName = "recently_used",
+			name = "Recently used duration",
+			description = "Duration for how long infoboxes are visible if showing only recently used logs",
+			position = 2,
+			section = infoboxes
+		) default int showRecentlyUsedForMinutes() { return 3; }
 
 	@ConfigSection(
 		name = "Debug",

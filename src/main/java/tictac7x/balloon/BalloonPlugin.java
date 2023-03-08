@@ -11,6 +11,7 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -98,5 +99,12 @@ public class BalloonPlugin extends Plugin {
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		balloon.onGameStateChanged(event);
+	}
+
+	@Subscribe
+	public void onConfigChanged(final ConfigChanged event) {
+		for (final BalloonInfoBox infobox : balloon_infoboxes) {
+			infobox.onConfigChanged(event);
+		}
 	}
 }
