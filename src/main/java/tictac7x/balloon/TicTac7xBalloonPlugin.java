@@ -26,7 +26,7 @@ import javax.inject.Inject;
 	description = "Show amount of logs stored in the balloon transport system storages.",
 	tags = { "balloon", "transport", "logs", "storage" }
 )
-public class BalloonPlugin extends Plugin {
+public class TicTac7xBalloonPlugin extends Plugin {
 	@Inject
 	private Client client;
 
