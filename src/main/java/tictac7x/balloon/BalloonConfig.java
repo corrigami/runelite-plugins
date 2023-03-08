@@ -21,7 +21,7 @@ public interface BalloonConfig extends Config {
 		@ConfigItem(
 			keyName = "show",
 			name = "Show",
-			description = "Show storage logs amounts all the time.",
+			description = "When to show infoboxes about balloon logs",
 			position = 1,
 			section = infoboxes
 		) default Show show() { return Show.RECENTLY_USED; }
