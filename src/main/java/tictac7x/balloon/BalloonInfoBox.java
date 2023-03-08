@@ -15,7 +15,7 @@ public class BalloonInfoBox extends InfoBox {
 
     private final String logs_id;
     private final String tooltip;
-    private boolean render = false;
+    private boolean render_recently = false;
 
     public BalloonInfoBox(final int item_id, final String logs_id, final String tooltip, final ConfigManager configs, final BalloonConfig config, final ItemManager items, final Balloon balloon, final Plugin plugin) {
         super(items.getImage(item_id), plugin);
@@ -52,7 +52,7 @@ public class BalloonInfoBox extends InfoBox {
         return
             config.show() == BalloonConfig.Show.ALL_THE_TIME ||
             config.show() == BalloonConfig.Show.NEAR_THE_BALLOON && balloon.isVisible() ||
-            config.show() == BalloonConfig.Show.RECENTLY_USED && this.render;
+            config.show() == BalloonConfig.Show.RECENTLY_USED && this.render_recently;
     }
 
     private int getCount() {
@@ -67,13 +67,13 @@ public class BalloonInfoBox extends InfoBox {
             config.show() == BalloonConfig.Show.RECENTLY_USED
         ) {
             // Start showing infobox.
-            this.render = true;
+            this.render_recently = true;
 
             new Thread(() -> {
                 try {
                     // Hide the infobox after specified time.
                     Thread.sleep(60L * config.showRecentlyUsedForMinutes() * 1000);
-                    this.render = false;
+                    this.render_recently = false;
                 } catch (final Exception ignored) {}
             }).start();
         }
