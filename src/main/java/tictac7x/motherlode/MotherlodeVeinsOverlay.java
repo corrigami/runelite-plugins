@@ -1,6 +1,9 @@
 package tictac7x.motherlode;
 
-import tictac7x.Overlay;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.components.ProgressPieComponent;
+
+import java.awt.Color;
 import java.util.Set;
 import java.util.HashSet;
 import java.awt.Dimension;
@@ -83,11 +86,11 @@ public class MotherlodeVeinsOverlay extends Overlay {
                 if (motherlode.getPlayerSectors().contains(vein.sector) && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
                     // Can't be mined.
                     if (pay_dirt_needed == 0 && inventory.countItems() != inventory.getSize() || pay_dirt_needed < 0) {
-                        renderPie(graphics, ore_vein, config.getOreVeinsStoppingColor(), veins.getOreVeinProgress(ore_vein), 150);
+                        renderPie(graphics, ore_vein, config.getOreVeinsStoppingColor(), veins.getOreVeinProgress(ore_vein));
 
                     // Can be mined.
                     } else if (motherlode.needToMine()) {
-                        renderPie(graphics, ore_vein, config.getOreVeinsDepletedColor(), veins.getOreVeinProgress(ore_vein), 150);
+                        renderPie(graphics, ore_vein, config.getOreVeinsDepletedColor(), veins.getOreVeinProgress(ore_vein));
                     }
                 }
 
@@ -96,16 +99,29 @@ public class MotherlodeVeinsOverlay extends Overlay {
                 if (motherlode.getPlayerSectors().contains(vein.sector) && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
                     // Can't be mined.
                     if (pay_dirt_needed == 0 && inventory.countItems() != inventory.getSize() || pay_dirt_needed < 0) {
-                        renderPie(graphics, ore_vein, config.getOreVeinsStoppingColor(), 1, 150);
+                        renderPie(graphics, ore_vein, config.getOreVeinsStoppingColor(), 1);
 
                     // Can be mined.
                     } else if (motherlode.needToMine()) {
-                        renderPie(graphics, ore_vein, config.getOreVeinsColor(), 1, 150);
+                        renderPie(graphics, ore_vein, config.getOreVeinsColor(), 1);
                     }
                 }
             }
         }
 
         return null;
+    }
+
+    private void renderPie(final Graphics2D graphics, final TileObject object, final Color color, final float progress) {
+        if (color.getAlpha() == 0) return;
+
+        try {
+            final ProgressPieComponent progressPieComponent = new ProgressPieComponent();
+            progressPieComponent.setPosition(object.getCanvasLocation(150));
+            progressPieComponent.setProgress(-progress);
+            progressPieComponent.setBorderColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            progressPieComponent.setFill(color);
+            progressPieComponent.render(graphics);
+        } catch (final Exception ignored) {}
     }
 }

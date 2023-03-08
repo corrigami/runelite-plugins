@@ -1,10 +1,12 @@
 package tictac7x.motherlode;
 
 import net.runelite.api.TileObject;
+import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import tictac7x.Overlay;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.HashSet;
@@ -78,56 +80,69 @@ public class MotherlodeObjectsOverlay extends Overlay {
 
         if (ladder_down != null && motherlode.isDownStairs()) {
             if (motherlode.needToMine()) {
-                renderClickbox(graphics, ladder_down, getColor(config.getOreVeinsColor(), alpha_normal));
+                renderClickbox(graphics, ladder_down, config.getOreVeinsColor());
             } else if (motherlode.needToDepositPayDirt()) {
-                renderClickbox(graphics, ladder_down, getColor(config.getOreVeinsDepletedColor(), alpha_normal));
+                renderClickbox(graphics, ladder_down, config.getOreVeinsDepletedColor());
             }
         }
 
         if (ladder_up != null && (motherlode.needToDepositPayDirt() || pay_dirt_needed < 0) && motherlode.isUpstairs()) {
             if (pay_dirt_needed == 0) {
-                renderClickbox(graphics, ladder_up, getColor(config.getOreVeinsColor(), alpha_normal));
+                renderClickbox(graphics, ladder_up, config.getOreVeinsColor());
             } else if (pay_dirt_needed < 0) {
-                renderClickbox(graphics, ladder_up, getColor(config.getOreVeinsStoppingColor(), alpha_normal));
+                renderClickbox(graphics, ladder_up, config.getOreVeinsStoppingColor());
             }
         } else if (ladder_up != null && pay_dirt_needed > 0 && motherlode.isUpstairs()) {
-            renderClickbox(graphics, ladder_up, getColor(config.getOreVeinsDepletedColor(), alpha_normal));
+            renderClickbox(graphics, ladder_up, config.getOreVeinsDepletedColor());
         }
 
         if (crate != null && pay_dirt_needed == 0 && inventory.countPayDirt() > 0 && motherlode_sack.isFull() && motherlode.isDownStairs() && broken_struts.size() == 2) {
-            renderClickbox(graphics, crate, getColor(config.getOreVeinsColor(), alpha_normal));
+            renderClickbox(graphics, crate, config.getOreVeinsColor());
         }
 
         if (hopper != null && inventory.countPayDirt() > 0) {
             if (pay_dirt_needed < 0) {
-                renderClickbox(graphics, hopper, getColor(config.getOreVeinsStoppingColor(), alpha_normal));
+                renderClickbox(graphics, hopper, config.getOreVeinsStoppingColor());
             } else if (pay_dirt_needed == 0) {
                 if (motherlode.isDownStairs()) {
-                    renderClickbox(graphics, hopper, getColor(config.getOreVeinsColor(), alpha_normal));
+                    renderClickbox(graphics, hopper, config.getOreVeinsColor());
                 } else {
-                    renderClickbox(graphics, hopper, getColor(config.getOreVeinsDepletedColor(), alpha_normal));
+                    renderClickbox(graphics, hopper, config.getOreVeinsDepletedColor());
                 }
             }
         }
 
         if (sack != null && motherlode_sack.shouldBeEmptied()) {
             if (motherlode.isDownStairs()) {
-                renderClickbox(graphics, sack, getColor(config.getOreVeinsColor(), alpha_normal));
+                renderClickbox(graphics, sack, config.getOreVeinsColor());
             } else {
-                renderClickbox(graphics, sack, getColor(config.getOreVeinsDepletedColor(), alpha_normal));
+                renderClickbox(graphics, sack, config.getOreVeinsDepletedColor());
             }
         }
 
         if (motherlode_sack.isFull() && !motherlode_sack.isFullActual() && motherlode.isDownStairs()) {
             for (final TileObject broken_strut : broken_struts) {
                 if (broken_struts.size() == 1) {
-                    renderClickbox(graphics, broken_strut, getColor(config.getOreVeinsDepletedColor(), alpha_normal));
+                    renderClickbox(graphics, broken_strut, config.getOreVeinsDepletedColor());
                 } else {
-                    renderClickbox(graphics, broken_strut, getColor(config.getOreVeinsStoppingColor(), alpha_normal));
+                    renderClickbox(graphics, broken_strut, config.getOreVeinsStoppingColor());
                 }
             }
         }
 
         return null;
+    }
+
+    private void renderClickbox(final Graphics2D graphics, final TileObject tile_object, final Color color) {
+        try {
+            // Area border.
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            graphics.setStroke(new BasicStroke(1));
+            graphics.draw(tile_object.getClickbox());
+
+            // Area fill.
+            graphics.setColor(color);
+            graphics.fill(tile_object.getClickbox());
+        } catch (final Exception ignored) {}
     }
 }

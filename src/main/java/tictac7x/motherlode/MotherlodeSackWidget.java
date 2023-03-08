@@ -1,23 +1,23 @@
 package tictac7x.motherlode;
 
-import tictac7x.Overlay;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Graphics2D;
 import net.runelite.api.Client;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 
 import javax.annotation.Nullable;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
-public class MotherlodeSackWidget extends Overlay {
+public class MotherlodeSackWidget extends OverlayPanel {
     private final MotherlodeConfig config;
     private final Motherlode motherlode;
     private final Client client;
@@ -37,7 +37,7 @@ public class MotherlodeSackWidget extends Overlay {
 
         setPosition(OverlayPosition.TOP_LEFT);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
-        makePanelResizeable(panelComponent, panel);
+        panelComponent.setBorder(new Rectangle(0, 0, 0, 0));
     }
 
     public void loadNativeWidget() {
@@ -93,17 +93,17 @@ public class MotherlodeSackWidget extends Overlay {
 
         // Panel background color.
         final Color color_background =
-            (this.isPayDirtTotalPerfect(pay_dirt_needed) || pay_dirt_needed == 0 && inventory.countPayDirt() > 0) ? color_green :
-            (sack.isFull() || pay_dirt_needed < 0) ? color_red :
-            (sack.shouldBeEmptied()) ? color_yellow :
+            (this.isPayDirtTotalPerfect(pay_dirt_needed) || pay_dirt_needed == 0 && inventory.countPayDirt() > 0) ? Color.green :
+            (sack.isFull() || pay_dirt_needed < 0) ? Color.red :
+            (sack.shouldBeEmptied()) ? Color.orange :
             null;
-        panel.setBackgroundColor(getPanelBackgroundColor(color_background));
+        panel.setBackgroundColor(color_background == null ? null : new Color(color_background.getRed(), color_background.getGreen(), color_background.getBlue(), 80));
 
         // Sack Pay-dirt count.
         if (config.showSackPaydirt()) {
             panel.getChildren().add(LineComponent.builder()
-                .left("Sack:").leftColor(color_background != null ? color_white : color_orange)
-                .right(String.valueOf(sack.countPayDirt())).rightColor(color_white)
+                .left("Sack:").leftColor(color_background != null ? Color.white : Color.lightGray)
+                .right(String.valueOf(sack.countPayDirt())).rightColor(Color.white)
                 .build()
             );
         }
@@ -111,17 +111,17 @@ public class MotherlodeSackWidget extends Overlay {
         // Inventory deposits left.
         if (config.showSackDeposits()) {
             panel.getChildren().add(LineComponent.builder()
-                .left("Deposits:").leftColor(color_background != null ? color_white : color_orange)
-                .right(String.valueOf(deposits_left)).rightColor(color_white)
+                .left("Deposits:").leftColor(color_background != null ? Color.white : Color.lightGray)
+                .right(String.valueOf(deposits_left)).rightColor(Color.white)
                 .build()
             );
         }
 
         // Pay-dirt needed to mine.
         if (config.showSackNeeded()) {
-            final Color color_needed = (color_background != null || pay_dirt_needed == 0) ? color_white : color_green;
+            final Color color_needed = (color_background != null || pay_dirt_needed == 0) ? Color.white : Color.green;
             panel.getChildren().add(LineComponent.builder()
-                .left("Needed:").leftColor(color_background != null ? color_white : color_orange)
+                .left("Needed:").leftColor(color_background != null ? Color.white : Color.orange)
                 .right(String.valueOf(pay_dirt_needed)).rightColor(color_needed)
                 .build()
             );

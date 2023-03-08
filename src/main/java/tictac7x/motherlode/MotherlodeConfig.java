@@ -1,7 +1,6 @@
 package tictac7x.motherlode;
 
 import net.runelite.client.config.*;
-import tictac7x.Overlay;
 import java.awt.Color;
 
 @ConfigGroup(MotherlodeConfig.group)
@@ -21,7 +20,7 @@ public interface MotherlodeConfig extends Config {
 			description = "Highlight ore veins that can be mined.",
 			position = 1,
 			section = ore_veins_and_rockfalls
-		) default Color getOreVeinsColor() { return Overlay.getColor(Overlay.color_green, Overlay.alpha_vibrant); }
+		) default Color getOreVeinsColor() { return new Color(0, 255, 0, 140); }
 
 		@Alpha
 		@ConfigItem(
@@ -30,7 +29,7 @@ public interface MotherlodeConfig extends Config {
 			description = "Highlight ore veins that are depleted.",
 			position = 2,
 			section = ore_veins_and_rockfalls
-		) default Color getOreVeinsDepletedColor() { return Overlay.getColor(Overlay.color_yellow, Overlay.alpha_vibrant); }
+		) default Color getOreVeinsDepletedColor() { return new Color(255, 180, 0, 140); }
 
 		@Alpha
 		@ConfigItem(
@@ -39,7 +38,7 @@ public interface MotherlodeConfig extends Config {
 			description = "Highlight ore veins when they shouldn't be mined.",
 			position = 3,
 			section = ore_veins_and_rockfalls
-		) default Color getOreVeinsStoppingColor() { return Overlay.getColor(Overlay.color_red, Overlay.alpha_vibrant); }
+		) default Color getOreVeinsStoppingColor() { return new Color(255, 0, 0, 140); }
 
 		@Alpha
 		@ConfigItem(
@@ -48,7 +47,7 @@ public interface MotherlodeConfig extends Config {
 			description = "Highlight rockfalls that need to be cleared.",
 			position = 4,
 			section = ore_veins_and_rockfalls
-		) default Color getRockfallsColor() { return Overlay.getColor(Overlay.color_red, Overlay.alpha_normal); }
+		) default Color getRockfallsColor() { return new Color(255, 0, 0, 80); }
 
 		@ConfigItem(
 			keyName = "draw_distance",

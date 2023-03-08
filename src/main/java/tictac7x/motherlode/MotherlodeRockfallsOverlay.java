@@ -1,6 +1,9 @@
 package tictac7x.motherlode;
 
-import tictac7x.Overlay;
+import net.runelite.client.ui.overlay.Overlay;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Optional;
@@ -21,7 +24,6 @@ public class MotherlodeRockfallsOverlay extends Overlay {
     private final Client client;
 
     private final Set<Integer> ROCKFALLS = ImmutableSet.of(26679, 26680);
-
     private final Set<TileObject> rockfalls = new HashSet<>();
 
     public MotherlodeRockfallsOverlay(final MotherlodeConfig config, final Motherlode motherlode, final Client client) {
@@ -88,5 +90,20 @@ public class MotherlodeRockfallsOverlay extends Overlay {
         }
 
         return null;
+    }
+
+    private void renderTile(final Graphics2D graphics, final TileObject tile_object, final Color color) {
+        if (color.getAlpha() == 0) return;
+
+        try {
+            // Area border.
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            graphics.setStroke(new BasicStroke(1));
+            graphics.draw(tile_object.getCanvasTilePoly());
+
+            // Area fill.
+            graphics.setColor(color);
+            graphics.fill(tile_object.getCanvasTilePoly());
+        } catch (final Exception ignored) {}
     }
 }
