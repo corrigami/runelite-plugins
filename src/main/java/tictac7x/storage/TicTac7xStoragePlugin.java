@@ -28,7 +28,7 @@ import javax.inject.Inject;
 	description = "Show overlays of inventory and bank",
 	tags = { "storage", "bank", "inventory", "item" }
 )
-public class StoragePlugin extends Plugin {
+public class TicTac7xStoragePlugin extends Plugin {
 	private String plugin_version = "v0.4";
 	private String plugin_message = "" +
 			"<colHIGHLIGHT>Storage " + plugin_version + ":<br>" +
