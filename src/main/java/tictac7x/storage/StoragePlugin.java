@@ -1,26 +1,26 @@
 package tictac7x.storage;
 
-import javax.inject.Inject;
-
+import com.google.inject.Provides;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import lombok.extern.slf4j.Slf4j;
-import com.google.inject.Provides;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.callback.ClientThread;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.client.ui.overlay.OverlayManager;
+
+import javax.inject.Inject;
 
 @Slf4j
 @PluginDescriptor(
@@ -29,9 +29,9 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	tags = { "storage", "bank", "inventory", "item" }
 )
 public class StoragePlugin extends Plugin {
-	private String plugin_version = "0.4";
+	private String plugin_version = "v0.4";
 	private String plugin_message = "" +
-			"<colHIGHLIGHT>Storage v0.4:<br>" +
+			"<colHIGHLIGHT>Storage " + plugin_version + ":<br>" +
 			"<colHIGHLIGHT>* Bank placeholders not showing as items<br>" +
 			"<colHIGHLIGHT>* Settings simplified";
 
