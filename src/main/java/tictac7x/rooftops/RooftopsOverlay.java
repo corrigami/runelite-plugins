@@ -1,29 +1,27 @@
 package tictac7x.rooftops;
 
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
+import net.runelite.api.Player;
+import net.runelite.api.Tile;
+import net.runelite.api.TileObject;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.ItemSpawned;
 import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import tictac7x.rooftops.courses.Courses;
 
 import java.awt.BasicStroke;
-import java.util.List;
-import java.util.Optional;
-import java.util.ArrayList;
-
-import java.awt.Shape;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-
-import net.runelite.api.Tile;
-import net.runelite.api.Client;
-import net.runelite.api.ItemID;
-import net.runelite.api.Player;
-import net.runelite.api.GameState;
-import net.runelite.api.TileObject;
-import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
+import java.awt.Shape;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 public class RooftopsOverlay extends Overlay {
@@ -104,9 +102,11 @@ public class RooftopsOverlay extends Overlay {
     }
 
     private void renderShape(final Graphics2D graphics, final Shape shape, final Color color) {
+        if (color.getAlpha() == 0) return;
+
         try {
             // Area border.
-            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.min(255, color.getAlpha() + 20)));
             graphics.setStroke(new BasicStroke(1));
             graphics.draw(shape);
 
