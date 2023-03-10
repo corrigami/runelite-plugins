@@ -1,4 +1,4 @@
-# Motherlode Mine Improved - v0.3.1
+# Motherlode Mine Improved - v0.3.2
 ![](img/motherlode.png)
 
 <br>

@@ -134,9 +134,11 @@ public class MotherlodeObjectsOverlay extends Overlay {
     }
 
     private void renderClickbox(final Graphics2D graphics, final TileObject tile_object, final Color color) {
+        if (color.getAlpha() == 0) return;
+
         try {
             // Area border.
-            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.min(255, color.getAlpha() + 20)));
             graphics.setStroke(new BasicStroke(1));
             graphics.draw(tile_object.getClickbox());
 

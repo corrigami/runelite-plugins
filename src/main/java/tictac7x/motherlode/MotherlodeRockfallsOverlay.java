@@ -1,22 +1,22 @@
 package tictac7x.motherlode;
 
-import net.runelite.client.ui.overlay.Overlay;
-
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Optional;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
 import com.google.common.collect.ImmutableSet;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Player;
 import net.runelite.api.TileObject;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 public class MotherlodeRockfallsOverlay extends Overlay {
     private final MotherlodeConfig config;
@@ -97,7 +97,7 @@ public class MotherlodeRockfallsOverlay extends Overlay {
 
         try {
             // Area border.
-            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.min(255, color.getAlpha() + 20)));
             graphics.setStroke(new BasicStroke(1));
             graphics.draw(tile_object.getCanvasTilePoly());
 

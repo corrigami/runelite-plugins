@@ -1,20 +1,20 @@
 package tictac7x.motherlode;
 
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.Player;
+import net.runelite.api.TileObject;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 import java.awt.Color;
-import java.util.Set;
-import java.util.HashSet;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import net.runelite.api.Client;
-import net.runelite.api.TileObject;
-import net.runelite.api.GameState;
-import net.runelite.api.Player;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MotherlodeVeinsOverlay extends Overlay {
     private final MotherlodeConfig config;
@@ -119,7 +119,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
             final ProgressPieComponent progressPieComponent = new ProgressPieComponent();
             progressPieComponent.setPosition(object.getCanvasLocation(150));
             progressPieComponent.setProgress(-progress);
-            progressPieComponent.setBorderColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() + 20));
+            progressPieComponent.setBorderColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.min(255, color.getAlpha() + 20)));
             progressPieComponent.setFill(color);
             progressPieComponent.render(graphics);
         } catch (final Exception ignored) {}
