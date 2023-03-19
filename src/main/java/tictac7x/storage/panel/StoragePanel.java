@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
@@ -22,10 +23,12 @@ public class StoragePanel extends PluginPanel {
     private final StorageConfig config;
     private final JsonParser parser = new JsonParser();
 
+    private List<DataItem> list_items;
+    private String search = "";
+
     private Search input_search;
     private JScrollPane panel_scoller;
     private PanelItems panel_items;
-    private List<DataItem> list_items;
 
     public StoragePanel(final ClientThread client_thread, final ItemManager items, final StorageConfig config) {
         super(false);
@@ -62,6 +65,8 @@ public class StoragePanel extends PluginPanel {
     }
 
     public void searchItems(final String search) {
+        this.search = search;
+
         // Show all items.
         if (search.length() == 0) {
             panel_items.update(list_items);
@@ -92,5 +97,12 @@ public class StoragePanel extends PluginPanel {
             list_items_starts_with.addAll(list_items_contains);
             panel_items.update(list_items_starts_with);
         });
+    }
+
+    public void onConfigChanged(final ConfigChanged event) {
+        if (!event.getGroup().equals(StorageConfig.group) || !event.getKey().equals(StorageConfig.bank)) return;
+
+        loadItemsFromConfig();
+        searchItems(search);
     }
 }

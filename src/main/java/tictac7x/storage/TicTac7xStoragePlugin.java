@@ -119,6 +119,9 @@ public class TicTac7xStoragePlugin extends Plugin {
 			return;
 		}
 
+		// Update list of items in the panel.
+		storage_panel.onConfigChanged(event);
+
 		for (final Storage storage : storages) {
 			storage.onConfigChanged(event);
 		}
@@ -143,13 +146,16 @@ public class TicTac7xStoragePlugin extends Plugin {
 		}
 
 		if (config.showPanel()) {
-			navigation_button = NavigationButton.builder()
-				.tooltip("Storage")
-				.icon(items.getImage(ItemID.CHEST))
-				.priority(config.getPanelPriority())
-				.panel(storage_panel)
-				.build();
-			client_toolbar.addNavigation(navigation_button);
+			// Invoke on client thread otherwise icon is not showing on the sidebar.
+			client_thread.invokeLater(() -> {
+				navigation_button = NavigationButton.builder()
+						.tooltip("Storage")
+						.icon(items.getImage(ItemID.CHEST))
+						.priority(config.getPanelPriority())
+						.panel(storage_panel)
+						.build();
+				client_toolbar.addNavigation(navigation_button);
+			});
 		}
 	}
 }
