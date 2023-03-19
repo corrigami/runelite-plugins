@@ -6,6 +6,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
+import net.runelite.api.ItemID;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.widgets.WidgetInfo;
@@ -18,8 +19,12 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import tictac7x.storage.panel.StoragePanel;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 @Slf4j
@@ -29,14 +34,16 @@ import javax.inject.Inject;
 	tags = { "storage", "bank", "inventory", "item" }
 )
 public class TicTac7xStoragePlugin extends Plugin {
-	private String plugin_version = "v0.4";
+	private String plugin_version = "v0.5";
 	private String plugin_message = "" +
-			"<colHIGHLIGHT>Storage " + plugin_version + ":<br>" +
-			"<colHIGHLIGHT>* Bank placeholders not showing as items<br>" +
-			"<colHIGHLIGHT>* Settings simplified";
+		"<colHIGHLIGHT>Storage " + plugin_version + ":<br>" +
+		"<colHIGHLIGHT>* Searchable panel with bank items (can be disabled in the settings)";
 
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientToolbar client_toolbar;
 
 	@Inject
 	private StorageConfig config;
@@ -63,6 +70,11 @@ public class TicTac7xStoragePlugin extends Plugin {
 
 	private Storage[] storages;
 
+	private StoragePanel storage_panel;
+
+	@Nullable
+	private NavigationButton navigation_button;
+
 	@Override
 	protected void startUp() {
 		storages = new Storage[]{
@@ -73,12 +85,20 @@ public class TicTac7xStoragePlugin extends Plugin {
 		for (final Storage storage : storages) {
 			overlays.add(storage);
 		}
+
+		// Panel
+		storage_panel = new StoragePanel(client_thread, items, config);
+		updateNavigationButton();
 	}
 
 	@Override
 	protected void shutDown() {
 		for (final Storage storage : storages) {
 			overlays.remove(storage);
+		}
+
+		if (config.showPanel()) {
+			client_toolbar.removeNavigation(navigation_button);
 		}
 	}
 
@@ -91,6 +111,14 @@ public class TicTac7xStoragePlugin extends Plugin {
 
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event) {
+		if (!event.getGroup().equals(StorageConfig.group)) return;
+
+		// Toggle panel.
+		if (event.getKey().equals(StorageConfig.panel) || event.getKey().equals(StorageConfig.panel_priority)) {
+			updateNavigationButton();
+			return;
+		}
+
 		for (final Storage storage : storages) {
 			storage.onConfigChanged(event);
 		}
@@ -109,4 +137,19 @@ public class TicTac7xStoragePlugin extends Plugin {
 		}
 	}
 
+	private void updateNavigationButton() {
+		if (navigation_button != null) {
+			client_toolbar.removeNavigation(navigation_button);
+		}
+
+		if (config.showPanel()) {
+			navigation_button = NavigationButton.builder()
+				.tooltip("Storage")
+				.icon(items.getImage(ItemID.CHEST))
+				.priority(config.getPanelPriority())
+				.panel(storage_panel)
+				.build();
+			client_toolbar.addNavigation(navigation_button);
+		}
+	}
 }

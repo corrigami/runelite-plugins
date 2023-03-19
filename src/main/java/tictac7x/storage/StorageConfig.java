@@ -13,6 +13,7 @@ public interface StorageConfig extends Config {
 	String show = "show";
 	String auto_hide = "auto_hide";
 	String version = "version";
+	String panel_priority = "panel_priority";
 
 	enum InventoryEmpty { TOP, FIRST, LAST, BOTTOM, HIDDEN }
 
@@ -124,4 +125,26 @@ public interface StorageConfig extends Config {
 			section = bank,
 			position = 4
 		) default String getBankHidden() { return ""; }
+
+	@ConfigSection(
+		name = "Panel",
+		description = "Panel settings",
+		position = 3
+	) String panel = "panel";
+
+		@ConfigItem(
+			keyName = panel,
+			name = "Show bank panel",
+			description = "Show bank panel on the sidebar where you can check your bank items",
+			section = panel,
+			position = 1
+		) default boolean showPanel() { return true; }
+
+		@ConfigItem(
+			keyName = panel_priority,
+			name = "Bank panel priority",
+			description = "Lower the number, higher the priority and storage icon on the sidebar",
+			section = panel,
+			position = 2
+		) default int getPanelPriority() { return 5; }
 }
