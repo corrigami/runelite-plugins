@@ -1,50 +1,25 @@
 package tictac7x.rooftops.courses;
 
-import java.util.Arrays;
-import tictac7x.rooftops.MarkOfGrace;
 import com.google.common.collect.ImmutableSet;
+import tictac7x.rooftops.MarkOfGrace;
+
+import java.util.Arrays;
 
 public class RooftopCourseSeers extends Course {
     public RooftopCourseSeers() {
-        super(
+        super("Seers",
+
+            // Regions.
+            ImmutableSet.of(10806),
+
             // Obstacles.
             Arrays.asList(
-                14927,
-                14928,
-                14932,
-                14929,
-                14930,
-                14931
-            ),
-
-            // Animations.
-            ImmutableSet.of(
-                737, 1118,
-                2586, 2588, 2586, 2588,
-                //
-                2585,
-                2586, 2588,
-                2586, 2588
-            ),
-
-            // Poses.
-            ImmutableSet.of(
-                //
-                //
-                762
-                //
-                //
-                //
-            ),
-
-            // Idles.
-            ImmutableSet.of(
-                //
-                //
-                763
-                //
-                //
-                //
+                new Obstacle(14927, 0, new int[][]{{2729, 3489}}),
+                new Obstacle(14928, 3, new int[][]{{2720, 3492}, {2720, 3493}, {2720, 3494}, {2720, 3495}, {2720, 3496}}),
+                new Obstacle(14932, 2, new int[][]{{2710, 3489}}),
+                new Obstacle(14929, 2, new int[][]{{2710, 3476}, {2711, 3476}, {2712, 3476}, {2713, 3476}, {2714, 3476}}),
+                new Obstacle(14930, 3, new int[][]{{2700, 3469}, {2701, 3469}, {2702, 3469}, {2703, 3469}}),
+                new Obstacle(14931, 2, new int[][]{{2703, 3461}, {2703, 3462}, {2703, 3463}, {2703, 3464}, {2703, 3465}})
             ),
 
             ImmutableSet.of(

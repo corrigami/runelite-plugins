@@ -1,11 +1,12 @@
 package tictac7x.rooftops;
 
-import java.awt.Color;
-import net.runelite.client.config.Config;
 import net.runelite.client.config.Alpha;
-import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+
+import java.awt.Color;
 
 @ConfigGroup("tictac7x-rooftops")
 public interface RooftopsConfig extends Config {
@@ -20,23 +21,26 @@ public interface RooftopsConfig extends Config {
 			keyName = "obstacle_next",
 			name = "Next obstacle",
 			description = "Color of the next obstacle.",
-			position = 1
-		) default Color getObstacleNextColor() { return new Color(0, 255, 0, 100); }
+			position = 1,
+			section = obstacles
+		) default Color getObstacleNextColor() { return new Color(0, 255, 0, 80); }
 
 		@Alpha
 		@ConfigItem(
 			keyName = "obstacle_next_unavailable",
 			name = "Next unavailable obstacle",
 			description = "Color of the next obstacle.",
-			position = 2
-		) default Color getObstacleNextUnavailableColor() { return new Color(200, 255, 0, 100); }
+			position = 2,
+			section = obstacles
+		) default Color getObstacleNextUnavailableColor() { return new Color(200, 255, 0, 80); }
 
 		@Alpha
 		@ConfigItem(
 			keyName = "obstacle_unavailable",
 			name = "Unavailable obstacles",
 			description = "Color of unavailable obstacles.",
-			position = 3
+			position = 3,
+			section = obstacles
 		) default Color getObstacleUnavailableColor() { return new Color(255, 150, 0, 80); }
 
 		@Alpha
@@ -44,23 +48,31 @@ public interface RooftopsConfig extends Config {
 			keyName = "obstacle_stop",
 			name = "Stopping obstacle",
 			description = "Color of obstacle that should not be used, because Mark of grace is on the ground.",
-			position = 4
-		) default Color getObstacleStopColor() { return new Color(255, 0, 0, 100); }
+			position = 4,
+			section = obstacles
+		) default Color getObstacleStopColor() { return new Color(255, 0, 0, 80); }
+
+	@ConfigSection(
+		name = "Marks of graces",
+		description = "Marks of graces",
+		position = 2
+	) String marks_of_graces = "marks_of_graces";
 
 		@Alpha
 		@ConfigItem(
 			keyName = "mark_of_grace",
 			name = "Mark of grace",
 			description = "Color of the Mark of grace.",
-			position = 5
-		) default Color getMarkOfGraceColor() { return new Color(0, 255, 0, 200); }
+			position = 1,
+			section = marks_of_graces
+		) default Color getMarkOfGraceColor() { return new Color(0, 255, 0, 80); }
 
-		@ConfigSection(
-			name = "Debug",
-			description = "Debug",
-			closedByDefault = true,
-			position = 2
-		) String debug = "debug";
+	@ConfigSection(
+		name = "Debug",
+		description = "Debug",
+		closedByDefault = true,
+		position = 3
+	) String debug = "debug";
 
 		@ConfigItem(
 			keyName = "debug",

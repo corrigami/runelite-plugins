@@ -1,26 +1,26 @@
 package tictac7x.rooftops;
 
-import tictac7x.rooftops.courses.Courses;
+import com.google.inject.Provides;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.DecorativeObjectSpawned;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.HitsplatApplied;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.ItemSpawned;
+import net.runelite.api.events.MenuOptionClicked;
+import net.runelite.api.events.StatChanged;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.plugins.Plugin;
+import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import com.google.inject.Provides;
-
-import net.runelite.api.Client;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.ItemDespawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GroundObjectSpawned;
-import net.runelite.api.events.DecorativeObjectSpawned;
-import net.runelite.api.events.HitsplatApplied;
-import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
@@ -38,11 +38,13 @@ public class RooftopsPlugin extends Plugin {
 	@Inject
 	private RooftopsConfig config;
 
-	private RooftopsOverlay overlay;
+	private RooftopsCourseManager course_manager;
 
-	private RooftopsOverylayDebug overlay_debug;
+	private RooftopsOverlay overlay_rooftops;
 
-	private Courses courses;
+//	private RooftopsOverylayDebug overlay_debug;
+
+//	private Courses courses;
 
 	@Provides
 	RooftopsConfig provideConfig(ConfigManager configManager) {
@@ -51,70 +53,78 @@ public class RooftopsPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		courses = new Courses(config, client);
-		overlay = new RooftopsOverlay(config, client, courses);
-		overlay_debug = new RooftopsOverylayDebug(client, config, courses);
+		course_manager = new RooftopsCourseManager(client);
+//		courses = new Courses(config, client);
+		overlay_rooftops = new RooftopsOverlay(client, config, course_manager);
+//		overlay_debug = new RooftopsOverylayDebug(client, config, courses);
 
-		overlays.add(overlay);
-		overlays.add(overlay_debug);
+		overlays.add(overlay_rooftops);
+//		overlays.add(overlay_debug);
 	}
 
 	@Override
 	protected void shutDown() {
-		overlays.remove(overlay);
-		overlays.remove(overlay_debug);
+		overlays.remove(overlay_rooftops);
+//		overlays.remove(overlay_debug);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		overlay.onTileObjectSpawned(event.getGameObject());
-		courses.onTileObjectSpawned(event.getGameObject());
+		course_manager.onTileObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onGroundObjectSpawned(final GroundObjectSpawned event) {
-		overlay.onTileObjectSpawned(event.getGroundObject());
-		courses.onTileObjectSpawned(event.getGroundObject());
+		course_manager.onTileObjectSpawned(event.getGroundObject());
 	}
 
 	@Subscribe
 	public void onDecorativeObjectSpawned(final DecorativeObjectSpawned event) {
-		overlay.onTileObjectSpawned(event.getDecorativeObject());
-		courses.onTileObjectSpawned(event.getDecorativeObject());
+		course_manager.onTileObjectSpawned(event.getDecorativeObject());
 	}
 
 	@Subscribe
 	public void onItemSpawned(final ItemSpawned event) {
-		overlay.onItemSpawned(event);
-		courses.onItemSpawned(event);
+//		overlay_rooftops.onItemSpawned(event);
+//		course_manager.onItemSpawned(event);
 	}
 
 	@Subscribe
 	public void onItemDespawned(final ItemDespawned event) {
-		overlay.onItemDespawned(event);
-		courses.onItemDespawned(event);
+//		overlay_rooftops.onItemDespawned(event);
+//		courses.onItemDespawned(event);
+	}
+
+	@Subscribe
+	public void onChatMessage(final ChatMessage event) {
+		course_manager.onChatMessage(event);
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(final MenuOptionClicked event) {
-		courses.onMenuOptionClicked(event);
+		course_manager.onMenuOptionClicked(event);
 	}
 
 	@Subscribe
 	public void onStatChanged(final StatChanged event) {
-		courses.onStatChanged(event);
+		course_manager.onStatChanged(event);
 	}
 
 	@Subscribe
 	public void onHitsplatApplied(final HitsplatApplied event) {
-		if (event.getActor() == client.getLocalPlayer()) {
-			courses.onObstacleFailed();
-		}
+//		if (event.getActor() == client.getLocalPlayer()) {
+//			courses.onObstacleFailed();
+//		}
+	}
+
+	@Subscribe
+	public void onGameTick(final GameTick gametick) {
+		course_manager.onGameTick(gametick);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		overlay.onGameStateChanged(event);
-		courses.onGameStateChanged(event);
+		course_manager.onGameStateChanged(event);
+//		courses.onGameStateChanged(event);
 	}
 }
