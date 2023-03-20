@@ -10,14 +10,16 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
 import tictac7x.rooftops.courses.Course;
 import tictac7x.rooftops.courses.Obstacle;
-import tictac7x.rooftops.courses.RooftopCourseSeers;
+import tictac7x.rooftops.courses.*;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -27,15 +29,15 @@ public class RooftopsCourseManager {
     private final Pattern lap_complete = Pattern.compile(".*lap count is:.*");
 
     private final Course[] courses = new Course[]{
-//        new RooftopCourseAlKharid(),
-//        new RooftopCourseVarrock(),
+        new RooftopCourseDraynor(),
+        new RooftopCourseAlKharid(),
+        new RooftopCourseVarrock(),
+        new RooftopCourseCanifis(),
+        new RooftopCourseFalador(),
         new RooftopCourseSeers(),
-//        new RooftopCoursePollnivneach(),
-//        new RooftopCourseArdougne(),
-//        new RooftopCourseCanifis(),
-//        new RooftopCourseDraynor(),
-//        new RooftopCourseRellekka(),
-//        new RooftopCourseFalador(),
+        new RooftopCoursePollnivneach(),
+        new RooftopCourseRellekka(),
+        new RooftopCourseArdougne(),
     };
 
     private final List<TileObject> obstacles = new ArrayList<>();
@@ -43,7 +45,7 @@ public class RooftopsCourseManager {
     private boolean obstacle_clicked;
 
     // Keep track of next obstacle id locally until obstacle is completed.
-    private int next_obstacle_id;
+    private int[] next_obstacle_ids;
 
     //  n: gameticks to wait before starting an obstacle
     //  0: start the obstacle
@@ -53,6 +55,8 @@ public class RooftopsCourseManager {
     @Nullable
     private Course course;
 
+    private boolean is_near_course;
+
     public RooftopsCourseManager(final Client client) {
         this.client = client;
     }
@@ -61,95 +65,54 @@ public class RooftopsCourseManager {
         if (course == null) return;
 
         for (final Obstacle obstacle : course.getObstacles()) {
-            if (object.getId() == obstacle.id) {
+            if (obstacle.hasId(object.getId())) {
                 obstacles.add(object);
             }
         }
     }
 
     public void onGameStateChanged(final GameStateChanged event) {
-        final int[] regions = client.getMapRegions();
-        if (regions == null) return;
-
+        // Clear previous obstacles objects (since they will spawn again).
         if (event.getGameState() == GameState.LOADING) {
             obstacles.clear();
         }
 
-        for (final Course course : courses) {
-            for (final int region : regions) {
-                if (course.getRegions().contains(region)) {
-                    // New course found, reset previous.
-                    if (this.course != null && this.course != course) {
-                        this.course.reset();
-                    }
-
-                    // New course found.
-                    this.course = course;
-                    this.next_obstacle_id = course.getNextObstacle().id;
-                    return;
-                }
-            }
-        }
-
-        // Course not found, reset previous.
-        if (this.course != null) {
-            this.course.reset();
-            this.course = null;
-        }
+        detectCourse();
     }
 
     public void onMenuOptionClicked(final MenuOptionClicked event) {
         // Click on interface or item in invetory doesn't stop from doing the obstacle.
         if (event.getId() == 1 && event.getItemId() == -1 || event.getItemId() != -1 && !event.getMenuTarget().contains("->")) return;
-        if (course == null) return;
-
-        // Next obstacle clicked.
-        if (event.getId() == next_obstacle_id) {
-            obstacle_clicked = true;
-
-            // Mark obstacle to be started.
-            if (isNearObstacle()) {
-                start_obstacle = 1;
-            }
-
-        // Some action happened that is stopping us from doing an obstacle.
-        } else {
-            obstacle_clicked = false;
-        }
+        checkForClickedObstacle(event.getId());
     }
 
     public void onStatChanged(final StatChanged event) {
         if (course == null || event.getSkill() != Skill.AGILITY) return;
-
-        // Obstacle completed, find next one.
-        course.completeObstacle();
-        next_obstacle_id = course.getNextObstacle().id;
+        completeObstacle();
     }
 
-    public void onGameTick(final GameTick gametick) {
-        if (course == null) return;
+    public void onHitsplatApplied(final HitsplatApplied event) {
+        if (course == null || event.getActor() != client.getLocalPlayer()) return;
 
-        // Delay starting the obstacle.
-        if (start_obstacle > 0) {
-            start_obstacle--;
-            return;
-        }
+        resetCourse();
+    }
 
-        // Start obstacle.
-        if (start_obstacle == 0) {
-            start_obstacle = -1;
-            obstacle_clicked = false;
-            course.startObstacle();
-            return;
-        }
-
-        // Obstacle detected from further away.
-        if (obstacle_clicked && isNearObstacle()) {
-            start_obstacle = 1;
+    public void onGameTick(final GameTick ignored) {
+        checkNearCourse();
+        checkStartObstacle();
+        if (course != null) {
+            System.out.println(course.getId());
         }
     }
 
     public void onChatMessage(final ChatMessage event) {
+        if (course != null) {
+            if (event.getMessage().contains("Complete")) {
+                course.completeObstacle();
+            } else if (event.getMessage().contains("Next")) {
+                course.startObstacle();
+            }
+        }
         if (course != null && event.getType() == ChatMessageType.GAMEMESSAGE && lap_complete.matcher(event.getMessage()).find()) {
             course.reset();
         }
@@ -164,12 +127,16 @@ public class RooftopsCourseManager {
         return obstacles;
     }
 
+    public boolean isNearCourse() {
+        return is_near_course;
+    }
+
     @Nullable
     private TileObject getNextObstacle() {
         if (course == null) return null;
 
         for (final TileObject obstacle : obstacles) {
-            if (obstacle.getId() == course.getNextObstacle().id) {
+            if (course.getNextObstacle().hasId(obstacle.getId())) {
                 return obstacle;
             }
         }
@@ -191,5 +158,96 @@ public class RooftopsCourseManager {
         }
 
         return false;
+    }
+
+    private void startObstacle() {
+        if (course == null) return;
+
+        start_obstacle = -1;
+        obstacle_clicked = false;
+        course.startObstacle();
+    }
+
+    private void completeObstacle() {
+        if (this.course == null) return;
+        course.completeObstacle();
+        next_obstacle_ids = course.getNextObstacle().getIds();
+    }
+
+    private void checkForClickedObstacle(final int id) {
+        if (course == null) return;
+
+        // Next obstacle clicked.
+        if (Arrays.stream(next_obstacle_ids).anyMatch(i -> i == id)) {
+            obstacle_clicked = true;
+
+            // Mark obstacle to be started after 1 gametick.
+            if (isNearObstacle()) {
+                start_obstacle = 1;
+            }
+
+            // Some action happened that is stopping us from doing an obstacle.
+        } else {
+            obstacle_clicked = false;
+        }
+    }
+
+    private void detectCourse() {
+        final int[] regions = client.getMapRegions();
+        if (regions == null) return;
+
+        for (final Course course : courses) {
+            if (course.isNearRegion(regions)) {
+                // If player is specifically in another course region, don't change the course.
+                if (this.course != null && this.course.isInRegion(client.getLocalPlayer().getWorldLocation().getRegionID())) {
+                    continue;
+                }
+
+                // New course found, reset previous.
+                if (this.course != null && this.course != course) {
+                    this.course.reset();
+                }
+
+                // New course found.
+                if (this.course != course) {
+                    this.next_obstacle_ids = course.getNextObstacle().getIds();
+                }
+
+                this.course = course;
+                // Cant break here since some courses share regions and we need to check all of them.
+            }
+        }
+    }
+
+    private void checkNearCourse() {
+        if (course == null) return;
+        is_near_course = course.isInRegion(client.getLocalPlayer().getWorldLocation().getRegionID());
+    }
+
+    private void checkStartObstacle() {
+        if (course == null) return;
+
+        // Delay starting the obstacle.
+        if (start_obstacle > 0) {
+            start_obstacle--;
+            return;
+        }
+
+        // Start obstacle.
+        if (start_obstacle == 0) {
+            startObstacle();
+            return;
+        }
+
+        // Obstacle detected from further away.
+        if (obstacle_clicked && isNearObstacle()) {
+            start_obstacle = 1;
+        }
+    }
+
+    private void resetCourse() {
+        if (course == null) return;
+        course.reset();
+        next_obstacle_ids = course.getNextObstacle().getIds();
     }
 }

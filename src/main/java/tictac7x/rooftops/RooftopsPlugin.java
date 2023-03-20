@@ -112,9 +112,7 @@ public class RooftopsPlugin extends Plugin {
 
 	@Subscribe
 	public void onHitsplatApplied(final HitsplatApplied event) {
-//		if (event.getActor() == client.getLocalPlayer()) {
-//			courses.onObstacleFailed();
-//		}
+		course_manager.onHitsplatApplied(event);
 	}
 
 	@Subscribe

@@ -54,13 +54,13 @@ public class RooftopsOverlay extends Overlay {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (course_manager.getCourse() == null) return null;
+        if (course_manager.getCourse() == null || !course_manager.isNearCourse()) return null;
 
         for (final TileObject obstacle : course_manager.getObstacles()) {
             final Shape clickbox = obstacle.getClickbox();
 
             final Color color =
-                obstacle.getId() == course_manager.getCourse().getNextObstacle().id
+                course_manager.getCourse().getNextObstacle().hasId(obstacle.getId())
                     ? course_manager.getCourse().isDoingObstacle()
                         ? config.getObstacleNextUnavailableColor()
                         : config.getObstacleNextColor()

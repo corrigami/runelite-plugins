@@ -2,23 +2,20 @@ package tictac7x.rooftops.courses;
 
 import tictac7x.rooftops.MarkOfGrace;
 
-import java.util.List;
-import java.util.Set;
-
 public abstract class Course {
     private final String id;
-    private final Set<Integer> regions;
-    private final List<Obstacle> obstacles;
-    private final Set<MarkOfGrace> mark_of_graces;
+    private final int[] regions;
+    private final Obstacle[] obstacles;
+    private final MarkOfGrace[] mark_of_graces;
 
     private int obstacle_index = 0;
     private boolean doing_obstacle;
 
     public Course(
         final String id,
-        final Set<Integer> regions,
-        final List<Obstacle> obstacles,
-        final Set<MarkOfGrace> mark_of_graces
+        final int[] regions,
+        final Obstacle[] obstacles,
+        final MarkOfGrace[] mark_of_graces
     ) {
         this.id = id;
         this.regions = regions;
@@ -30,20 +27,20 @@ public abstract class Course {
         return id;
     }
 
-    public Set<Integer> getRegions() {
+    public int[] getRegions() {
         return regions;
     }
 
-    public List<Obstacle> getObstacles() {
+    public Obstacle[] getObstacles() {
         return obstacles;
     }
 
-    public Set<MarkOfGrace> getMarkOfGraces() {
+    public MarkOfGrace[] getMarkOfGraces() {
         return mark_of_graces;
     }
 
     public Obstacle getNextObstacle() {
-        return obstacles.get(obstacle_index);
+        return obstacles[obstacle_index];
     }
 
     public void startObstacle() {
@@ -51,7 +48,7 @@ public abstract class Course {
         if (doing_obstacle) return;
 
         doing_obstacle = true;
-        obstacle_index = obstacle_index + 1 == obstacles.size()
+        obstacle_index = obstacle_index + 1 == obstacles.length
             ? 0
             : obstacle_index + 1;
     }
@@ -67,5 +64,27 @@ public abstract class Course {
 
     public boolean isDoingObstacle() {
         return doing_obstacle;
+    }
+
+    public boolean isInRegion(final int region) {
+        for (final int r : this.regions) {
+            if (r == region) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isNearRegion(final int[] regions) {
+        for (final int region : regions) {
+            for (final int course_region : this.regions) {
+                if (course_region == region) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
