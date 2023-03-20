@@ -19,7 +19,7 @@ public interface RooftopsConfig extends Config {
 		@Alpha
 		@ConfigItem(
 			keyName = "obstacle_next",
-			name = "Next obstacle",
+			name = "Next",
 			description = "Color of the next obstacle.",
 			position = 1,
 			section = obstacles
@@ -28,7 +28,7 @@ public interface RooftopsConfig extends Config {
 		@Alpha
 		@ConfigItem(
 			keyName = "obstacle_next_unavailable",
-			name = "Next unavailable obstacle",
+			name = "Next unavailable",
 			description = "Color of the next obstacle.",
 			position = 2,
 			section = obstacles
@@ -37,16 +37,16 @@ public interface RooftopsConfig extends Config {
 		@Alpha
 		@ConfigItem(
 			keyName = "obstacle_unavailable",
-			name = "Unavailable obstacles",
-			description = "Color of unavailable obstacles.",
+			name = "Other",
+			description = "Color of other obstacles.",
 			position = 3,
 			section = obstacles
-		) default Color getObstacleUnavailableColor() { return new Color(255, 150, 0, 80); }
+		) default Color getObstacleUnavailableColor() { return new Color(255, 150, 0, 70); }
 
 		@Alpha
 		@ConfigItem(
 			keyName = "obstacle_stop",
-			name = "Stopping obstacle",
+			name = "Stop",
 			description = "Color of obstacle that should not be used, because Mark of grace is on the ground.",
 			position = 4,
 			section = obstacles

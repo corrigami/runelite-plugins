@@ -85,14 +85,12 @@ public class RooftopsPlugin extends Plugin {
 
 	@Subscribe
 	public void onItemSpawned(final ItemSpawned event) {
-//		overlay_rooftops.onItemSpawned(event);
-//		course_manager.onItemSpawned(event);
+		course_manager.onItemSpawned(event);
 	}
 
 	@Subscribe
 	public void onItemDespawned(final ItemDespawned event) {
-//		overlay_rooftops.onItemDespawned(event);
-//		courses.onItemDespawned(event);
+		course_manager.onItemDespawned(event);
 	}
 
 	@Subscribe

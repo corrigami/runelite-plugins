@@ -3,19 +3,31 @@ package tictac7x.rooftops;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.Player;
 import net.runelite.api.Skill;
+import net.runelite.api.Tile;
 import net.runelite.api.TileObject;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.HitsplatApplied;
+import net.runelite.api.events.ItemDespawned;
+import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
 import tictac7x.rooftops.courses.Course;
 import tictac7x.rooftops.courses.Obstacle;
-import tictac7x.rooftops.courses.*;
+import tictac7x.rooftops.courses.RooftopCourseAlKharid;
+import tictac7x.rooftops.courses.RooftopCourseArdougne;
+import tictac7x.rooftops.courses.RooftopCourseCanifis;
+import tictac7x.rooftops.courses.RooftopCourseDraynor;
+import tictac7x.rooftops.courses.RooftopCourseFalador;
+import tictac7x.rooftops.courses.RooftopCoursePollnivneach;
+import tictac7x.rooftops.courses.RooftopCourseRellekka;
+import tictac7x.rooftops.courses.RooftopCourseSeers;
+import tictac7x.rooftops.courses.RooftopCourseVarrock;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -41,6 +53,7 @@ public class RooftopsCourseManager {
     };
 
     private final List<TileObject> obstacles = new ArrayList<>();
+    private final List<Tile> marks_of_graces = new ArrayList<>();
 
     private boolean obstacle_clicked;
 
@@ -93,29 +106,27 @@ public class RooftopsCourseManager {
 
     public void onHitsplatApplied(final HitsplatApplied event) {
         if (course == null || event.getActor() != client.getLocalPlayer()) return;
-
         resetCourse();
     }
 
     public void onGameTick(final GameTick ignored) {
         checkNearCourse();
         checkStartObstacle();
-        if (course != null) {
-            System.out.println(course.getId());
-        }
     }
 
     public void onChatMessage(final ChatMessage event) {
-        if (course != null) {
-            if (event.getMessage().contains("Complete")) {
-                course.completeObstacle();
-            } else if (event.getMessage().contains("Next")) {
-                course.startObstacle();
-            }
-        }
-        if (course != null && event.getType() == ChatMessageType.GAMEMESSAGE && lap_complete.matcher(event.getMessage()).find()) {
-            course.reset();
-        }
+        if (course == null || event.getType() != ChatMessageType.GAMEMESSAGE || !lap_complete.matcher(event.getMessage()).find()) return;
+        resetCourse();
+    }
+
+    public void onItemSpawned(final ItemSpawned event) {
+        if (event.getItem().getId() != ItemID.MARK_OF_GRACE) return;
+        marks_of_graces.add(event.getTile());
+    }
+
+    public void onItemDespawned(final ItemDespawned event) {
+        if (event.getItem().getId() != ItemID.MARK_OF_GRACE) return;
+        marks_of_graces.remove(event.getTile());
     }
 
     @Nullable
@@ -127,8 +138,26 @@ public class RooftopsCourseManager {
         return obstacles;
     }
 
+    public List<Tile> getMarksOfGraces() {
+        return marks_of_graces;
+    }
+
     public boolean isNearCourse() {
         return is_near_course;
+    }
+
+    public boolean isStoppingObstacle(final int obstacle_id) {
+        if (course == null) return false;
+
+        for (final Tile tile : marks_of_graces) {
+            for (final MarkOfGrace mark : course.getMarkOfGraces()) {
+                if (mark.obstacle == obstacle_id && mark.x == tile.getWorldLocation().getX() && mark.y == tile.getWorldLocation().getY()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Nullable
