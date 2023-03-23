@@ -13,32 +13,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 
-//package tictac7x.rooftops;
-//
-//import net.runelite.api.Client;
-//import net.runelite.api.GameState;
-//import net.runelite.api.ItemID;
-//import net.runelite.api.Player;
-//import net.runelite.api.Tile;
-//import net.runelite.api.TileObject;
-//import net.runelite.api.events.GameStateChanged;
-//import net.runelite.api.events.ItemDespawned;
-//import net.runelite.api.events.ItemSpawned;
-//import net.runelite.client.ui.overlay.Overlay;
-//import net.runelite.client.ui.overlay.OverlayLayer;
-//import net.runelite.client.ui.overlay.OverlayPosition;
-//import tictac7x.rooftops.courses.Courses;
-//
-//import java.awt.BasicStroke;
-//import java.awt.Color;
-//import java.awt.Dimension;
-//import java.awt.Graphics2D;
-//import java.awt.Shape;
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Optional;
-//
-//
 public class RooftopsOverlay extends Overlay {
     private final Client client;
     private final RooftopsConfig config;
@@ -59,9 +33,7 @@ public class RooftopsOverlay extends Overlay {
 
         // Obstacles.
         for (final TileObject obstacle : course_manager.getObstacles()) {
-            final Shape clickbox = obstacle.getClickbox();
-
-            final Color color =
+             final Color color =
                 course_manager.isStoppingObstacle(obstacle.getId())
                     ? config.getObstacleStopColor()
                     : course_manager.getCourse().getNextObstacle().hasId(obstacle.getId())
@@ -70,7 +42,7 @@ public class RooftopsOverlay extends Overlay {
                             : config.getObstacleNextColor()
                         : config.getObstacleUnavailableColor();
 
-            renderShape(graphics, clickbox, color);
+            renderShape(graphics, obstacle.getClickbox(), color);
         }
 
         // Mark of graces.
