@@ -206,7 +206,7 @@ public class Storage extends OverlayPanel {
 
         renderAfter();
 
-        if (panelComponent.getChildren().size() == 0) return null;
+        if (itemsPanelComponent.getChildren().size() == 0) return null;
         return super.render(graphics);
     }
 

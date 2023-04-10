@@ -34,10 +34,10 @@ import javax.inject.Inject;
 	tags = { "storage", "bank", "inventory", "item" }
 )
 public class TicTac7xStoragePlugin extends Plugin {
-	private String plugin_version = "v0.5";
+	private String plugin_version = "v0.5.1";
 	private String plugin_message = "" +
 		"<colHIGHLIGHT>Storage " + plugin_version + ":<br>" +
-		"<colHIGHLIGHT>* Searchable panel with bank items (can be disabled in the settings)";
+		"<colHIGHLIGHT>* Overlays without any items no longer rendering";
 
 	@Inject
 	private Client client;
