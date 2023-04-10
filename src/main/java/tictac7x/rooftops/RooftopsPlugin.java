@@ -42,10 +42,6 @@ public class RooftopsPlugin extends Plugin {
 
 	private RooftopsOverlay overlay_rooftops;
 
-//	private RooftopsOverylayDebug overlay_debug;
-
-//	private Courses courses;
-
 	@Provides
 	RooftopsConfig provideConfig(ConfigManager configManager) {
 		return configManager.getConfig(RooftopsConfig.class);
@@ -54,18 +50,13 @@ public class RooftopsPlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		course_manager = new RooftopsCourseManager(client);
-//		courses = new Courses(config, client);
 		overlay_rooftops = new RooftopsOverlay(client, config, course_manager);
-//		overlay_debug = new RooftopsOverylayDebug(client, config, courses);
-
 		overlays.add(overlay_rooftops);
-//		overlays.add(overlay_debug);
 	}
 
 	@Override
 	protected void shutDown() {
 		overlays.remove(overlay_rooftops);
-//		overlays.remove(overlay_debug);
 	}
 
 	@Subscribe
@@ -121,6 +112,5 @@ public class RooftopsPlugin extends Plugin {
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		course_manager.onGameStateChanged(event);
-//		courses.onGameStateChanged(event);
 	}
 }
