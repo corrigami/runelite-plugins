@@ -6,7 +6,7 @@ public class RooftopCourseAlKharid extends Course {
     public RooftopCourseAlKharid() {
         super("Al Kharid",
             // Regions.
-            new int[]{13105},
+            new int[]{13105, 13106},
 
             // Obstacles.
             new Obstacle[]{

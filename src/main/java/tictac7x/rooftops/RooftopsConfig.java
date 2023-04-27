@@ -66,19 +66,4 @@ public interface RooftopsConfig extends Config {
 			position = 1,
 			section = marks_of_graces
 		) default Color getMarkOfGraceColor() { return new Color(0, 255, 0, 80); }
-
-	@ConfigSection(
-		name = "Debug",
-		description = "Debug",
-		closedByDefault = true,
-		position = 3
-	) String debug = "debug";
-
-		@ConfigItem(
-			keyName = "debug",
-			name = "Enable debug overlay",
-			description = "Enable debug overlay, if some marks of grace and the next obstacle are showing incorrectly. Create a new issue in GitHub with the details.",
-			position = 1,
-			section = debug
-		) default boolean debugging() { return false; }
 }
