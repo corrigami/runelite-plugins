@@ -5,7 +5,6 @@ import tictac7x.rooftops.MarkOfGrace;
 public class RooftopCourseCanifis extends Course {
     public RooftopCourseCanifis() {
         super("Canifis",
-
             // Regions.
             new int[]{13878},
 

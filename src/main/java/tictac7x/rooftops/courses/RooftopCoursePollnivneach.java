@@ -5,7 +5,6 @@ import tictac7x.rooftops.MarkOfGrace;
 public class RooftopCoursePollnivneach extends Course {
     public RooftopCoursePollnivneach() {
         super("Pollnivneach",
-
             // Regions.
             new int[]{13358},
 

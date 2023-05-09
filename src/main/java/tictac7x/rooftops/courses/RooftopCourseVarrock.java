@@ -5,7 +5,7 @@ import tictac7x.rooftops.MarkOfGrace;
 public class RooftopCourseVarrock extends Course {
     public RooftopCourseVarrock() {
         super("Varrock",
-
+            // Regions.
             new int[]{12597, 12853},
 
             // Obstacles.
@@ -19,7 +19,6 @@ public class RooftopCourseVarrock extends Course {
                 new Obstacle(14835, 3, new int[][]{{3233, 3402}}),
                 new Obstacle(14836, 3, new int[][]{{3236, 3409}, {3237, 3409}, {3238, 3409}, {3239, 3409}, {3240, 3409}}),
                 new Obstacle(14841, 3, new int[][]{{3236, 3416}, {3237, 3416}, {3238, 3416}, {3239, 3416}, {3240, 3416}}),
-
             },
 
             new MarkOfGrace[]{

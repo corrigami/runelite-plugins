@@ -5,7 +5,6 @@ import tictac7x.rooftops.MarkOfGrace;
 public class RooftopCourseSeers extends Course {
     public RooftopCourseSeers() {
         super("Seers' Village",
-
             // Regions.
             new int[]{10806},
 

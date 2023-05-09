@@ -5,7 +5,6 @@ import tictac7x.rooftops.MarkOfGrace;
 public class RooftopCourseRellekka extends Course {
     public RooftopCourseRellekka() {
         super("Rellekka",
-
             // Regions.
             new int[]{10553, 10297},
 
