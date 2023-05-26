@@ -23,7 +23,7 @@ public class RooftopCourseAlKharid extends Course {
             new MarkOfGrace[]{
                 //
                 new MarkOfGrace(3277, 3186, 14398),
-                //
+                new MarkOfGrace(3266, 3163, 14402),
                 //
                 new MarkOfGrace(3315, 3161, 14404)
                 //

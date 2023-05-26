@@ -1,4 +1,4 @@
-# Rooftop Agility Improved - v0.5.2
+# Rooftop Agility Improved - v0.5.2.1
 Improved clickboxes for rooftop agility courses.
 
 ![](img/seers.png)
