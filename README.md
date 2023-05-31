@@ -1,4 +1,4 @@
-# Tithe Farm Improved - v0.3.4
+# Tithe Farm Improved - v0.4
 Improve overall experience for Tithe farm.
 
 ## Plants progress
@@ -14,9 +14,6 @@ Improve overall experience for Tithe farm.
 
 ## Inventory highlights
 * Highlights seeds
-* Highlight farmers outfit when it's time to deposit the fruits
-
-![](./img/farmers_outfit.png)
 
 <br>
 

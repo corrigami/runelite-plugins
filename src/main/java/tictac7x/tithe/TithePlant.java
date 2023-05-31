@@ -53,7 +53,7 @@ public class TithePlant {
     protected static final int LOGAVANO_GROWN_BLIGHTED = 27416;
 
     // One plant cycle duration in game ticks.
-    private final double DURATION_CYCLE_GAME_TICKS = 101;
+    private final double DURATION_CYCLE_GAME_TICKS = 100;
 
     public enum State {
         SEEDLING_DRY,
@@ -91,21 +91,59 @@ public class TithePlant {
         // Update game object reference.
         this.game_object = game_object;
 
-        // Plant watered.
-        if (isWatered(game_object)) {
-            switch (this.state) {
-                case SEEDLING_DRY:
-                    this.state = State.SEEDLING_WATERED;
-                    return;
-                case PLANT_1_DRY:
-                    this.state = State.PLANT_1_WATERED;
-                    return;
-                case PLANT_2_DRY:
-                    this.state = State.PLANT_2_WATERED;
-                    return;
-            }
-        }
+        switch (game_object.getId()) {
+            case GOLOVANOVA_SEEDLING_WATERED:
+            case BOLOGANO_SEEDLING_WATERED:
+            case LOGAVANO_SEEDLING_WATERED:
+                this.state = State.SEEDLING_WATERED;
+                return;
 
+            case GOLOVANOVA_PLANT_1:
+            case BOLOGANO_PLANT_1:
+            case LOGAVANO_PLANT_1:
+                if (this.state != State.PLANT_1_DRY) this.ticks = 0;
+                this.state = State.PLANT_1_DRY;
+                return;
+
+            case GOLOVANOVA_PLANT_1_WATERED:
+            case BOLOGANO_PLANT_1_WATERED:
+            case LOGAVANO_PLANT_1_WATERED:
+                this.state = State.PLANT_1_WATERED;
+                return;
+
+            case GOLOVANOVA_PLANT_2:
+            case BOLOGANO_PLANT_2:
+            case LOGAVANO_PLANT_2:
+                if (this.state != State.PLANT_2_DRY) this.ticks = 0;
+                this.state = State.PLANT_2_DRY;
+                return;
+
+            case GOLOVANOVA_PLANT_2_WATERED:
+            case BOLOGANO_PLANT_2_WATERED:
+            case LOGAVANO_PLANT_2_WATERED:
+                this.state = State.PLANT_2_WATERED;
+                return;
+
+            case GOLOVANOVA_GROWN:
+            case BOLOGANO_GROWN:
+            case LOGAVANO_GROWN:
+                if (this.state != State.GROWN) this.ticks = 0;
+                this.state = State.GROWN;
+                return;
+
+            case GOLOVANOVA_SEEDLING_BLIGHTED:
+            case GOLOVANOVA_PLANT_1_BLIGHTED:
+            case GOLOVANOVA_PLANT_2_BLIGHTED:
+            case BOLOGANO_SEEDLING_BLIGHTED:
+            case BOLOGANO_PLANT_1_BLIGHTED:
+            case BOLOGANO_PLANT_2_BLIGHTED:
+            case LOGAVANO_SEEDLING_BLIGHTED:
+            case LOGAVANO_PLANT_1_BLIGHTED:
+            case LOGAVANO_PLANT_2_BLIGHTED:
+                if (this.state != State.BLIGHTED) this.ticks = 0;
+                this.state = State.BLIGHTED;
+                return;
+        }
     }
 
     /**
@@ -127,31 +165,38 @@ public class TithePlant {
             case GROWN:
                 this.state = State.BLIGHTED;
                 return;
+
             case SEEDLING_WATERED:
                 this.state = State.PLANT_1_DRY;
                 return;
+
             case PLANT_1_WATERED:
                 this.state = State.PLANT_2_DRY;
                 return;
+
             case PLANT_2_WATERED:
                 this.state = State.GROWN;
                 return;
         }
     }
 
-    public boolean isBlighted() {
-        return isBlighted(this.game_object);
-    }
-
     public Color getCycleColor() {
-        if (state == State.SEEDLING_DRY || state == State.PLANT_1_DRY || state == State.PLANT_2_DRY) {
-            return config.getPlantsDryColor();
-        } else if (state == State.GROWN) {
-            return config.getPlantsGrownColor();
-        } else if (state == State.SEEDLING_WATERED || state == State.PLANT_1_WATERED || state == State.PLANT_2_WATERED) {
-            return config.getPlantsWateredColor();
-        } else if (state == State.BLIGHTED) {
-            return config.getPlantsBlightedColor();
+        switch (state) {
+            case SEEDLING_DRY:
+            case PLANT_1_DRY:
+            case PLANT_2_DRY:
+                return config.getPlantsDryColor();
+
+            case SEEDLING_WATERED:
+            case PLANT_1_WATERED:
+            case PLANT_2_WATERED:
+                return config.getPlantsWateredColor();
+
+            case GROWN:
+                return config.getPlantsGrownColor();
+
+            case BLIGHTED:
+                return config.getPlantsBlightedColor();
         }
 
         return null;

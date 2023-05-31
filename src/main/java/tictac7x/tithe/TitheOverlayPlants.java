@@ -1,6 +1,7 @@
 package tictac7x.tithe;
 
 import net.runelite.api.TileObject;
+import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.client.ui.overlay.OverlayPanel;
 
 import java.awt.Color;
@@ -19,17 +20,14 @@ import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 public class TitheOverlayPlants extends OverlayPanel {
-    private final Client client;
     private final TithePlugin plugin;
     private final TitheConfig config;
 
     public final Map<LocalPoint, TithePlant> plants = new HashMap<>();
-    private WorldPoint location_player_planting_seed;
 
-    public TitheOverlayPlants(final TithePlugin plugin, final TitheConfig config, final Client client) {
+    public TitheOverlayPlants(final TithePlugin plugin, final TitheConfig config) {
         this.plugin = plugin;
         this.config = config;
-        this.client = client;
 
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.UNDER_WIDGETS);
@@ -37,38 +35,32 @@ public class TitheOverlayPlants extends OverlayPanel {
 
     /**
      * Update plant state to watered based on the game object.
-     * @param game_object - Tithe plant.
+     * @param event - Tithe plant spawned event.
      */
-    public void onGameObjectSpawned(final GameObject game_object) {
+    public void onGameObjectSpawned(final GameObjectSpawned event) {
         if (!plugin.inTitheFarm()) return;
 
-        if (TithePlant.isPatch(game_object)) {
-            final LocalPoint location_patch = game_object.getLocalLocation();
+        final GameObject game_object = event.getGameObject();
+        if (!TithePlant.isPatch(game_object)) return;
 
-            // Empty patch, plant completed.
-            if (game_object.getId() == TithePlant.TITHE_EMPTY_PATCH) {
-                this.plants.remove(location_patch);
+        final LocalPoint location_patch = game_object.getLocalLocation();
 
-            // Update plant state.
-            } else if (this.plants.containsKey(location_patch)) {
-                this.plants.get(location_patch).setGameObject(game_object);
-            }
+        // Empty patch, plant completed.
+        if (game_object.getId() == TithePlant.TITHE_EMPTY_PATCH) {
+            this.plants.remove(location_patch);
 
-            // GameObject is seedling and player is next to the seedling.
-            if (TithePlant.isSeedling(game_object) && isPlayerNextToSeedling(game_object, location_player_planting_seed)) {
-                this.plants.put(location_patch, new TithePlant(config, game_object));
-            }
+        // Update plant state.
+        } else if (this.plants.containsKey(location_patch)) {
+            this.plants.get(location_patch).setGameObject(game_object);
+        }
+
+        // GameObject is seedling.
+        if (TithePlant.isSeedling(game_object)) {
+            this.plants.put(location_patch, new TithePlant(config, game_object));
         }
     }
 
     public void onGameTick() {
-        if (!plugin.inTitheFarm()) return;
-
-        // Save local point where player did seed planting animation.
-        if (client.getLocalPlayer() != null && client.getLocalPlayer().getAnimation() == AnimationID.FARMING_PLANT_SEED) {
-            this.location_player_planting_seed = client.getLocalPlayer().getWorldLocation();
-        }
-
         // Update plants progress.
         for (final TithePlant plant : this.plants.values()) {
             plant.onGameTick();
@@ -86,27 +78,16 @@ public class TitheOverlayPlants extends OverlayPanel {
         return null;
     }
 
-    private boolean isPlayerNextToSeedling(final GameObject seedling, final WorldPoint location_player) {
-        return (
-            seedling != null
-            && location_player != null
-            && location_player.getX() + 2 >= seedling.getWorldLocation().getX()
-            && location_player.getX() - 2 <= seedling.getWorldLocation().getX()
-            && location_player.getY() + 2 >= seedling.getWorldLocation().getY()
-            && location_player.getY() - 2 <= seedling.getWorldLocation().getY()
-        );
-    }
-
     private void renderPie(final Graphics2D graphics, final TileObject object, final Color color, final float progress) {
         if (color == null || color.getAlpha() == 0) return;
 
         try {
-            final ProgressPieComponent progressPieComponent = new ProgressPieComponent();
-            progressPieComponent.setPosition(object.getCanvasLocation(0));
-            progressPieComponent.setProgress(-progress);
-            progressPieComponent.setBorderColor(color.darker());
-            progressPieComponent.setFill(color);
-            progressPieComponent.render(graphics);
-        } catch (Exception ignored) {}
+            final ProgressPieComponent pie = new ProgressPieComponent();
+            pie.setPosition(object.getCanvasLocation(0));
+            pie.setProgress(-progress);
+            pie.setBorderColor(color.darker());
+            pie.setFill(color);
+            pie.render(graphics);
+        } catch (final Exception ignored) {}
     }
 }

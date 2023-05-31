@@ -100,17 +100,6 @@ public interface TitheConfig extends Config {
 			return new Color(0, 255, 0, 80);
 		}
 
-		@Alpha
-		@ConfigItem(
-			position = 2,
-			keyName = "farmer_outfit",
-			name = "Farmer outfit",
-			description = "Highlight farmer outfit when you only have fruits in inventory",
-			section = section_inventory
-		) default Color getHighlightFarmersOutfitColor() {
-			return new Color(255, 0, 0, 80);
-		}
-
 	@ConfigSection(
 		position = 3,
 		name = "Points",

@@ -34,13 +34,12 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	conflicts = "Tithe Farm"
 )
 public class TithePlugin extends Plugin {
-	private String plugin_version = "0.3.4";
+	private String plugin_version = "v0.4";
 	private String plugin_message = "" +
-		"<colHIGHLIGHT>Tithe Farm Improved v0.3.4:<br>" +
-		"<colHIGHLIGHT>* Correctly detect whether player is in the Tithe farm<br>" +
-		"<colHIGHLIGHT>* Added support for farmers outfit female version<br>" +
-		"<colHIGHLIGHT>* Removed support for water can and charges";
+		"<colHIGHLIGHT>Tithe Farm Improved " + plugin_version + ":<br>" +
+		"<colHIGHLIGHT>* Updated points calculation based on new forumula";
 
+	private static final int SEED_TABLE = 27430;
 	private boolean in_tithe_farm = false;
 
 	@Inject
@@ -78,7 +77,7 @@ public class TithePlugin extends Plugin {
 	protected void startUp() {
 		overlay_points = new TitheOverlayPoints(this, config, client);
 		overlay_patches = new TitheOverlayPatches(this, config, client);
-		overlay_plants = new TitheOverlayPlants(this, config, client);
+		overlay_plants = new TitheOverlayPlants(this, config);
 		overlay_inventory = new TitheOverlayInventory(this, config);
 
 		overlays.add(overlay_points);
@@ -101,7 +100,8 @@ public class TithePlugin extends Plugin {
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		overlay_plants.onGameObjectSpawned(event.getGameObject());
+		overlay_plants.onGameObjectSpawned(event);
+		if (event.getGameObject().getId() == SEED_TABLE) this.in_tithe_farm = true;
 	}
 
 	@Subscribe
@@ -121,10 +121,6 @@ public class TithePlugin extends Plugin {
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
-		if (event.getGroupId() == WidgetInfo.TITHE_FARM.getGroupId()) {
-			this.in_tithe_farm = true;
-		}
-
 		overlay_points.onWidgetLoaded(event);
 	}
 
@@ -145,32 +141,14 @@ public class TithePlugin extends Plugin {
 			);
 		}
 
-		// When entering tithe farm, this check fails first time, since the widget is loaded later.
-		// This check is needed for when loading happens while in the tithe farm.
-		// Or when you leave from the farm.
-		if (event.getGameState() == GameState.LOADING) {
-			final Widget widget_tithe = client.getWidget(WidgetInfo.TITHE_FARM);
-			this.in_tithe_farm = widget_tithe != null;
-
-			if (!this.in_tithe_farm) {
-				this.overlay_plants.plants.clear();
-			}
-		}
+		if (event.getGameState() == GameState.LOADING) this.in_tithe_farm = false;
 	}
 
 	public boolean inTitheFarm() {
-		return in_tithe_farm || seedsInInventory() > 0;
-	}
-
-	public int seedsInInventory() {
-		return overlay_inventory.seeds_inventory;
+		return in_tithe_farm ;
 	}
 
 	public int fruitsInInventory() {
 		return overlay_inventory.fruits_inventory;
-	}
-
-	public int nonBlightedPlants() {
-		return (int) overlay_plants.plants.values().stream().filter(plant -> !plant.isBlighted()).count();
 	}
 }

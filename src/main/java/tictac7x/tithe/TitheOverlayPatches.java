@@ -103,6 +103,6 @@ public class TitheOverlayPatches extends OverlayPanel {
             // Area fill.
             graphics.setColor(color);
             graphics.fill(shape);
-        } catch (Exception ignored) {}
+        } catch (final Exception ignored) {}
     }
 }
