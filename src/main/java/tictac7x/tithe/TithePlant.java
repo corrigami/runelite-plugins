@@ -1,13 +1,9 @@
 package tictac7x.tithe;
 
-import net.runelite.client.ui.overlay.OverlayPanel;
-import net.runelite.client.ui.overlay.components.ProgressPieComponent;
+import net.runelite.api.GameObject;
+import net.runelite.api.TileObject;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import net.runelite.api.TileObject;
-import net.runelite.api.GameObject;
 
 public class TithePlant {
     // Tithe empty patch.

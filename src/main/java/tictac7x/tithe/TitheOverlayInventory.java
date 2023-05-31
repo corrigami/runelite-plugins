@@ -8,7 +8,6 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.ui.overlay.WidgetItemOverlay;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 
 public class TitheOverlayInventory extends WidgetItemOverlay {
     private final TithePlugin plugin;

@@ -1,23 +1,19 @@
 package tictac7x.tithe;
 
+import net.runelite.api.GameObject;
 import net.runelite.api.TileObject;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPanel;
+import net.runelite.client.ui.overlay.OverlayPosition;
+import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.AnimationID;
-import net.runelite.api.coords.LocalPoint;
-import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.ui.overlay.OverlayLayer;
-import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
 public class TitheOverlayPlants extends OverlayPanel {
     private final TithePlugin plugin;
