@@ -39,6 +39,19 @@ public class TitheOverlayInventory extends WidgetItemOverlay {
             case ItemID.LOGAVANO_SEED:
                 graphics.setColor(config.getHighlightSeedsColor());
                 graphics.fill(widget_item.getCanvasBounds());
+                return;
+            case ItemID.WATERING_CAN1:
+            case ItemID.WATERING_CAN2:
+            case ItemID.WATERING_CAN3:
+            case ItemID.WATERING_CAN4:
+            case ItemID.WATERING_CAN5:
+            case ItemID.WATERING_CAN6:
+            case ItemID.WATERING_CAN7:
+            case ItemID.WATERING_CAN8:
+            case ItemID.GRICOLLERS_CAN:
+                graphics.setColor(config.getHighlightWateringCanColor());
+                graphics.fill(widget_item.getCanvasBounds());
+                return;
         }
     }
 }

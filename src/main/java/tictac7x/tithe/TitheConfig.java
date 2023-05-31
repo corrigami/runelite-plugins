@@ -100,6 +100,17 @@ public interface TitheConfig extends Config {
 			return new Color(0, 255, 0, 80);
 		}
 
+		@Alpha
+		@ConfigItem(
+			position = 1,
+			keyName = "watering_cans",
+			name = "Watering cans",
+			description = "Highlight watering cans",
+			section = section_inventory
+		) default Color getHighlightWateringCanColor() {
+			return new Color(60, 240, 255, 100);
+	}
+
 	@ConfigSection(
 		position = 3,
 		name = "Points",
