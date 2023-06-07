@@ -26,10 +26,10 @@ import javax.inject.Inject;
 @Slf4j
 @PluginDescriptor(
 	name = "Wintertodt Improved",
-	description = "Additonal helpful information for Wintertodt",
+	description = "Additional helpful information for Wintertodt",
 	tags = {"wintertodt"}
 )
-public class TicTac7xWintertodtPlugin extends Plugin {
+public class WintertodtImprovedPlugin extends Plugin {
 	private final String plugin_version = "v0.1";
 	private final String plugin_message = "" +
 		"<colHIGHLIGHT>Wintertodt Improved " + plugin_version + ":<br>" +

@@ -39,7 +39,7 @@ public class WintertodtPanel extends OverlayPanel {
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (widget_points == null || !config.showGoalPanel()) return null;
+        if (widget_points == null || widget_points.isHidden() || !config.showGoalPanel()) return null;
 
         final int points = Integer.parseInt(widget_points.getText().replaceAll("Points<br>", ""));
         final int logs_needed = Math.max(0, (config.getGoal() - points) / 25 - inventory_brumas);
