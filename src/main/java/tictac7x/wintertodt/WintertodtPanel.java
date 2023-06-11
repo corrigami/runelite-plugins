@@ -4,6 +4,7 @@ import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -59,15 +60,6 @@ public class WintertodtPanel extends OverlayPanel {
         if (event.getContainerId() != InventoryID.INVENTORY.getId()) return;
 
         final ItemContainer inventory = event.getItemContainer();
-
-        new Thread(() -> {
-            try {
-                // Wait to avoid flickering on the panel.
-                Thread.sleep(1200);
-                inventory_brumas = inventory.count(ItemID.BRUMA_ROOT) + inventory.count(ItemID.BRUMA_KINDLING);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
+        inventory_brumas = inventory.count(ItemID.BRUMA_ROOT) + inventory.count(ItemID.BRUMA_KINDLING);
     }
 }
