@@ -5,38 +5,30 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.GraphicChanged;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 import javax.inject.Inject;
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Rectangle;
 
 @Slf4j
 @PluginDescriptor(
@@ -92,8 +84,8 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private Tables tables;
 	private Energy energy;
 	private Portal portal;
+	private Teleporters teleporters;
 	private Inventory inventory;
-	private Panel panel;
 	private Overlay overlay;
 
 	@Provides
@@ -108,19 +100,24 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		tables = new Tables();
 		energy = new Energy(client, configs, config);
 		portal = new Portal(client, notifier);
+		teleporters = new Teleporters();
 		inventory = new Inventory();
 
-		panel = new Panel(config, timer, energy, portal);
-		overlay = new Overlay(client, outlines, sprites, config, tables, guardians, inventory, portal, energy);
-
-		overlays.add(panel);
+		overlay = new Overlay(client, outlines, sprites, items, config, tables, guardians, inventory, portal, teleporters, energy, timer);
 		overlays.add(overlay);
 	}
 
 	@Override
 	protected void shutDown() {
-		overlays.remove(panel);
 		overlays.remove(overlay);
+
+		client_thread.invokeLater(() -> {
+			final Widget widget_elemental_energy = client.getWidget(746, 21);
+			if (widget_elemental_energy != null) widget_elemental_energy.setHidden(false);
+
+			final Widget widget_catalytic_energy = client.getWidget(746, 24);
+			if (widget_catalytic_energy != null) widget_catalytic_energy.setHidden(false);
+		});
 	}
 
 	@Subscribe
@@ -133,6 +130,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardians.onGameObjectSpawned(event.getGameObject());
 		tables.onGameObjectSpawned(event.getGameObject());
 		portal.onGameObjectSpawned(event.getGameObject());
+		teleporters.onGameObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
@@ -140,6 +138,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardians.onGameObjectDespawned(event.getGameObject());
 		tables.onGameObjectDespawned(event.getGameObject());
 		portal.onGameObjectDespawned(event.getGameObject());
+		teleporters.onGameObjectDespawned(event.getGameObject());
 	}
 
 	@Subscribe
@@ -148,48 +147,6 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		timer.onChatMesage(message);
 		energy.onChatMessage(message);
 		portal.onChatMessage(message);
-
-		System.out.println("MESSAGE | " +
-			"type: " + message.getType().name() +
-			", message: " + message.getMessage().replaceAll("</?col.*?>", "") +
-			", sender: " + message.getSender()
-		);
-	}
-
-	@Subscribe
-	public void onAnimationChanged(final AnimationChanged event) {
-		if (event.getActor() == client.getLocalPlayer()) {
-			System.out.println("ANIMATION | " +
-				"id: " + event.getActor().getAnimation()
-			);
-		}
-	}
-
-	@Subscribe
-	public void onGraphicChanged(final GraphicChanged event) {
-		if (event.getActor() == client.getLocalPlayer()) {
-			System.out.println("GRAPHIC | " +
-				"id: " + event.getActor().getGraphic()
-			);
-		}
-	}
-
-	@Subscribe
-	public void onConfigChanged(final ConfigChanged event) {
-		if (event.getGroup().equals(TicTac7xGotrImprovedConfig.group)) {
-			System.out.println("CONFIG | " +
-				"key: " + event.getKey() +
-				", old value: " + event.getOldValue() +
-				", new value: " + event.getNewValue()
-			);
-		}
-	}
-
-	@Subscribe
-	public void onWidgetLoaded(final WidgetLoaded event) {
-		System.out.println("WIDGET | " +
-			"group: " + event.getGroupId()
-		);
 	}
 
 	@Subscribe
@@ -206,6 +163,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	public void onGameTick(final GameTick gametick) {
 		guardians.onGameTick();
 		energy.onGameTick();
+		teleporters.onGameTick();
 	}
 
 	@Subscribe
@@ -213,6 +171,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardians.onGameStateChanged(event.getGameState());
 		tables.onGameStateChanged(event.getGameState());
 		portal.onGameStateChanged(event.getGameState());
+		teleporters.onGameStateChanged(event.getGameState());
 
 		// Send message about plugin updates for once.
 		if (event.getGameState() == GameState.LOGGED_IN && !config.getVersion().equals(plugin_version)) {
@@ -223,17 +182,6 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 					.build()
 			);
 		}
-	}
-
-	static public void drawCenteredString(Graphics g, String text, Rectangle rect, final Color color) {
-		g.setFont(FontManager.getRunescapeFont());
-		FontMetrics metrics = g.getFontMetrics();
-		int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
-		int y = rect.y + ((rect.height - metrics.getHeight()) / 2) + metrics.getAscent();
-		g.setColor(Color.BLACK);
-		g.drawString(text, x + 1, y + 1);
-		g.setColor(color);
-		g.drawString(text, x, y);
 	}
 }
 

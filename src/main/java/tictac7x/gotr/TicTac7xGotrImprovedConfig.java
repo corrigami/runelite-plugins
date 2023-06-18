@@ -16,21 +16,53 @@ public interface TicTac7xGotrImprovedConfig extends Config {
     String guardians_current = "guardians_current";
     String guardians_total = "guardians_total";
 
-    @Alpha
-    @ConfigItem(
-        keyName = "color_catalytic",
-        name = "Catalytic color",
-        description = "Color to highlight catalytic objects",
+    @ConfigSection(
+        name = "Colors",
+        description = "Change colors of various items",
         position = 1
-    ) default Color getCatalyticColor() { return new Color(215, 240, 60); }
+    ) String colors = "colors";
 
-    @Alpha
-    @ConfigItem(
+        @Alpha
+        @ConfigItem(
             keyName = "color_elemental",
             name = "Elemental color",
             description = "Color to highlight elemental objects",
-            position = 1
-    ) default Color getElementalColor() { return new Color(50, 210, 160); }
+            position = 1,
+            section = colors
+        ) default Color getElementalColor() {
+            return new Color(50, 210, 160);
+        }
+
+        @Alpha
+        @ConfigItem(
+            keyName = "color_catalytic",
+            name = "Catalytic color",
+            description = "Color to highlight catalytic objects",
+            position = 2,
+            section = colors
+        ) default Color getCatalyticColor() {
+            return new Color(215, 240, 60);
+        }
+
+        @ConfigItem(
+            keyName = "color_widget_energies",
+            name = "Colorful energy points",
+            description = "If enabled shows energy points in respective colors",
+            position = 3,
+            section = colors
+        ) default boolean showWidgetEnergyPointColors() {
+            return true;
+        }
+
+        @ConfigItem(
+            keyName = "color_widget_portal",
+            name = "Colorful portal countdown",
+            description = "If enabled shows portal countdown in different colors based on time left",
+            position = 4,
+            section = colors
+        ) default boolean showWidgetPortalCountdownColors() {
+            return true;
+        }
 
     @ConfigSection(
         name = "Debug",

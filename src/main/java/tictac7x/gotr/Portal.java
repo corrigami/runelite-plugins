@@ -41,8 +41,8 @@ public class Portal {
         return portal;
     }
 
-    public Color getTimeToPortalColor(final long seconds, final boolean panel) {
-        return seconds <= 10 ? Color.RED : seconds <= 30 ? Color.ORANGE : panel ? Color.GREEN : Color.WHITE;
+    public Color getTimeToPortalColor(final long seconds) {
+        return seconds <= 10 ? Color.RED : seconds <= 30 ? Color.ORANGE : Color.WHITE;
     }
 
     public void onGameObjectSpawned(final GameObject object) {
@@ -64,6 +64,7 @@ public class Portal {
     public void onGameStateChanged(final GameState state) {
         if (state == GameState.LOADING) {
             portal = Optional.empty();
+            portal_time_left = Optional.empty();
             client.clearHintArrow();
         }
     }
