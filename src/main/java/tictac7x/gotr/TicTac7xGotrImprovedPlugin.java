@@ -95,7 +95,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		timer = new Timer(configs, config);
+		timer = new Timer();
 		guardians = new Guardians(client, configs);
 		tables = new Tables();
 		energy = new Energy(client, configs, config);
@@ -147,6 +147,8 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		timer.onChatMesage(message);
 		energy.onChatMessage(message);
 		portal.onChatMessage(message);
+
+		System.out.println(message.getType() + " " + message.getMessage());
 	}
 
 	@Subscribe
@@ -164,6 +166,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardians.onGameTick();
 		energy.onGameTick();
 		teleporters.onGameTick();
+		portal.onGameTick();
 	}
 
 	@Subscribe

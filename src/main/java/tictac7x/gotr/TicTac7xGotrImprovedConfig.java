@@ -65,6 +65,22 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         }
 
     @ConfigSection(
+        name = "Notifications",
+        description = "Manage notifications",
+        position = 2
+    ) String notifications = "notifications";
+
+        @ConfigItem(
+            keyName = "notification_start",
+            name = "Game starting",
+            description = "Notify about game start",
+            position = 1,
+            section = notifications
+        ) default boolean notifyGameStart() {
+        return true;
+    }
+
+    @ConfigSection(
         name = "Debug",
         description = "Values of charges for all items under the hood",
         position = 99,

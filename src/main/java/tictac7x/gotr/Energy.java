@@ -15,6 +15,7 @@ public class Energy {
     private final TicTac7xGotrImprovedConfig config;
 
     private final Pattern regex_check = Pattern.compile("You have (?<catalytic>.+) catalytic energy and (?<elemental>.+) elemental energy.");
+    private final Pattern regex_game_over = Pattern.compile("Total elemental energy: (?<elemental>.+). Total catalytic energy: (?<catalytic>.+).");
     private final Pattern regex_catalytic_energy = Pattern.compile("Catalytic<br>Energy: (?<catalytic>.+)");
     private final Pattern regex_elemental_energy = Pattern.compile("Elemental<br>Energy: (?<elemental>.+)");
 
@@ -36,13 +37,15 @@ public class Energy {
     }
 
     public void onChatMessage(final ChatMessage message) {
-        if (message.getType() != ChatMessageType.MESBOX) return;
+        if (message.getType() != ChatMessageType.MESBOX || message.getType() != ChatMessageType.GAMEMESSAGE) return;
 
-        final Matcher matcher = regex_check.matcher(message.getMessage());
-        if (!matcher.find()) return;
+        final Matcher matcher_check = regex_check.matcher(message.getMessage());
+        final Matcher matcher_game_over = regex_game_over.matcher(message.getMessage());
 
-        configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_catalytic, Integer.parseInt(matcher.group("catalytic")));
-        configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_elemental, Integer.parseInt(matcher.group("elemental")));
+        if (!matcher_check.find() && !matcher_game_over.find()) return;
+
+        configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_catalytic, Integer.parseInt(matcher_check.group("catalytic")));
+        configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_elemental, Integer.parseInt(matcher_check.group("elemental")));
     }
 
     public void onGameTick() {

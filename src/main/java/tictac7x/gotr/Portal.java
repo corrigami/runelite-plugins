@@ -5,17 +5,20 @@ import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 
 import java.awt.Color;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Portal {
     private final String game_started = "The rift becomes active!";
-    private final String portal_opened = "A portal to the huge guardian fragment mine has opened";
     private final String game_ended = "The Portal Guardians will keep their rifts open";
     private final String portal_used = "You step through the portal and find yourself in another part of the temple.";
+    private final Pattern portal_opened = Pattern.compile("A portal to the huge guardian fragment mine has opened (?<location>.*)!");
 
     private final Client client;
     private final Notifier notifier;
@@ -23,6 +26,9 @@ public class Portal {
     private Optional<GameObject> portal = Optional.empty();
     private Optional<Instant> time_to_portal = Optional.empty();
     private Optional<Instant> portal_time_left = Optional.empty();
+
+    private boolean first_portal;
+    private boolean portal_active;
 
     public Portal(final Client client, final Notifier notifier) {
         this.client = client;
@@ -42,15 +48,17 @@ public class Portal {
     }
 
     public Color getTimeToPortalColor(final long seconds) {
-        return seconds <= 10 ? Color.RED : seconds <= 30 ? Color.ORANGE : Color.WHITE;
+        if (first_portal) {
+            return seconds >= 160 ? Color.RED : seconds >= 140 ? Color.ORANGE : Color.WHITE;
+        } else {
+            return seconds >= 100 ? Color.RED : seconds >= 80 ? Color.ORANGE : Color.WHITE;
+        }
     }
 
     public void onGameObjectSpawned(final GameObject object) {
         if (object.getId() == 43729) {
             portal = Optional.of(object);
-            portal_time_left = Optional.of(Instant.now().plusMillis(44 * 600));
             client.setHintArrow(object.getWorldLocation());
-            notifier.notify("Portal has opened!");
         }
     }
 
@@ -72,14 +80,31 @@ public class Portal {
     public void onChatMessage(final ChatMessage message) {
         if (message.getType() != ChatMessageType.GAMEMESSAGE) return;
 
+        final Matcher matcher = portal_opened.matcher(message.getMessage());
+
         if (message.getMessage().equals(game_started)) {
-            time_to_portal = Optional.of(Instant.now().plusSeconds(161));
-        } else if (message.getMessage().contains(portal_opened)) {
-            time_to_portal = Optional.of(Instant.now().plusSeconds(131));
-        } else if (message.getMessage().contains(game_ended)) {
-            time_to_portal = Optional.empty();
+            first_portal = true;
+            time_to_portal = Optional.of(Instant.now());
         } else if (message.getMessage().equals(portal_used)) {
             client.clearHintArrow();
+        } else if (matcher.find()) {
+            portal_time_left = Optional.of(Instant.now().plusMillis(44 * 600));
+            notifier.notify("Portal opened " + matcher.group("location") + "!");
+        }
+    }
+
+    public void onGameTick() {
+        final Widget widget_gotr = client.getWidget(746, 2);
+        if (widget_gotr == null || widget_gotr.isHidden()) return;
+
+        final Widget widget_portal = client.getWidget(746, 26);
+
+        if (portal_active && (widget_portal == null || widget_portal.isHidden())) {
+            portal_active = false;
+            time_to_portal = Optional.of(Instant.now());
+        } else if (!portal_active && widget_portal != null && !widget_portal.isHidden()) {
+            portal_active = true;
+            first_portal = false;
         }
     }
 }

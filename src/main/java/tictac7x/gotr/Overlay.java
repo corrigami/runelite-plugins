@@ -119,12 +119,11 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
                 }
             }
 
-            final long seconds = Math.max(Duration.between(Instant.now(), portal.getTimeToPortal().get()).getSeconds(), 0);
-            final String time = seconds / 60 + ":" + String.format("%02d", seconds % 60);
+            final long seconds = Math.max(Duration.between(portal.getTimeToPortal().get(), Instant.now()).getSeconds(), 0);
 
             graphics.drawImage(portal_inactive_image, 194, 90, 32, 32, null);
             final Rectangle rectangle = new Rectangle(194, 120, 32, 32);
-            drawCenteredString(graphics, time, rectangle, config.showWidgetPortalCountdownColors() ? portal.getTimeToPortalColor(seconds) : Color.WHITE, FontManager.getRunescapeFont());
+            drawCenteredString(graphics, seconds + "s", rectangle, config.showWidgetPortalCountdownColors() ? portal.getTimeToPortalColor(seconds) : Color.WHITE, FontManager.getRunescapeFont());
         }
 
         // Elemental energy widget.
