@@ -72,7 +72,6 @@ public class Portal {
     public void onGameStateChanged(final GameState state) {
         if (state == GameState.LOADING) {
             portal = Optional.empty();
-            portal_time_left = Optional.empty();
             client.clearHintArrow();
         }
     }

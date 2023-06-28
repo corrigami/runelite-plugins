@@ -13,6 +13,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;

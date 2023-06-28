@@ -18,6 +18,7 @@ public class Energy {
     private final Pattern regex_game_over = Pattern.compile("Total elemental energy: (?<elemental>.+). Total catalytic energy: (?<catalytic>.+).");
     private final Pattern regex_catalytic_energy = Pattern.compile("Catalytic<br>Energy: (?<catalytic>.+)");
     private final Pattern regex_elemental_energy = Pattern.compile("Elemental<br>Energy: (?<elemental>.+)");
+    private final String regex_found_loot = "You found some loot:";
 
     private double catalytic_energy;
     private double elemental_energy;
@@ -37,15 +38,25 @@ public class Energy {
     }
 
     public void onChatMessage(final ChatMessage message) {
-        if (message.getType() != ChatMessageType.MESBOX || message.getType() != ChatMessageType.GAMEMESSAGE) return;
+        if (message.getType() != ChatMessageType.MESBOX && message.getType() != ChatMessageType.GAMEMESSAGE && message.getType() != ChatMessageType.SPAM) return;
+        System.out.println(message.getMessage());
 
         final Matcher matcher_check = regex_check.matcher(message.getMessage());
+        if (matcher_check.find()) {
+            configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_catalytic, Integer.parseInt(matcher_check.group("catalytic")));
+            configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_elemental, Integer.parseInt(matcher_check.group("elemental")));
+        }
+
         final Matcher matcher_game_over = regex_game_over.matcher(message.getMessage());
+        if (matcher_game_over.find()) {
+            configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_catalytic, Integer.parseInt(matcher_game_over.group("catalytic")));
+            configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_elemental, Integer.parseInt(matcher_game_over.group("elemental")));
+        }
 
-        if (!matcher_check.find() && !matcher_game_over.find()) return;
-
-        configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_catalytic, Integer.parseInt(matcher_check.group("catalytic")));
-        configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_elemental, Integer.parseInt(matcher_check.group("elemental")));
+        if (message.getMessage().contains(regex_found_loot)) {
+            configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_catalytic, config.getCatalyticEnergy() - 1);
+            configs.setConfiguration(TicTac7xGotrImprovedConfig.group, TicTac7xGotrImprovedConfig.energy_elemental, config.getElementalEnergy() - 1);
+        }
     }
 
     public void onGameTick() {
