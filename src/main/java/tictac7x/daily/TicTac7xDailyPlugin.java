@@ -17,7 +17,6 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 
 import tictac7x.daily.infoboxes.BowStrings;
-import tictac7x.daily.infoboxes.Hespori;
 import tictac7x.daily.infoboxes.OgreArrows;
 import tictac7x.daily.infoboxes.PureEssence;
 import tictac7x.daily.infoboxes.Battlestaves;
@@ -64,8 +63,7 @@ public class TicTac7xDailyPlugin extends Plugin {
             new BucketsOfSlime(client, config, items, this),
             new OgreArrows(client, config, items, this),
             new BowStrings(client, config, items, this),
-            new KingdomOfMiscellania(client, config, configs, items, this),
-            new Hespori(client, config, items, this),
+            new KingdomOfMiscellania(client, config, configs, items, this)
         };
 
         for (final DailyInfobox infobox : infoboxes_daily) {
