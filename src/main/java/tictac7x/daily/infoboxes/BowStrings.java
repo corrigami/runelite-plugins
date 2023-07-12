@@ -14,7 +14,7 @@ public class BowStrings extends DailyInfobox {
     private final String tooltip = "Exchange flax to %d bow strings from the Flax Keeper at Seers Village";
 
     public BowStrings(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(DailyConfig.bow_strings_id, items.getImage(ItemID.BOW_STRING), client, config, plugin);
+        super(DailyConfig.bow_strings, items.getImage(ItemID.BOW_STRING), client, config, plugin);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class OgreArrows extends DailyInfobox {
     private final String tooltip = "Collect %d ogre arrows from Rantz near Feldip Hills cave";
 
     public OgreArrows(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(DailyConfig.ogre_arrows_id, items.getImage(ItemID.OGRE_ARROW, 1000, false), client, config, plugin);
+        super(DailyConfig.ogre_arrows, items.getImage(ItemID.OGRE_ARROW, 1000, false), client, config, plugin);
     }
 
     @Override

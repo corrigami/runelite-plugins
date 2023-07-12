@@ -14,7 +14,7 @@ public class Battlestaves extends DailyInfobox {
     private final String tooltip = "Buy %d battlestaves from Zaff at Varrock for %d,000 coins";
 
     public Battlestaves(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(DailyConfig.battlestaves_id, items.getImage(ItemID.BATTLESTAFF), client, config, plugin);
+        super(DailyConfig.battlestaves, items.getImage(ItemID.BATTLESTAFF), client, config, plugin);
     }
 
     @Override

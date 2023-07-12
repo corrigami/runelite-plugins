@@ -14,7 +14,7 @@ public class PureEssence extends DailyInfobox {
     private final String tooltip = "Collect %d pure essence from Wizard Cromperty at East-Ardougne";
 
     public PureEssence(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(DailyConfig.pure_essence_id, items.getImage(ItemID.PURE_ESSENCE), client, config, plugin);
+        super(DailyConfig.pure_essence, items.getImage(ItemID.PURE_ESSENCE), client, config, plugin);
     }
 
     @Override

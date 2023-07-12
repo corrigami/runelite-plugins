@@ -1,105 +1,99 @@
 package tictac7x.daily;
 
-import net.runelite.client.config.Config;
-import net.runelite.client.config.ConfigGroup;
-import net.runelite.client.config.ConfigItem;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.client.config.*;
 
 import java.util.Date;
 
 @ConfigGroup(DailyConfig.group)
 public interface DailyConfig extends Config {
     String group = "tictac7x-daily";
-
-    String battlestaves_id = "battlestaves";
-    String battlestaves_name = "Battlestaves by Zaff";
-    String battlestaves_description = "Reminds you to buy battlestaves from Zaff at Varrock.";
-
-    @ConfigItem(
-        keyName = battlestaves_id,
-        name = battlestaves_name,
-        description = battlestaves_description,
-        position = 1
-    ) default boolean showBattlestaves() { return true; }
-
-    String bow_strings_id = "bow_strings";
-    String bow_strings_name = "Bow strings by Flax Keeper";
-    String bow_strings_description = "Reminds you to exchange flax for Bow Strings from the Flax Keeper at Seers Village.";
-
-    @ConfigItem(
-        keyName = bow_strings_id,
-        name = bow_strings_name,
-        description = bow_strings_description,
-        position = 2
-    ) default boolean showBowStrings() { return true; }
-
-    String buckets_of_sand_id = "buckets_of_sand";
-    String buckets_of_sand_name = "Buckets of sand by Bert";
-    String buckets_of_sand_description = "Reminds you to collect 84 buckets of sand from Bert at Yanille.";
-
-    @ConfigItem(
-        keyName = buckets_of_sand_id,
-        name = buckets_of_sand_name,
-        description = buckets_of_sand_description,
-        position = 3
-    ) default boolean showBucketsOfSand() { return true; }
-
-    String buckets_of_slime_id = "buckets_of_slime";
-    String buckets_of_slime_name = "Buckets of slime and bonemeal by Robin";
-    String buckets_of_slime_description = "Reminds you to exchange bones for buckets of slime and bonemeal from Robin at Port Phasmatys.";
-
-    @ConfigItem(
-        keyName = buckets_of_slime_id,
-        name = buckets_of_slime_name,
-        description = buckets_of_slime_description,
-        position = 4
-    ) default boolean showBucketsOfSlime() { return true; }
-
-    String kingdom_of_miscellania_id = "kingdom_of_miscellania";
-    String kingdom_of_miscellania_name = "Miscellania favor";
-    String kingdom_of_miscellania_description = "Reminds you to keep favor of Miscellania people at 100%.";
+    String battlestaves = "battlestaves";
+    String bow_strings = "bow_strings";
+    String buckets_of_sand = "buckets_of_sand";
+    String buckets_of_slime = "buckets_of_slime";
+    String ogre_arrows = "ogre_arrows";
+    String pure_essence = "pure_essence";
+    String kingdom_of_miscellania = "kingdom_of_miscellania";
     String kingdom_of_miscellania_favor = "kingdom_of_miscellania_favor";
     String kingdom_of_miscellania_favor_date = "miscellania_favor_date";
 
-    @ConfigItem(
-        keyName = kingdom_of_miscellania_id,
-        name = kingdom_of_miscellania_name,
-        description = kingdom_of_miscellania_description,
-        position = 5
-    ) default boolean showKingdomOfMiscellaniaFavor() { return true; }
+    @ConfigSection(
+        name = "Infoboxes",
+        description = "Infoboxes",
+        position = 1
+    ) String infoboxes = "infoboxes";
 
-    @ConfigItem(
-        keyName = kingdom_of_miscellania_favor,
-        name = kingdom_of_miscellania_favor,
-        description = kingdom_of_miscellania_favor,
-        hidden = true
-    ) default int getKingdomOfMiscellaniaFavor() { return 0; }
+        @ConfigItem(
+            keyName = battlestaves,
+            name = "Battlestaves by Zaff",
+            description = "Reminds you to buy battlestaves from Zaff at Varrock.",
+            section = infoboxes
+        ) default boolean showBattlestaves() { return true; }
 
-    @ConfigItem(
-        keyName = kingdom_of_miscellania_favor_date,
-        name = kingdom_of_miscellania_favor_date,
-        description = kingdom_of_miscellania_favor_date,
-        hidden = true
-    ) default String getKingdomOfMiscellaniaFavorDate() { return null; }
+        @ConfigItem(
+            keyName = bow_strings,
+            name = "Bow strings by Flax Keeper",
+            description = "Reminds you to exchange flax for Bow Strings from the Flax Keeper at Seers Village.",
+            section = infoboxes
+        ) default boolean showBowStrings() { return true; }
 
-    String ogre_arrows_id = "ogre_arrows";
-    String ogre_arrows_name = "Ogre arrows by Rantz";
-    String ogre_arrows_description = "Reminds you to collect ogre arrows from Rantz near Feldip Hills cave.";
+        @ConfigItem(
+            keyName = buckets_of_sand,
+            name = "Buckets of sand by Bert",
+            description = "Reminds you to collect 84 buckets of sand from Bert at Yanille.",
+            section = infoboxes
+        ) default boolean showBucketsOfSand() { return true; }
 
-    @ConfigItem(
-        keyName = ogre_arrows_id,
-        name = ogre_arrows_name,
-        description = ogre_arrows_description,
-        position = 6
-    ) default boolean showOgreArrows() { return true; }
+        @ConfigItem(
+            keyName = buckets_of_slime,
+            name = "Buckets of slime and bonemeal by Robin",
+            description = "Reminds you to exchange bones for buckets of slime and bonemeal from Robin at Port Phasmatys.",
+            section = infoboxes
+        ) default boolean showBucketsOfSlime() { return true; }
 
-    String pure_essence_id = "pure_essence";
-    String pure_essence_name = "Pure essence by Wizard Cromperty";
-    String pure_essence_description = "Reminds you to collect pure essence from Wizard Cromperty at East-Ardougne.";
+        @Range(min = -1, max = 99)
+        @ConfigItem(
+            keyName = kingdom_of_miscellania,
+            name = "Miscellania favor",
+            description = "Reminds you to keep favor of Miscellania over certain percentage.",
+            position = 99,
+            section = infoboxes
+        ) default int showKingdomOfMiscellaniaFavor() { return 99; }
 
-    @ConfigItem(
-        keyName = pure_essence_id,
-        name = pure_essence_name,
-        description = pure_essence_description,
-        position = 7
-    ) default boolean showPureEssence() { return true; }
+        @ConfigItem(
+            keyName = ogre_arrows,
+            name = "Ogre arrows by Rantz",
+            description = "Reminds you to collect ogre arrows from Rantz near Feldip Hills cave.",
+            section = infoboxes
+        ) default boolean showOgreArrows() { return true; }
+
+        @ConfigItem(
+            keyName = pure_essence,
+            name = "Pure essence by Wizard Cromperty",
+            description = "Reminds you to collect pure essence from Wizard Cromperty at East-Ardougne.",
+            section = infoboxes
+        ) default boolean showPureEssence() { return true; }
+
+    @ConfigSection(
+        name = "Debug",
+        description = "Debug",
+        position = 99,
+        closedByDefault = true
+    ) String debug = "debug";
+
+        @Range(min = 0, max = 127)
+        @ConfigItem(
+            keyName = kingdom_of_miscellania_favor,
+            name = kingdom_of_miscellania_favor,
+            description = kingdom_of_miscellania_favor,
+            section = debug
+        ) default int getKingdomOfMiscellaniaFavor() { return 0; }
+
+        @ConfigItem(
+            keyName = kingdom_of_miscellania_favor_date,
+            name = kingdom_of_miscellania_favor_date,
+            description = kingdom_of_miscellania_favor_date,
+            section = debug
+        ) default String getKingdomOfMiscellaniaFavorDate() { return null; }
 }

@@ -19,7 +19,7 @@ public class BucketsOfSand extends DailyInfobox {
     private final int amount_buckets_of_sand = 84;
 
     public BucketsOfSand(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(DailyConfig.buckets_of_sand_id, items.getImage(ItemID.BUCKET_OF_SAND), client, config, plugin);
+        super(DailyConfig.buckets_of_sand, items.getImage(ItemID.BUCKET_OF_SAND), client, config, plugin);
     }
 
     @Override
