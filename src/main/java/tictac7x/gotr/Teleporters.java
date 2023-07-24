@@ -1,72 +1,76 @@
 package tictac7x.gotr;
 
-import net.runelite.api.DynamicObject;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
-import net.runelite.api.ObjectID;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameStateChanged;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Teleporters {
-    private final List<Integer> teleporter_elemental_ids = Arrays.asList(ObjectID.GUARDIAN_OF_AIR, ObjectID.GUARDIAN_OF_WATER, ObjectID.GUARDIAN_OF_EARTH, ObjectID.GUARDIAN_OF_FIRE);
-    private final List<Integer> teleporter_catalytic_ids = Arrays.asList(ObjectID.GUARDIAN_OF_MIND, ObjectID.GUARDIAN_OF_BODY, ObjectID.GUARDIAN_OF_COSMIC, ObjectID.GUARDIAN_OF_CHAOS, ObjectID.GUARDIAN_OF_NATURE, ObjectID.GUARDIAN_OF_LAW, ObjectID.GUARDIAN_OF_DEATH, ObjectID.GUARDIAN_OF_BLOOD);
+    private final String PORTAL_OPENED = "Creatures from the Abyss begin their attack!";
+    private final String KEEP_RIFTS_OPEN = "The Portal Guardians will keep their rifts open for another 30 seconds.";
+    private final int TELEPORTER_ACTIVE_IN_GAME_GAMETICKS = 33;
+    private final int TELEPORTER_ACTIVE_AFTER_GAME_GAMETICKS = 50;
+    private final int GAMETICK_DURATION = 600;
 
-    private Set<GameObject> teleporters = new HashSet<>();
-    private Optional<Instant> teleporters_time_left = Optional.empty();
+    private Optional<Integer> gameticks_left = Optional.empty();
+    private Optional<Instant> time_left = Optional.empty();
+    private final Map<GameObject, Teleporter> teleporters = new HashMap<>();
+    private boolean game_starting = false;
+    private boolean keep_rifts_open = false;
 
-    private final List<Integer> teleporters_active_ids = new ArrayList<>();
+    public Optional<Instant> getTimeLeft() {
+        return time_left;
+    }
 
-    public Set<GameObject> getTeleporters() {
+    public Map<GameObject, Teleporter> getTeleporters() {
         return teleporters;
     }
 
-    public Optional<Instant> getTeleportersTimeLeft() {
-        return teleporters_time_left;
-    }
-
-    public void onGameObjectSpawned(final GameObject object) {
-        if (teleporter_elemental_ids.contains(object.getId()) || teleporter_catalytic_ids.contains(object.getId())) teleporters.add(object);
-    }
-
-    public void onGameObjectDespawned(final GameObject object) {
-        if (teleporter_elemental_ids.contains(object.getId()) || teleporter_catalytic_ids.contains(object.getId())) teleporters.remove(object);
-    }
-
-    public void onGameStateChanged(final GameState state) {
-        if (state == GameState.LOADING) {
-            teleporters.clear();
+    public void onChatMessage(final ChatMessage message) {
+        if (message.getType() == ChatMessageType.GAMEMESSAGE) {
+            game_starting = message.getMessage().equals(PORTAL_OPENED);
+            keep_rifts_open = message.getMessage().equals(KEEP_RIFTS_OPEN);
         }
     }
 
     public void onGameTick() {
-        boolean updated = false;
+        if (gameticks_left.isPresent()) {
+            gameticks_left = Optional.of(gameticks_left.get() - 1);
 
-        for (final GameObject teleporter : teleporters) {
-            if (((DynamicObject) teleporter.getRenderable()).getAnimation().getId() == 9363) {
-                if (!teleporters_active_ids.contains(teleporter.getId())) {
-                    if (!updated) teleporters_active_ids.clear();
-                    updated = true;
-                    teleporters_active_ids.add(teleporter.getId());
-                }
+            if (gameticks_left.get() == 0) {
+                startTeleportersCycle();
             }
         }
 
-        if (updated) {
-            teleporters_time_left = Optional.of(Instant.now().plusMillis(33 * 600));
+        if (game_starting) {
+            game_starting = false;
+            startTeleportersCycle();
+        }
+
+        if (keep_rifts_open) {
+            keep_rifts_open = false;
+            gameticks_left = Optional.empty();
+            time_left = Optional.of(Instant.now().plusMillis(TELEPORTER_ACTIVE_AFTER_GAME_GAMETICKS * GAMETICK_DURATION));
         }
     }
 
-    public boolean isElementalTeleporter(final int id) {
-        return teleporter_elemental_ids.contains(id);
+    public void onGameObjectSpawned(final GameObject object) {
+        final Optional<Teleporter> teleporter = Arrays.stream(Teleporter.ALL).filter(t -> t.teleporter_id == object.getId()).findFirst();
+        teleporter.ifPresent(value -> teleporters.put(object, value));
     }
 
-    public boolean isCatalyticTeleporter(final int id) {
-        return teleporter_catalytic_ids.contains(id);
+    public void onGameStateChanged(final GameStateChanged event) {
+        if (event.getGameState() == GameState.LOADING) {
+            teleporters.clear();
+        }
+    }
+
+    private void startTeleportersCycle() {
+        gameticks_left = Optional.of(TELEPORTER_ACTIVE_IN_GAME_GAMETICKS);
+        time_left = Optional.of(Instant.now().plusMillis((TELEPORTER_ACTIVE_IN_GAME_GAMETICKS) * GAMETICK_DURATION));
     }
 }
