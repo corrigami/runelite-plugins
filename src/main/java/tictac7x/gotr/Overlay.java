@@ -134,7 +134,7 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
             drawCenteredString(graphics, "Elemental:", rectangle, config.showWidgetEnergyPointColors() ? config.getElementalColor() : Color.WHITE, FontManager.getRunescapeFont());
 
             final Rectangle rectangle1 = new Rectangle(47, 112, 0, 24);
-            drawCenteredString(graphics, String.valueOf(energy.getElementalEnergy()), rectangle1, config.showWidgetEnergyPointColors() ? config.getElementalColor() : Color.WHITE, FontManager.getRunescapeFont());
+            drawCenteredString(graphics, energy.getElementalEnergy(), rectangle1, config.showWidgetEnergyPointColors() ? config.getElementalColor() : Color.WHITE, FontManager.getRunescapeFont());
         }
 
         // Catalytic energy widget.
@@ -145,7 +145,7 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
             drawCenteredString(graphics, "Catalytic:", rectangle, config.showWidgetEnergyPointColors() ? config.getCatalyticColor() : Color.WHITE, FontManager.getRunescapeFont());
 
             final Rectangle rectangle1 = new Rectangle(128, 112, 0, 24);
-            drawCenteredString(graphics, String.valueOf(energy.getCatalyticEnergy()), rectangle1, config.showWidgetEnergyPointColors() ? config.getCatalyticColor() : Color.WHITE, FontManager.getRunescapeFont());
+            drawCenteredString(graphics, energy.getCatalyticEnergy(), rectangle1, config.showWidgetEnergyPointColors() ? config.getCatalyticColor() : Color.WHITE, FontManager.getRunescapeFont());
         }
 
         // Time to start.

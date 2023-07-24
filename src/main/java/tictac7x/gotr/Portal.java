@@ -84,6 +84,7 @@ public class Portal {
         if (message.getMessage().equals(game_started)) {
             first_portal = true;
             time_to_portal = Optional.of(Instant.now());
+            notifier.notify("The Guardians of the Rift minigame has started!");
         } else if (message.getMessage().equals(portal_used)) {
             client.clearHintArrow();
         } else if (matcher.find()) {

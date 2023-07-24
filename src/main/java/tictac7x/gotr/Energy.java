@@ -15,7 +15,7 @@ public class Energy {
     private final TicTac7xGotrImprovedConfig config;
 
     private final Pattern regex_check = Pattern.compile("You have (?<catalytic>.+) catalytic energy and (?<elemental>.+) elemental energy.");
-    private final Pattern regex_game_over = Pattern.compile("Total elemental energy: (?<elemental>.+). Total catalytic energy: (?<catalytic>.+).");
+    private final Pattern regex_game_over = Pattern.compile("Total elemental energy: (?<elemental>.+). Total catalytic energy:  (?<catalytic>.+).");
     private final Pattern regex_catalytic_energy = Pattern.compile("Catalytic<br>Energy: (?<catalytic>.+)");
     private final Pattern regex_elemental_energy = Pattern.compile("Elemental<br>Energy: (?<elemental>.+)");
     private final String regex_found_loot = "You found some loot:";
@@ -29,12 +29,12 @@ public class Energy {
         this.config = config;
     }
 
-    public double getElementalEnergy() {
-        return config.getElementalEnergy() + elemental_energy;
+    public String getElementalEnergy() {
+        return config.getElementalEnergy() + " + " + elemental_energy;
     }
 
-    public double getCatalyticEnergy() {
-        return config.getCatalyticEnergy() + catalytic_energy;
+    public String getCatalyticEnergy() {
+        return config.getCatalyticEnergy() + " + " + catalytic_energy;
     }
 
     public void onChatMessage(final ChatMessage message) {
