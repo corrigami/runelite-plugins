@@ -85,8 +85,11 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private SpriteManager sprites;
 
 	private Teleporters teleporters;
-	private Inventory inventory;
+	private GreatGuardian great_guardian;
+	private Guardians guardians;
+	private Portal portal;
 	private Overlay overlay;
+	private Inventory inventory;
 
 	@Provides
 	TicTac7xGotrImprovedConfig provideConfig(ConfigManager configManager) {
@@ -96,9 +99,12 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		teleporters = new Teleporters();
+		great_guardian = new GreatGuardian();
+		guardians = new Guardians(client);
+		portal = new Portal(client, notifier);
 		inventory = new Inventory();
 
-		overlay = new tictac7x.gotr.Overlay(client, items, outlines, config, teleporters, inventory);
+		overlay = new tictac7x.gotr.Overlay(client, items, outlines, config, teleporters, great_guardian, guardians, portal, inventory);
 		overlays.add(overlay);
 	}
 
@@ -115,34 +121,42 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
 		teleporters.onGameObjectSpawned(event.getGameObject());
+		portal.onGameObjectSpawned((event.getGameObject()));
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(final GameObjectDespawned event) {
+		portal.onGameObjectDespawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onChatMessage(final ChatMessage message) {
 		message.setMessage(message.getMessage().replaceAll("</?col.*?>", ""));
 		teleporters.onChatMessage(message);
+		portal.onChatMessage(message);
 	}
 
 	@Subscribe
 	public void onNpcSpawned(final NpcSpawned event) {
+		great_guardian.onNpcSpawned(event.getNpc());
 	}
 
 	@Subscribe
 	public void onNpcDespawned(final NpcDespawned event) {
+		great_guardian.onNpcDespawned(event.getNpc());
 	}
 
 	@Subscribe
 	public void onGameTick(final GameTick gametick) {
 		teleporters.onGameTick();
+		portal.onGameTick();
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		teleporters.onGameStateChanged(event);
+		teleporters.onGameStateChanged(event.getGameState());
+		great_guardian.onGameStateChanged(event.getGameState());
+		portal.onGameStateChanged(event.getGameState());
 	}
 }
 

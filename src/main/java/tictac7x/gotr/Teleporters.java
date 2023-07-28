@@ -63,8 +63,8 @@ public class Teleporters {
         teleporter.ifPresent(value -> teleporters.put(object, value));
     }
 
-    public void onGameStateChanged(final GameStateChanged event) {
-        if (event.getGameState() == GameState.LOADING) {
+    public void onGameStateChanged(final GameState game_state) {
+        if (game_state == GameState.LOADING) {
             teleporters.clear();
         }
     }

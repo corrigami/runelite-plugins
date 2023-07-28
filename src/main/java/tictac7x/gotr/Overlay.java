@@ -1,9 +1,6 @@
 package tictac7x.gotr;
 
-import net.runelite.api.Client;
-import net.runelite.api.DynamicObject;
-import net.runelite.api.GameObject;
-import net.runelite.api.Perspective;
+import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.FontManager;
@@ -24,14 +21,30 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
     private final ModelOutlineRenderer outlines;
     private final TicTac7xGotrImprovedConfig config;
     private final Teleporters teleporters;
+    private final GreatGuardian great_guardian;
+    private final Guardians guardians;
+    private final Portal portal;
     private final Inventory inventory;
 
-    public Overlay(final Client client, final ItemManager items, final ModelOutlineRenderer outlines, final TicTac7xGotrImprovedConfig config, final Teleporters teleporters, final Inventory inventory) {
+    public Overlay(
+        final Client client,
+        final ItemManager items,
+        final ModelOutlineRenderer outlines,
+        final TicTac7xGotrImprovedConfig config,
+        final Teleporters teleporters,
+        final GreatGuardian great_guardian,
+        final Guardians guardians,
+        final Portal portal,
+        final Inventory inventory
+    ) {
         this.client = client;
         this.items = items;
         this.outlines = outlines;
         this.config = config;
         this.teleporters = teleporters;
+        this.great_guardian = great_guardian;
+        this.guardians = guardians;
+        this.portal = portal;
         this.inventory = inventory;
 
         setPosition(OverlayPosition.DYNAMIC);
@@ -41,8 +54,32 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
     @Override
     public Dimension render(final Graphics2D graphics) {
         drawTeleporters(graphics);
+        drawGreatGuardian();
+        drawPortal(graphics);
 
         return null;
+    }
+
+    private void drawPortal(final Graphics2D graphics) {
+        if (portal.getPortal().isPresent() && portal.getTimeLeft().isPresent()) {
+            final long seconds = Duration.between(Instant.now(), portal.getTimeLeft().get()).getSeconds();
+            if (seconds < 0) return;
+
+            final long milliseconds = Duration.between(Instant.now(), portal.getTimeLeft().get()).getNano() / 1_000_000 % 1000 / 100;
+            final String time = seconds + "." + milliseconds;
+            final Point location =  Perspective.getCanvasTextLocation(client, graphics, portal.getPortal().get().getLocalLocation(), time, 120);
+
+            drawCenteredString(graphics, time, location);
+            client.setHintArrow(portal.getPortal().get().getLocalLocation());
+        } else {
+            client.clearHintArrow();
+        }
+    }
+
+    private void drawGreatGuardian() {
+        if (great_guardian.getGreatGuardian().isPresent() && inventory.hasEssence()) {
+            drawOutline(great_guardian.getGreatGuardian().get(), inventory.hasElementalEssence() ? config.getElementalColor() : config.getCatalyticColor());
+        }
     }
 
     private void drawTeleporters(final Graphics2D graphics) {
@@ -87,6 +124,18 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
     private void drawOutline(final GameObject object, final Color color) {
         try {
             outlines.drawOutline(object, 2, color, 2);
+        } catch (final Exception ignored) {}
+    }
+
+    private void drawOutline(final NPC npc, final Color color) {
+        try {
+            outlines.drawOutline(npc, 2, color, 2);
+        } catch (final Exception ignored) {}
+    }
+
+    private void drawCenteredString(final Graphics2D graphics, final String text, final Point location) {
+        try {
+            OverlayUtil.renderTextLocation(graphics, location, text, Color.WHITE);
         } catch (final Exception ignored) {}
     }
 

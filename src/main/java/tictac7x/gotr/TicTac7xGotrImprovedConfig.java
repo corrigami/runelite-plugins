@@ -6,6 +6,12 @@ import java.awt.Color;
 
 import static tictac7x.gotr.TicTac7xGotrImprovedConfig.group;
 
+enum GameStart {
+    ZERO,
+    TEN,
+    THIRTY
+}
+
 @ConfigGroup(group)
 public interface TicTac7xGotrImprovedConfig extends Config {
     String group = "tictac7x-gotr";
@@ -76,8 +82,8 @@ public interface TicTac7xGotrImprovedConfig extends Config {
             description = "Notify about game start",
             position = 1,
             section = notifications
-        ) default boolean notifyGameStart() {
-        return true;
+        ) default GameStart notifyGameStart() {
+        return GameStart.ZERO;
     }
 
     @ConfigSection(
@@ -110,20 +116,4 @@ public interface TicTac7xGotrImprovedConfig extends Config {
             section = debug,
             position = 3
         ) default int getElementalEnergy() { return 0; }
-
-        @ConfigItem(
-            keyName = guardians_current,
-            name = guardians_current,
-            description = guardians_current,
-            section = debug,
-            position = 5
-        ) default double getCurrentGuardians() { return 0; }
-
-        @ConfigItem(
-            keyName = guardians_total,
-            name = guardians_total,
-            description = guardians_total,
-            section = debug,
-            position = 6
-        ) default double getTotalGuardians() { return 0; }
 }
