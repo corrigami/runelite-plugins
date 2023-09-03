@@ -8,12 +8,14 @@ import java.util.Date;
 @ConfigGroup(DailyConfig.group)
 public interface DailyConfig extends Config {
     String group = "tictac7x-daily";
+    String version = "version";
     String battlestaves = "battlestaves";
     String bow_strings = "bow_strings";
     String buckets_of_sand = "buckets_of_sand";
     String buckets_of_slime = "buckets_of_slime";
     String ogre_arrows = "ogre_arrows";
     String pure_essence = "pure_essence";
+    String dynamite = "dynamite";
     String kingdom_of_miscellania = "kingdom_of_miscellania";
     String kingdom_of_miscellania_favor = "kingdom_of_miscellania_favor";
     String kingdom_of_miscellania_favor_date = "miscellania_favor_date";
@@ -26,28 +28,28 @@ public interface DailyConfig extends Config {
 
         @ConfigItem(
             keyName = battlestaves,
-            name = "Battlestaves by Zaff",
+            name = "Battlestaves from Zaff",
             description = "Reminds you to buy battlestaves from Zaff at Varrock.",
             section = infoboxes
         ) default boolean showBattlestaves() { return true; }
 
         @ConfigItem(
             keyName = bow_strings,
-            name = "Bow strings by Flax Keeper",
+            name = "Bow strings from Flax Keeper",
             description = "Reminds you to exchange flax for Bow Strings from the Flax Keeper at Seers Village.",
             section = infoboxes
         ) default boolean showBowStrings() { return true; }
 
         @ConfigItem(
             keyName = buckets_of_sand,
-            name = "Buckets of sand by Bert",
+            name = "Buckets of sand from Bert",
             description = "Reminds you to collect 84 buckets of sand from Bert at Yanille.",
             section = infoboxes
         ) default boolean showBucketsOfSand() { return true; }
 
         @ConfigItem(
             keyName = buckets_of_slime,
-            name = "Buckets of slime and bonemeal by Robin",
+            name = "Buckets of slime and bonemeal from Robin",
             description = "Reminds you to exchange bones for buckets of slime and bonemeal from Robin at Port Phasmatys.",
             section = infoboxes
         ) default boolean showBucketsOfSlime() { return true; }
@@ -63,17 +65,24 @@ public interface DailyConfig extends Config {
 
         @ConfigItem(
             keyName = ogre_arrows,
-            name = "Ogre arrows by Rantz",
+            name = "Ogre arrows from Rantz",
             description = "Reminds you to collect ogre arrows from Rantz near Feldip Hills cave.",
             section = infoboxes
         ) default boolean showOgreArrows() { return true; }
 
         @ConfigItem(
             keyName = pure_essence,
-            name = "Pure essence by Wizard Cromperty",
+            name = "Pure essence from Wizard Cromperty",
             description = "Reminds you to collect pure essence from Wizard Cromperty at East-Ardougne.",
             section = infoboxes
         ) default boolean showPureEssence() { return true; }
+
+        @ConfigItem(
+            keyName = dynamite,
+            name = "Dynamite from Thirus",
+            description = "Reminds you to collect dynamite from Thirus.",
+            section = infoboxes
+        ) default boolean showDynamite() { return true; }
 
     @ConfigSection(
         name = "Debug",
@@ -81,6 +90,14 @@ public interface DailyConfig extends Config {
         position = 99,
         closedByDefault = true
     ) String debug = "debug";
+
+        @ConfigItem(
+            keyName = version,
+            name = "Version",
+            description = "Version of the plugin for update message",
+            section = debug,
+            position = 99
+        ) default String getVersion() { return ""; }
 
         @Range(min = 0, max = 127)
         @ConfigItem(

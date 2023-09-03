@@ -18,33 +18,34 @@ public class OgreArrows extends DailyInfobox {
     }
 
     @Override
-    public Supplier<Boolean> getRenderSupplier() {
-        return () -> (
+    public boolean isShowing() {
+        return (
             config.showOgreArrows() &&
-            client.getVarbitValue(Varbits.DIARY_WESTERN_EASY) == 1 &&
-            client.getVarbitValue(Varbits.DAILY_ARROWS_STATE) == 0
+            plugin.isCompleted(Varbits.DIARY_WESTERN_EASY) &&
+            !plugin.isCompleted(Varbits.DAILY_ARROWS_STATE)
         );
     }
 
     @Override
-    public Supplier<String> getTextSupplier() {
-        return () -> String.valueOf(getOgreArrowsAmount());
+    public String getText() {
+        return String.valueOf(getOgreArrowsAmount());
     }
 
     @Override
-    public Supplier<String> getTooltipSupplier() {
-        return () -> String.format(tooltip, getOgreArrowsAmount());
+    public String getTooltip() {
+        return String.format(tooltip, getOgreArrowsAmount());
     }
 
     private int getOgreArrowsAmount() {
-        if (client.getVarbitValue(Varbits.DIARY_WESTERN_EASY) == 1) {
-            if (client.getVarbitValue(Varbits.DIARY_WESTERN_MEDIUM) == 1) {
-                if (client.getVarbitValue(Varbits.DIARY_WESTERN_HARD) == 1) {
-                    if (client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) == 1) {
-                        return 150;
-                    } return 100;
-                } return 50;
-            } return 25;
-        } return 0;
+        final boolean easy   = plugin.isCompleted(Varbits.DIARY_WESTERN_EASY);
+        final boolean medium = plugin.isCompleted(Varbits.DIARY_WESTERN_MEDIUM);
+        final boolean hard   = plugin.isCompleted(Varbits.DIARY_WESTERN_HARD);
+        final boolean elite  = plugin.isCompleted(Varbits.DIARY_WESTERN_ELITE);
+
+        if (easy && medium && hard && elite) return 150;
+        if (easy && medium && hard) return 100;
+        if (easy && medium) return 50;
+        if (easy) return 25;
+        return 0;
     }
 }

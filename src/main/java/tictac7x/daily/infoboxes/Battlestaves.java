@@ -18,32 +18,33 @@ public class Battlestaves extends DailyInfobox {
     }
 
     @Override
-    public Supplier<Boolean> getRenderSupplier() {
-        return () -> (
+    public boolean isShowing() {
+        return (
             config.showBattlestaves() &&
-            client.getVarbitValue(Varbits.DAILY_STAVES_COLLECTED) == 0
+            !plugin.isCompleted(Varbits.DAILY_STAVES_COLLECTED)
         );
     }
 
     @Override
-    public Supplier<String> getTextSupplier() {
-        return () -> String.valueOf(getBattlestavesAmount());
+    public String getText() {
+        return String.valueOf(getBattlestavesAmount());
     }
 
     @Override
-    public Supplier<String> getTooltipSupplier() {
-        return () -> String.format(tooltip, getBattlestavesAmount(), getBattlestavesAmount() * 7);
+    public String getTooltip() {
+        return String.format(tooltip, getBattlestavesAmount(), getBattlestavesAmount() * 7);
     }
 
     private int getBattlestavesAmount() {
-        if (client.getVarbitValue(Varbits.DIARY_VARROCK_EASY) == 1) {
-            if (client.getVarbitValue(Varbits.DIARY_VARROCK_MEDIUM) == 1) {
-                if (client.getVarbitValue(Varbits.DIARY_VARROCK_HARD) == 1) {
-                    if (client.getVarbitValue(Varbits.DIARY_VARROCK_ELITE) == 1) {
-                        return 120;
-                    } else return 60;
-                } else return 30;
-            } else return 15;
-        } else return 5;
+        final boolean easy   = plugin.isCompleted(Varbits.DIARY_VARROCK_EASY);
+        final boolean medium = plugin.isCompleted(Varbits.DIARY_VARROCK_MEDIUM);
+        final boolean hard   = plugin.isCompleted(Varbits.DIARY_VARROCK_HARD);
+        final boolean elite  = plugin.isCompleted(Varbits.DIARY_VARROCK_ELITE);
+
+        if (easy && medium && hard && elite) return 120;
+        if (easy && medium && hard) return 60;
+        if (easy && medium) return 30;
+        if (easy) return 15;
+        return 5;
     }
 }

@@ -23,22 +23,22 @@ public class BucketsOfSand extends DailyInfobox {
     }
 
     @Override
-    public Supplier<Boolean> getRenderSupplier() {
-        return () -> (
+    public boolean isShowing() {
+        return (
             config.showBucketsOfSand() &&
             client.getAccountType() != AccountType.ULTIMATE_IRONMAN &&
             quest_the_hand_in_the_sand.getState(client) == QuestState.FINISHED &&
-            client.getVarbitValue(Varbits.DAILY_SAND_COLLECTED) == 0
+            !plugin.isCompleted(Varbits.DAILY_SAND_COLLECTED)
         );
     }
 
     @Override
-    public Supplier<String> getTextSupplier() {
-        return () -> String.valueOf(amount_buckets_of_sand);
+    public String getText() {
+        return String.valueOf(amount_buckets_of_sand);
     }
 
     @Override
-    public Supplier<String> getTooltipSupplier() {
-        return () -> String.format(tooltip, amount_buckets_of_sand);
+    public String getTooltip() {
+        return String.format(tooltip, amount_buckets_of_sand);
     }
 }

@@ -5,9 +5,14 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -16,22 +21,21 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 
-import tictac7x.daily.infoboxes.BowStrings;
-import tictac7x.daily.infoboxes.OgreArrows;
-import tictac7x.daily.infoboxes.PureEssence;
-import tictac7x.daily.infoboxes.Battlestaves;
-import tictac7x.daily.infoboxes.BucketsOfSand;
-import tictac7x.daily.infoboxes.BucketsOfSlime;
-import tictac7x.daily.infoboxes.KingdomOfMiscellania;
+import tictac7x.daily.infoboxes.*;
 
 @Slf4j
 @PluginDescriptor(
     name = "Daily Tasks",
     description = "Daily infoboxes to annoy you to do your tasks",
-    tags = { "daily","battlestaves","essence","ess","kingdom","battlestaff","sand","flax","bowstring","ogre","rantz","bone","bonemeal","slime","buckets","herb","boxes,nmz,dynamite,mith,grapple" }
+    tags = { "daily","battlestaves","essence","ess","kingdom","battlestaff","sand","flax","bowstring","ogre","rantz","bone","bonemeal","slime","buckets","herb","boxes,nmz,dynamite,mith,grapple","dynamite" }
 
 )
 public class TicTac7xDailyPlugin extends Plugin {
+    private final String plugin_version = "v0.2.4";
+    private final String plugin_message = "" +
+        "<colHIGHLIGHT>Daily Tasks " + plugin_version + ":<br>" +
+        "<colHIGHLIGHT>* Dynamite from Thirus added.";
+
     @Inject
     private Client client;
 
@@ -46,6 +50,9 @@ public class TicTac7xDailyPlugin extends Plugin {
 
     @Inject
     private ItemManager items;
+
+    @Inject
+    private ChatMessageManager chat_messages;
 
     private DailyInfobox[] infoboxes_daily;
 
@@ -63,7 +70,8 @@ public class TicTac7xDailyPlugin extends Plugin {
             new BucketsOfSlime(client, config, items, this),
             new OgreArrows(client, config, items, this),
             new BowStrings(client, config, items, this),
-            new KingdomOfMiscellania(client, config, configs, items, this)
+            new Dynamite(client, config, items, this),
+            new KingdomOfMiscellania(client, config, configs, items, this),
         };
 
         for (final DailyInfobox infobox : infoboxes_daily) {
@@ -97,5 +105,24 @@ public class TicTac7xDailyPlugin extends Plugin {
         for (final DailyInfobox infobox : infoboxes_daily) {
             infobox.onVarbitChanged(event);
         }
+    }
+
+    @Subscribe
+    public void onGameStateChanged(final GameStateChanged event) {
+        if (event.getGameState() != GameState.LOGGED_IN) return;
+
+        // Send message about plugin updates for once.
+        if (!config.getVersion().equals(plugin_version)) {
+            configs.setConfiguration(DailyConfig.group, DailyConfig.version, plugin_version);
+            chat_messages.queue(QueuedMessage.builder()
+                .type(ChatMessageType.CONSOLE)
+                .runeLiteFormattedMessage(plugin_message)
+                .build()
+            );
+        }
+    }
+
+    public boolean isCompleted(final int diary) {
+        return client.getVarbitValue(diary) == 1;
     }
 }

@@ -39,25 +39,25 @@ public class KingdomOfMiscellania extends DailyInfobox {
     }
 
     @Override
-    public Supplier<Boolean> getRenderSupplier() {
-        return () -> (
+    public boolean isShowing() {
+        return (
             quest_throne_of_miscellania.getState(client) == QuestState.FINISHED &&
             getFavorPercentage() <= config.showKingdomOfMiscellaniaFavor()
         );
     }
 
     @Override
-    public Supplier<String> getTextSupplier() {
-        return () -> String.format(percentage_format, getFavorPercentage());
+    public String getText() {
+        return String.format(percentage_format, getFavorPercentage());
     }
 
     @Override
-    public Supplier<String> getTooltipSupplier() {
-        return () -> String.format(tooltip, getFavorPercentage());
+    public String getTooltip() {
+        return String.format(tooltip, getFavorPercentage());
     }
 
     @Override
-    public void onVarbitChanged(final VarbitChanged event) {
+    protected void onVarbitChanged(final VarbitChanged event) {
         if (event.getVarbitId() == VARBIT_KINGDOM_APPROVAL) {
             configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, LocalDateTime.now(timezone).format(DateTimeFormatter.ISO_LOCAL_DATE));
             configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, event.getValue());

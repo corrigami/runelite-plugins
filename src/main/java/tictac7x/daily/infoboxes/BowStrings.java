@@ -18,33 +18,34 @@ public class BowStrings extends DailyInfobox {
     }
 
     @Override
-    public Supplier<Boolean> getRenderSupplier() {
-        return () -> (
+    public boolean isShowing() {
+        return (
             config.showBowStrings() &&
-            client.getVarbitValue(Varbits.DIARY_KANDARIN_EASY) == 1 &&
-            client.getVarbitValue(Varbits.DAILY_FLAX_STATE) == 0
+            plugin.isCompleted(Varbits.DIARY_KANDARIN_EASY) &&
+            !plugin.isCompleted(Varbits.DAILY_FLAX_STATE)
         );
     }
 
     @Override
-    public Supplier<String> getTextSupplier() {
-        return () -> String.valueOf(getBowStringsAmount());
+    public String getText() {
+        return String.valueOf(getBowStringsAmount());
     }
 
     @Override
-    public Supplier<String> getTooltipSupplier() {
-        return () -> String.format(tooltip, getBowStringsAmount());
+    public String getTooltip() {
+        return String.format(tooltip, getBowStringsAmount());
     }
 
     private int getBowStringsAmount() {
-        if (client.getVarbitValue(Varbits.DIARY_KANDARIN_EASY) == 1) {
-            if (client.getVarbitValue(Varbits.DIARY_KANDARIN_MEDIUM) == 1) {
-                if (client.getVarbitValue(Varbits.DIARY_KANDARIN_HARD) == 1) {
-                    if (client.getVarbitValue(Varbits.DIARY_KANDARIN_ELITE) == 1) {
-                        return 250;
-                    } return 120;
-                } return 60;
-            } return 30;
-        } return 0;
+        final boolean easy   = plugin.isCompleted(Varbits.DIARY_KANDARIN_EASY);
+        final boolean medium = plugin.isCompleted(Varbits.DIARY_KANDARIN_MEDIUM);
+        final boolean hard   = plugin.isCompleted(Varbits.DIARY_KANDARIN_HARD);
+        final boolean elite  = plugin.isCompleted(Varbits.DIARY_KANDARIN_ELITE);
+
+        if (easy && medium && hard && elite) return 250;
+        if (easy && medium && hard) return 120;
+        if (easy && medium) return 60;
+        if (easy) return 30;
+        return 0;
     }
 }

@@ -3,20 +3,18 @@ package tictac7x.daily;
 import net.runelite.api.Client;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.plugins.Plugin;
 import net.runelite.client.ui.overlay.infobox.InfoBox;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.function.Supplier;
 
 public abstract class DailyInfobox extends InfoBox {
+    protected final String id;
     protected final Client client;
     protected final DailyConfig config;
-    protected final String id;
-    protected final Plugin plugin;
+    protected final TicTac7xDailyPlugin plugin;
 
-    public DailyInfobox(final String id, final BufferedImage image, final Client client, final DailyConfig config, final Plugin plugin) {
+    public DailyInfobox(final String id, final BufferedImage image, final Client client, final DailyConfig config, final TicTac7xDailyPlugin plugin) {
         super(image, plugin);
         this.id = id;
         this.client = client;
@@ -24,36 +22,20 @@ public abstract class DailyInfobox extends InfoBox {
         this.plugin = plugin;
     }
 
+    abstract public boolean isShowing();
+
+    abstract public String getText();
+
+    abstract public String getTooltip();
+
     @Override
     public String getName() {
         return super.getName() + "_" + this.id;
     }
 
-    public Supplier<Boolean> getRenderSupplier() {
-        return () -> false;
-    }
-
-    public Supplier<String> getTextSupplier() {
-        return () -> null;
-    };
-
-    public Supplier<String> getTooltipSupplier() {
-        return () -> null;
-    };
-
     @Override
     public boolean render() {
-        return getRenderSupplier().get();
-    }
-
-    @Override
-    public String getText() {
-        return getTextSupplier().get();
-    }
-
-    @Override
-    public String getTooltip() {
-        return getTooltipSupplier().get();
+        return isShowing();
     }
 
     @Override
@@ -61,9 +43,9 @@ public abstract class DailyInfobox extends InfoBox {
         return Color.red;
     }
 
-    public void onConfigChanged(final ConfigChanged event) {}
+    protected void onConfigChanged(final ConfigChanged ignored) {}
 
-    public void onGameTick() {}
+    protected void onGameTick() {}
 
-    public void onVarbitChanged(final VarbitChanged event) {}
+    protected void onVarbitChanged(final VarbitChanged event) {}
 }

@@ -18,35 +18,37 @@ public class BucketsOfSlime extends DailyInfobox {
     }
 
     @Override
-    public Supplier<Boolean> getRenderSupplier() {
-        return () -> (
+    public boolean isShowing() {
+        return (
             config.showBucketsOfSlime() &&
-            client.getVarbitValue(Varbits.DIARY_MORYTANIA_EASY) == 1 &&
-            client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1 &&
+            plugin.isCompleted(Varbits.DIARY_MORYTANIA_EASY) &&
+            plugin.isCompleted(Varbits.DIARY_MORYTANIA_MEDIUM) &&
             getBucketsOfSlimeAmount() > 0
         );
     }
 
     @Override
-    public Supplier<String> getTextSupplier() {
-        return () -> String.valueOf(getBucketsOfSlimeAmount());
+    public String getText() {
+        return String.valueOf(getBucketsOfSlimeAmount());
     }
 
     @Override
-    public Supplier<String> getTooltipSupplier() {
-        return () -> String.format(tooltip, getBucketsOfSlimeAmount());
+    public String getTooltip() {
+        return String.format(tooltip, getBucketsOfSlimeAmount());
     }
 
     private int getBucketsOfSlimeAmount() {
-        final int buckets_of_slime;
+        int buckets_of_slime = 0;
 
-        if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_MEDIUM) == 1) {
-            if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_HARD) == 1) {
-                if (client.getVarbitValue(Varbits.DIARY_MORYTANIA_ELITE) == 1) {
-                    buckets_of_slime = 39;
-                } else buckets_of_slime = 26;
-            } else buckets_of_slime = 13;
-        } else buckets_of_slime = 0;
+        final boolean easy   = plugin.isCompleted(Varbits.DIARY_VARROCK_EASY);
+        final boolean medium = plugin.isCompleted(Varbits.DIARY_VARROCK_MEDIUM);
+        final boolean hard   = plugin.isCompleted(Varbits.DIARY_VARROCK_HARD);
+        final boolean elite  = plugin.isCompleted(Varbits.DIARY_VARROCK_ELITE);
+
+        if (easy && medium && hard && elite) { buckets_of_slime = 39; } else
+        if (easy && medium && hard) { buckets_of_slime = 26; } else
+        if (easy && medium) { buckets_of_slime = 13; } else
+        if (easy) { buckets_of_slime = 0; }
 
         return buckets_of_slime - client.getVarbitValue(Varbits.DAILY_BONEMEAL_STATE);
     }

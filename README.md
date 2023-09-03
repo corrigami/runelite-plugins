@@ -1,4 +1,4 @@
-# Daily Tasks - v0.2.3
+# Daily Tasks - v0.2.4
 Daily infoboxes to annoy you to do your tasks.
 
 ![](img/infoboxes.png)
@@ -16,7 +16,7 @@ Daily infoboxes to annoy you to do your tasks.
 - [x] Exchange bones into bonemeal and buckets of slime.
 - [ ] Claim random free runes from Lundail.
 - [ ] Purchase herb boxes from Nightmare Zone.
-- [ ] Claim dynamite from Thirus.
+- [x] Claim dynamite from Thirus.
 - [ ] Search for bronze crossbow and mith grapples with Fletching cape.
 
 ## Implemented weeklies
