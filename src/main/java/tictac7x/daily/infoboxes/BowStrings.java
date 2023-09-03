@@ -8,8 +8,6 @@ import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
 import tictac7x.daily.TicTac7xDailyPlugin;
 
-import java.util.function.Supplier;
-
 public class BowStrings extends DailyInfobox {
     private final String tooltip = "Exchange flax to %d bow strings from the Flax Keeper at Seers Village";
 

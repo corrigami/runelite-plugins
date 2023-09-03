@@ -8,8 +8,6 @@ import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
 import tictac7x.daily.TicTac7xDailyPlugin;
 
-import java.util.function.Supplier;
-
 public class PureEssence extends DailyInfobox {
     private final String tooltip = "Collect %d pure essence from Wizard Cromperty at East-Ardougne";
 

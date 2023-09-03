@@ -8,8 +8,6 @@ import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
 import tictac7x.daily.TicTac7xDailyPlugin;
 
-import java.util.function.Supplier;
-
 public class Dynamite extends DailyInfobox {
     private final String tooltip = "Claim %d dynamite from Thirus at Lovakengj";
 

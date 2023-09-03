@@ -8,8 +8,6 @@ import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
 import tictac7x.daily.TicTac7xDailyPlugin;
 
-import java.util.function.Supplier;
-
 public class BucketsOfSlime extends DailyInfobox {
     private final String tooltip = "Exchange %d bones to buckets of slime and bonemeal from Robin at Porty Phasmatys";
 

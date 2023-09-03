@@ -8,8 +8,6 @@ import tictac7x.daily.DailyInfobox;
 import tictac7x.daily.TicTac7xDailyPlugin;
 import net.runelite.client.game.ItemManager;
 
-import java.util.function.Supplier;
-
 public class Battlestaves extends DailyInfobox {
     private final String tooltip = "Buy %d battlestaves from Zaff at Varrock for %d,000 coins";
 

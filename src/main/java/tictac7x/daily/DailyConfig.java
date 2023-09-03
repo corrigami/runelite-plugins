@@ -1,15 +1,14 @@
 package tictac7x.daily;
 
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.*;
-
-import java.util.Date;
 
 @ConfigGroup(DailyConfig.group)
 public interface DailyConfig extends Config {
     String group = "tictac7x-daily";
     String version = "version";
     String battlestaves = "battlestaves";
+    String herb_boxes = "herb_boxes";
+    String random_runes = "lundail_runes";
     String bow_strings = "bow_strings";
     String buckets_of_sand = "buckets_of_sand";
     String buckets_of_slime = "buckets_of_slime";
@@ -83,6 +82,20 @@ public interface DailyConfig extends Config {
             description = "Reminds you to collect dynamite from Thirus.",
             section = infoboxes
         ) default boolean showDynamite() { return true; }
+
+        @ConfigItem(
+            keyName = random_runes,
+            name = "Random runes from Lundail",
+            description = "Reminds you to collect random runes from Lundail.",
+            section = infoboxes
+        ) default boolean showRandomRunes() { return true; }
+
+        @ConfigItem(
+            keyName = herb_boxes,
+            name = "Herb boxes from Nightmare Zone",
+            description = "Reminds you to buy herb boxes from Nightmare Zone .",
+            section = infoboxes
+        ) default boolean showHerbBoxes() { return true; }
 
     @ConfigSection(
         name = "Debug",

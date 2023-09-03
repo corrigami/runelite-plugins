@@ -5,13 +5,10 @@ import net.runelite.api.ItemID;
 import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 import net.runelite.api.Varbits;
-import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
 import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
 import tictac7x.daily.TicTac7xDailyPlugin;
-
-import java.util.function.Supplier;
 
 public class BucketsOfSand extends DailyInfobox {
     private final String tooltip = "Collect %d buckets of sand from Bert at Yanille";

@@ -14,10 +14,9 @@ Daily infoboxes to annoy you to do your tasks.
 - [x] Exchange noted flax for bow strings.
 - [x] Receive free ogre arrows from Rantz.
 - [x] Exchange bones into bonemeal and buckets of slime.
-- [ ] Claim random free runes from Lundail.
-- [ ] Purchase herb boxes from Nightmare Zone.
+- [x] Claim random free runes from Lundail.
+- [x] Purchase herb boxes from Nightmare Zone.
 - [x] Claim dynamite from Thirus.
-- [ ] Search for bronze crossbow and mith grapples with Fletching cape.
 
 ## Implemented weeklies
 - [ ] Play Tears of Guthix minigame.

@@ -8,8 +8,6 @@ import tictac7x.daily.DailyConfig;
 import tictac7x.daily.DailyInfobox;
 import tictac7x.daily.TicTac7xDailyPlugin;
 
-import java.util.function.Supplier;
-
 public class OgreArrows extends DailyInfobox {
     private final String tooltip = "Collect %d ogre arrows from Rantz near Feldip Hills cave";
 

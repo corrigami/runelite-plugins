@@ -27,14 +27,16 @@ import tictac7x.daily.infoboxes.*;
 @PluginDescriptor(
     name = "Daily Tasks",
     description = "Daily infoboxes to annoy you to do your tasks",
-    tags = { "daily","battlestaves","essence","ess","kingdom","battlestaff","sand","flax","bowstring","ogre","rantz","bone","bonemeal","slime","buckets","herb","boxes,nmz,dynamite,mith,grapple","dynamite" }
+    tags = { "daily","battlestaves","essence","ess","kingdom","battlestaff","sand","flax","bowstring","ogre","rantz","bone","bonemeal","slime","buckets","herb","boxes,nmz,dynamite,mith,grapple","dynamite","rune","herb","box" }
 
 )
 public class TicTac7xDailyPlugin extends Plugin {
     private final String plugin_version = "v0.2.4";
     private final String plugin_message = "" +
         "<colHIGHLIGHT>Daily Tasks " + plugin_version + ":<br>" +
-        "<colHIGHLIGHT>* Dynamite from Thirus added.";
+        "<colHIGHLIGHT>* Dynamite from Thirus added.<br>" +
+        "<colHIGHLIGHT>* Random runes from Lundail added.<br>" +
+        "<colHIGHLIGHT>* Herb boxes from Nightmare Zone added.";
 
     @Inject
     private Client client;
@@ -71,6 +73,8 @@ public class TicTac7xDailyPlugin extends Plugin {
             new OgreArrows(client, config, items, this),
             new BowStrings(client, config, items, this),
             new Dynamite(client, config, items, this),
+            new RandomRunes(client, config, items, this),
+            new HerbBoxes(client, config, items, this),
             new KingdomOfMiscellania(client, config, configs, items, this),
         };
 
