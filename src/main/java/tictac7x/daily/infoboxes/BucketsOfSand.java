@@ -26,7 +26,7 @@ public class BucketsOfSand extends DailyInfobox {
     public boolean isShowing() {
         return (
             config.showBucketsOfSand() &&
-            client.getAccountType() != AccountType.ULTIMATE_IRONMAN &&
+            client.getVarbitValue(Varbits.ACCOUNT_TYPE) != 2 && // 2 - ULTIMATE IRONMAN
             quest_the_hand_in_the_sand.getState(client) == QuestState.FINISHED &&
             !plugin.isCompleted(Varbits.DAILY_SAND_COLLECTED)
         );
