@@ -69,12 +69,16 @@ public class KingdomOfMiscellania extends DailyInfobox {
             final LocalDate visited = LocalDate.parse(config.getKingdomOfMiscellaniaFavorDate());
             final long days = Math.abs(ChronoUnit.DAYS.between(now, visited));
 
-            int percentage = config.getKingdomOfMiscellaniaFavor() * 100 / FAVOR_MAX;
+            int favor = config.getKingdomOfMiscellaniaFavor();
             for (int i = 0; i < days; i++) {
-                percentage = (int) Math.ceil(percentage * (quest_royal_trouble.getState(client) == QuestState.FINISHED ? FAVOR_LOST_MODIFIER_WITH_ROYAL_TROUBLE : FAVOR_LOST_MODIFIER_WITHOUT_ROYAL_TROUBLE));
+                favor = (int) Math.round(favor *
+                    (quest_royal_trouble.getState(client) == QuestState.FINISHED
+                        ? FAVOR_LOST_MODIFIER_WITH_ROYAL_TROUBLE
+                        : FAVOR_LOST_MODIFIER_WITHOUT_ROYAL_TROUBLE)
+                );
             }
 
-            return percentage;
+            return favor * 100 / FAVOR_MAX;
         } catch (final Exception exception) {
             return 0;
         }

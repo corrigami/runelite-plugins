@@ -20,7 +20,7 @@ public class BowStrings extends DailyInfobox {
         return (
             config.showBowStrings() &&
             plugin.isCompleted(Varbits.DIARY_KANDARIN_EASY) &&
-            !plugin.isCompleted(Varbits.DAILY_FLAX_STATE)
+            client.getVarbitValue(Varbits.DAILY_FLAX_STATE) == 0
         );
     }
 
