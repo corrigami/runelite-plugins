@@ -2,7 +2,7 @@
 name: Charges Plugin - Request Item
 about: Suggest an item to show charges for
 title: Name of the item - Request
-labels: 'a: plugin-charges'
+labels: 'a: plugin-charges, l: feature-request'
 assignees: ''
 
 ---
