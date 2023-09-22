@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
+**Link**
+Link to osrs wiki for the item: ...
+
 **Screenshots**
 Provide screenshots that are available to the item that you are requesting with all in-game messages shown.
 
