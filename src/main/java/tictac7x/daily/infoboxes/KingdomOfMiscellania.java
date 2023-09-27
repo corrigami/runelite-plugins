@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 
 public class KingdomOfMiscellania extends DailyInfobox {
     private final ConfigManager configs;
@@ -27,10 +28,11 @@ public class KingdomOfMiscellania extends DailyInfobox {
     private final Quest quest_royal_trouble = Quest.ROYAL_TROUBLE;
     private final ZoneId timezone = ZoneId.of("Europe/London");
     
-    private final static int VARBIT_KINGDOM_APPROVAL = 72;
-    private final static int FAVOR_MAX = 127;
-    private final static double FAVOR_LOST_MODIFIER_WITHOUT_ROYAL_TROUBLE = 0.975;
-    private final static double FAVOR_LOST_MODIFIER_WITH_ROYAL_TROUBLE = 0.99;
+    private final int VARBIT_KINGDOM_APPROVAL = 72;
+    private final int FAVOR_MAX = 127;
+    private final double FAVOR_LOST_MODIFIER_WITHOUT_ROYAL_TROUBLE = 0.975;
+    private final double FAVOR_LOST_MODIFIER_WITH_ROYAL_TROUBLE = 0.99;
+    private final int[] MISCELLANIA_REGIONS = new int[]{10044, 10300};
 
     public KingdomOfMiscellania(final Client client, final DailyConfig config, final ConfigManager configs, final ItemManager items, final TicTac7xDailyPlugin plugin) {
         super(DailyConfig.kingdom_of_miscellania, items.getImage(ItemID.CASKET), client, config, plugin);
@@ -57,10 +59,11 @@ public class KingdomOfMiscellania extends DailyInfobox {
 
     @Override
     protected void onVarbitChanged(final VarbitChanged event) {
-        if (event.getVarbitId() == VARBIT_KINGDOM_APPROVAL) {
-            configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, LocalDateTime.now(timezone).format(DateTimeFormatter.ISO_LOCAL_DATE));
-            configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, event.getValue());
-        }
+        if (event.getVarbitId() != VARBIT_KINGDOM_APPROVAL) return;
+        if (Arrays.stream(MISCELLANIA_REGIONS).noneMatch(region -> region == client.getLocalPlayer().getWorldLocation().getRegionID())) return;
+
+        configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, LocalDateTime.now(timezone).format(DateTimeFormatter.ISO_LOCAL_DATE));
+        configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, event.getValue());
     }
 
     private int getFavorPercentage() {
@@ -79,7 +82,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
             }
 
             return favor * 100 / FAVOR_MAX;
-        } catch (final Exception exception) {
+        } catch (final Exception ignored) {
             return 0;
         }
     }
