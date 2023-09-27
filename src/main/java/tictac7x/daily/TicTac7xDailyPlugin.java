@@ -31,12 +31,12 @@ import tictac7x.daily.infoboxes.*;
 
 )
 public class TicTac7xDailyPlugin extends Plugin {
-    private final String plugin_version = "v0.2.4";
+    private final String plugin_version = "v0.2.5";
     private final String plugin_message = "" +
         "<colHIGHLIGHT>Daily Tasks " + plugin_version + ":<br>" +
-        "<colHIGHLIGHT>* Dynamite from Thirus added.<br>" +
-        "<colHIGHLIGHT>* Random runes from Lundail added.<br>" +
-        "<colHIGHLIGHT>* Herb boxes from Nightmare Zone added.";
+        "<colHIGHLIGHT>* Bowstrings infobox disappears after collecting.<br>" +
+        "<colHIGHLIGHT>* Buckets of slime infobox shows correct number to collect.<br>" +
+        "<colHIGHLIGHT>* Miscellania kingdom percentage correctly updating.";
 
     @Inject
     private Client client;
