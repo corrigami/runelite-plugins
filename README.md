@@ -17,6 +17,7 @@ Daily infoboxes to annoy you to do your tasks.
 - [x] Claim random free runes from Lundail.
 - [x] Purchase herb boxes from Nightmare Zone.
 - [x] Claim dynamite from Thirus.
+- [x] Buy 10 impling jars from Elnock Inquisitor. 
 
 ## Implemented weeklies
 - [ ] Play Tears of Guthix minigame.
