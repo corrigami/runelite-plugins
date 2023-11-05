@@ -1,19 +1,19 @@
-package tictac7x.daily.infoboxes;
+package tictac7x.daily.dailies;
 
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
 import net.runelite.api.Varbits;
 import net.runelite.client.game.ItemManager;
-import tictac7x.daily.DailyConfig;
-import tictac7x.daily.DailyInfobox;
-import tictac7x.daily.TicTac7xDailyPlugin;
+import tictac7x.daily.TicTac7xDailyTasksConfig;
+import tictac7x.daily.common.DailyInfobox;
+import tictac7x.daily.TicTac7xDailyTasksPlugin;
 
 public class HerbBoxes extends DailyInfobox {
+    private final int HERB_BOXES_DAILY = 15;
     private final String tooltip = "Buy %d herb boxes from Nightmare Zone rewards shop.";
-    private final int herb_boxes_daily = 15;
 
-    public HerbBoxes(final Client client, final DailyConfig config, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(DailyConfig.herb_boxes, items.getImage(ItemID.HERB_BOX), client, config, plugin);
+    public HerbBoxes(final Client client, final TicTac7xDailyTasksConfig config, final ItemManager itemManager, final TicTac7xDailyTasksPlugin plugin) {
+        super(TicTac7xDailyTasksConfig.herb_boxes, itemManager.getImage(ItemID.HERB_BOX), client, config, plugin);
     }
 
     @Override
@@ -36,6 +36,6 @@ public class HerbBoxes extends DailyInfobox {
     }
 
     private int getHerbBoxesAmount() {
-        return herb_boxes_daily - client.getVarbitValue(Varbits.DAILY_HERB_BOXES_COLLECTED);
+        return HERB_BOXES_DAILY - client.getVarbitValue(Varbits.DAILY_HERB_BOXES_COLLECTED);
     }
 }

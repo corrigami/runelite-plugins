@@ -2,14 +2,15 @@ package tictac7x.daily;
 
 import net.runelite.client.config.*;
 
-@ConfigGroup(DailyConfig.group)
-public interface DailyConfig extends Config {
+@ConfigGroup(TicTac7xDailyTasksConfig.group)
+public interface TicTac7xDailyTasksConfig extends Config {
     String group = "tictac7x-daily";
     String version = "version";
     String battlestaves = "battlestaves";
     String herb_boxes = "herb_boxes";
     String random_runes = "lundail_runes";
     String bow_strings = "bow_strings";
+    String impling_jars = "impling_jars";
     String buckets_of_sand = "buckets_of_sand";
     String buckets_of_slime = "buckets_of_slime";
     String ogre_arrows = "ogre_arrows";
@@ -93,9 +94,16 @@ public interface DailyConfig extends Config {
         @ConfigItem(
             keyName = herb_boxes,
             name = "Herb boxes from Nightmare Zone",
-            description = "Reminds you to buy herb boxes from Nightmare Zone .",
+            description = "Reminds you to buy herb boxes from Nightmare Zone.",
             section = infoboxes
         ) default boolean showHerbBoxes() { return true; }
+
+    @ConfigItem(
+        keyName = impling_jars,
+        name = "Impling jars from Elnock Inquisitor",
+        description = "Reminds you to buy impling jars from Elnock Inquisitor.",
+        section = infoboxes
+    ) default boolean showImplingJars() { return true; }
 
     @ConfigSection(
         name = "Debug",

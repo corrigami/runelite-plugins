@@ -1,4 +1,4 @@
-package tictac7x.daily.infoboxes;
+package tictac7x.daily.dailies;
 
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
@@ -7,9 +7,9 @@ import net.runelite.api.QuestState;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
-import tictac7x.daily.DailyConfig;
-import tictac7x.daily.DailyInfobox;
-import tictac7x.daily.TicTac7xDailyPlugin;
+import tictac7x.daily.TicTac7xDailyTasksConfig;
+import tictac7x.daily.common.DailyInfobox;
+import tictac7x.daily.TicTac7xDailyTasksPlugin;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,13 +19,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 public class KingdomOfMiscellania extends DailyInfobox {
-    private final ConfigManager configs;
+    private final ConfigManager configManager;
 
-    private final String percentage_format = "%d%%";
-    private final String tooltip = "You need to work harder to increase your kingdom of Miscellania favor: " + percentage_format;
-
-    private final Quest quest_throne_of_miscellania = Quest.THRONE_OF_MISCELLANIA;
-    private final Quest quest_royal_trouble = Quest.ROYAL_TROUBLE;
+    private final String formatPercentage = "%d%%";
+    private final String tooltip = "You need to work harder to increase your kingdom of Miscellania favor: " + formatPercentage;
     private final ZoneId timezone = ZoneId.of("Europe/London");
     
     private final int VARBIT_KINGDOM_APPROVAL = 72;
@@ -34,22 +31,22 @@ public class KingdomOfMiscellania extends DailyInfobox {
     private final double FAVOR_LOST_MODIFIER_WITH_ROYAL_TROUBLE = 0.99;
     private final int[] MISCELLANIA_REGIONS = new int[]{10044, 10300};
 
-    public KingdomOfMiscellania(final Client client, final DailyConfig config, final ConfigManager configs, final ItemManager items, final TicTac7xDailyPlugin plugin) {
-        super(DailyConfig.kingdom_of_miscellania, items.getImage(ItemID.CASKET), client, config, plugin);
-        this.configs = configs;
+    public KingdomOfMiscellania(final Client client, final TicTac7xDailyTasksConfig config, final ConfigManager configManager, final ItemManager itemManager, final TicTac7xDailyTasksPlugin plugin) {
+        super(TicTac7xDailyTasksConfig.kingdom_of_miscellania, itemManager.getImage(ItemID.CASKET), client, config, plugin);
+        this.configManager = configManager;
     }
 
     @Override
     public boolean isShowing() {
         return (
-            quest_throne_of_miscellania.getState(client) == QuestState.FINISHED &&
+            Quest.THRONE_OF_MISCELLANIA.getState(client) == QuestState.FINISHED &&
             getFavorPercentage() <= config.showKingdomOfMiscellaniaFavor()
         );
     }
 
     @Override
     public String getText() {
-        return String.format(percentage_format, getFavorPercentage());
+        return String.format(formatPercentage, getFavorPercentage());
     }
 
     @Override
@@ -58,12 +55,12 @@ public class KingdomOfMiscellania extends DailyInfobox {
     }
 
     @Override
-    protected void onVarbitChanged(final VarbitChanged event) {
+    public void onVarbitChanged(final VarbitChanged event) {
         if (event.getVarbitId() != VARBIT_KINGDOM_APPROVAL) return;
         if (Arrays.stream(MISCELLANIA_REGIONS).noneMatch(region -> region == client.getLocalPlayer().getWorldLocation().getRegionID())) return;
 
-        configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor_date, LocalDateTime.now(timezone).format(DateTimeFormatter.ISO_LOCAL_DATE));
-        configs.setConfiguration(DailyConfig.group, DailyConfig.kingdom_of_miscellania_favor, event.getValue());
+        configManager.setConfiguration(TicTac7xDailyTasksConfig.group, TicTac7xDailyTasksConfig.kingdom_of_miscellania_favor_date, LocalDateTime.now(timezone).format(DateTimeFormatter.ISO_LOCAL_DATE));
+        configManager.setConfiguration(TicTac7xDailyTasksConfig.group, TicTac7xDailyTasksConfig.kingdom_of_miscellania_favor, event.getValue());
     }
 
     private int getFavorPercentage() {
@@ -75,7 +72,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
             int favor = config.getKingdomOfMiscellaniaFavor();
             for (int i = 0; i < days; i++) {
                 favor = (int) Math.round(favor *
-                    (quest_royal_trouble.getState(client) == QuestState.FINISHED
+                    (Quest.ROYAL_TROUBLE.getState(client) == QuestState.FINISHED
                         ? FAVOR_LOST_MODIFIER_WITH_ROYAL_TROUBLE
                         : FAVOR_LOST_MODIFIER_WITHOUT_ROYAL_TROUBLE)
                 );
