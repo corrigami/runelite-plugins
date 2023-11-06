@@ -16,6 +16,7 @@ public interface TicTac7xDailyTasksConfig extends Config {
     String ogre_arrows = "ogre_arrows";
     String pure_essence = "pure_essence";
     String dynamite = "dynamite";
+    String explorers_ring_alchemy = "explorers_ring_alchemy";
     String kingdom_of_miscellania = "kingdom_of_miscellania";
     String kingdom_of_miscellania_favor = "kingdom_of_miscellania_favor";
     String kingdom_of_miscellania_favor_date = "miscellania_favor_date";
@@ -98,12 +99,19 @@ public interface TicTac7xDailyTasksConfig extends Config {
             section = infoboxes
         ) default boolean showHerbBoxes() { return true; }
 
-    @ConfigItem(
-        keyName = impling_jars,
-        name = "Impling jars from Elnock Inquisitor",
-        description = "Reminds you to buy impling jars from Elnock Inquisitor.",
-        section = infoboxes
-    ) default boolean showImplingJars() { return true; }
+        @ConfigItem(
+            keyName = impling_jars,
+            name = "Impling jars from Elnock Inquisitor",
+            description = "Reminds you to buy impling jars from Elnock Inquisitor.",
+            section = infoboxes
+        ) default boolean showImplingJars() { return true; }
+
+        @ConfigItem(
+            keyName = explorers_ring_alchemy,
+            name = "Explorers ring alchemy uses",
+            description = "Reminds you to use explorers ring alchemy charges.",
+            section = infoboxes
+        ) default boolean showExplorersRingAlchemy() { return true; }
 
     @ConfigSection(
         name = "Debug",

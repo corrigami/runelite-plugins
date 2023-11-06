@@ -3,7 +3,6 @@ package tictac7x.daily;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 
 import net.runelite.api.ChatMessageType;
@@ -26,6 +25,7 @@ import tictac7x.daily.dailies.BowStrings;
 import tictac7x.daily.dailies.BucketsOfSand;
 import tictac7x.daily.dailies.BucketsOfSlime;
 import tictac7x.daily.dailies.Dynamite;
+import tictac7x.daily.dailies.ExplorersRingAlchemy;
 import tictac7x.daily.dailies.HerbBoxes;
 import tictac7x.daily.dailies.ImplingJars;
 import tictac7x.daily.dailies.KingdomOfMiscellania;
@@ -33,7 +33,6 @@ import tictac7x.daily.dailies.OgreArrows;
 import tictac7x.daily.dailies.PureEssence;
 import tictac7x.daily.dailies.RandomRunes;
 
-@Slf4j
 @PluginDescriptor(
     name = "Daily Tasks",
     description = "Daily infoboxes to annoy you to do your tasks",
@@ -58,13 +57,16 @@ import tictac7x.daily.dailies.RandomRunes;
         "rantz",
         "essence",
         "runes",
+        "explorer"
     }
 )
 public class TicTac7xDailyTasksPlugin extends Plugin {
     private final String plugin_version = "v0.3";
     private final String plugin_message = "" +
         "<colHIGHLIGHT>Daily Tasks " + plugin_version + ":<br>" +
-        "<colHIGHLIGHT>* New daily added to remind you buy 10 impling jars from Elnock Inquisitor.";
+        "<colHIGHLIGHT>* New daily to remind you buy 10 impling jars from Elnock Inquisitor.<br>" +
+        "<colHIGHLIGHT>* New daily to remind you to use explorers ring alchemy charges."
+    ;
 
     @Inject
     private Client client;
@@ -106,6 +108,7 @@ public class TicTac7xDailyTasksPlugin extends Plugin {
             new HerbBoxes(client, config, itemManager, this),
             new KingdomOfMiscellania(client, config, configManager, itemManager, this),
             new ImplingJars(client, config, itemManager, this),
+            new ExplorersRingAlchemy(client, config, itemManager, this),
         };
 
         for (final DailyInfobox infobox : dailyInfoboxes) {
