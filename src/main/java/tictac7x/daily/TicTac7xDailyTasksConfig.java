@@ -18,6 +18,7 @@ public interface TicTac7xDailyTasksConfig extends Config {
     String dynamite = "dynamite";
     String explorers_ring_alchemy = "explorers_ring_alchemy";
     String kingdom_of_miscellania = "kingdom_of_miscellania";
+    String kingdom_of_miscellania_percentage = "kingdom_of_miscellania_percentage";
     String kingdom_of_miscellania_favor = "kingdom_of_miscellania_favor";
     String kingdom_of_miscellania_favor_date = "miscellania_favor_date";
 
@@ -55,9 +56,17 @@ public interface TicTac7xDailyTasksConfig extends Config {
             section = infoboxes
         ) default boolean showBucketsOfSlime() { return true; }
 
-        @Range(min = -1, max = 99)
         @ConfigItem(
             keyName = kingdom_of_miscellania,
+            name = "Miscellania kingdom management",
+            description = "Reminds you to manage Miscellania kingdom.",
+            section = infoboxes,
+            position = 98
+        ) default boolean showKingdomOfMiscellania() { return true; }
+
+        @Range(min = 0, max = 99)
+        @ConfigItem(
+            keyName = kingdom_of_miscellania_percentage,
             name = "Miscellania favor",
             description = "Reminds you to keep favor of Miscellania over certain percentage.",
             position = 99,

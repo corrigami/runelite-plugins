@@ -21,10 +21,10 @@ import java.util.Arrays;
 public class KingdomOfMiscellania extends DailyInfobox {
     private final ConfigManager configManager;
 
-    private final String formatPercentage = "%d%%";
-    private final String tooltip = "You need to work harder to increase your kingdom of Miscellania favor: " + formatPercentage;
+    private final String percentageFormat = "%d%%";
     private final ZoneId timezone = ZoneId.of("Europe/London");
-    
+    private final String tooltip = "You need to work harder to increase your kingdom of Miscellania favor: " + percentageFormat;
+
     private final int VARBIT_KINGDOM_APPROVAL = 72;
     private final int FAVOR_MAX = 127;
     private final double FAVOR_LOST_MODIFIER_WITHOUT_ROYAL_TROUBLE = 0.975;
@@ -32,13 +32,14 @@ public class KingdomOfMiscellania extends DailyInfobox {
     private final int[] MISCELLANIA_REGIONS = new int[]{10044, 10300};
 
     public KingdomOfMiscellania(final Client client, final TicTac7xDailyTasksConfig config, final ConfigManager configManager, final ItemManager itemManager, final TicTac7xDailyTasksPlugin plugin) {
-        super(TicTac7xDailyTasksConfig.kingdom_of_miscellania, itemManager.getImage(ItemID.CASKET), client, config, plugin);
+        super(TicTac7xDailyTasksConfig.kingdom_of_miscellania_percentage, itemManager.getImage(ItemID.CASKET), client, config, plugin);
         this.configManager = configManager;
     }
 
     @Override
     public boolean isShowing() {
         return (
+            config.showKingdomOfMiscellania() &&
             Quest.THRONE_OF_MISCELLANIA.getState(client) == QuestState.FINISHED &&
             getFavorPercentage() <= config.showKingdomOfMiscellaniaFavor()
         );
@@ -46,7 +47,7 @@ public class KingdomOfMiscellania extends DailyInfobox {
 
     @Override
     public String getText() {
-        return String.format(formatPercentage, getFavorPercentage());
+        return String.format(percentageFormat, getFavorPercentage());
     }
 
     @Override
