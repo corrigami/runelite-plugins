@@ -1,6 +1,5 @@
 package tictac7x.daily;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import com.google.inject.Provides;
@@ -10,6 +9,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.plugins.Plugin;
@@ -61,15 +61,11 @@ import tictac7x.daily.dailies.RandomRunes;
     }
 )
 public class TicTac7xDailyTasksPlugin extends Plugin {
-    private final String plugin_version = "v0.3";
-    private final String plugin_message = "" +
-        "<colHIGHLIGHT>Daily Tasks " + plugin_version + ":<br>" +
-        "<colHIGHLIGHT>* New daily to remind you buy 10 impling jars from Elnock Inquisitor.<br>" +
-        "<colHIGHLIGHT>* New daily to remind you to use explorers ring alchemy charges."
-    ;
-
     @Inject
     private Client client;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Inject
     private ConfigManager configManager;
@@ -86,41 +82,29 @@ public class TicTac7xDailyTasksPlugin extends Plugin {
     @Inject
     private ChatMessageManager chatMessageManager;
 
-    @Nullable
-    private DailyInfobox[] dailyInfoboxes;
-
     @Provides
     TicTac7xDailyTasksConfig provideConfig(final ConfigManager configManager) {
         return configManager.getConfig(TicTac7xDailyTasksConfig.class);
     }
 
+    private final String plugin_version = "v0.3";
+    private final String plugin_message = "" +
+        "<colHIGHLIGHT>Daily Tasks " + plugin_version + ":<br>" +
+        "<colHIGHLIGHT>* New daily to remind you buy 10 impling jars from Elnock Inquisitor.<br>" +
+        "<colHIGHLIGHT>* New daily to remind you to use explorers ring alchemy charges."
+    ;
+    private DailyInfobox[] dailyInfoboxes = new DailyInfobox[]{};
+
     @Override
     protected void startUp() {
-        dailyInfoboxes = new DailyInfobox[]{
-            new Battlestaves(client, config, itemManager, this),
-            new BucketsOfSand(client, config, itemManager, this),
-            new PureEssence(client, config, itemManager, this),
-            new BucketsOfSlime(client, config, itemManager, this),
-            new OgreArrows(client, config, itemManager, this),
-            new BowStrings(client, config, itemManager, this),
-            new Dynamite(client, config, itemManager, this),
-            new RandomRunes(client, config, itemManager, this),
-            new HerbBoxes(client, config, itemManager, this),
-            new KingdomOfMiscellania(client, config, configManager, itemManager, this),
-            new ImplingJars(client, config, itemManager, this),
-            new ExplorersRingAlchemy(client, config, itemManager, this),
-        };
-
-        for (final DailyInfobox infobox : dailyInfoboxes) {
-            infoBoxManager.addInfoBox(infobox);
+        if (client.getGameState() == GameState.LOGGED_IN) {
+            generateInfoboxes();
         }
     }
 
     @Override
     protected void shutDown() {
-        for (final DailyInfobox infobox : dailyInfoboxes) {
-            infoBoxManager.removeInfoBox(infobox);
-        }
+        removeOldInfoboxes();
     }
 
     @Subscribe
@@ -134,14 +118,52 @@ public class TicTac7xDailyTasksPlugin extends Plugin {
     public void onGameStateChanged(final GameStateChanged event) {
         if (event.getGameState() != GameState.LOGGED_IN) return;
 
+        generateInfoboxes();
+
         // Send message about plugin updates for once.
-        if (!config.getVersion().equals(plugin_version)) {
+        if (!config.getVersion().isEmpty() && !config.getVersion().equals(plugin_version)) {
             configManager.setConfiguration(TicTac7xDailyTasksConfig.group, TicTac7xDailyTasksConfig.version, plugin_version);
             chatMessageManager.queue(QueuedMessage.builder()
                 .type(ChatMessageType.CONSOLE)
                 .runeLiteFormattedMessage(plugin_message)
                 .build()
             );
+        }
+    }
+
+    private void generateInfoboxes() {
+        new Thread(() -> {
+            // Sleep for 2 gameticks to make sure diary checks are read correctly.
+            try { Thread.sleep(1200); } catch (final Exception ignored) {}
+
+            clientThread.invokeLater(() -> {
+                removeOldInfoboxes();
+
+                dailyInfoboxes = new DailyInfobox[]{
+                    new Battlestaves(client, config, itemManager, this),
+                    new BucketsOfSand(client, config, itemManager, this),
+                    new PureEssence(client, config, itemManager, this),
+                    new BucketsOfSlime(client, config, itemManager, this),
+                    new OgreArrows(client, config, itemManager, this),
+                    new BowStrings(client, config, itemManager, this),
+                    new Dynamite(client, config, itemManager, this),
+                    new RandomRunes(client, config, itemManager, this),
+                    new HerbBoxes(client, config, itemManager, this),
+                    new KingdomOfMiscellania(client, config, configManager, itemManager, this),
+                    new ImplingJars(client, config, itemManager, this),
+                    new ExplorersRingAlchemy(client, config, itemManager, this),
+                };
+
+                for (final DailyInfobox infobox : dailyInfoboxes) {
+                    infoBoxManager.addInfoBox(infobox);
+                }
+            });
+        }).start();
+    }
+
+    private void removeOldInfoboxes() {
+        for (final DailyInfobox infobox : dailyInfoboxes) {
+            infoBoxManager.removeInfoBox(infobox);
         }
     }
 }
