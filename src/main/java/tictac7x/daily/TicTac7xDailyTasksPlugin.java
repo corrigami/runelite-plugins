@@ -34,6 +34,7 @@ import tictac7x.daily.dailies.PureEssence;
 import tictac7x.daily.dailies.RandomRunes;
 
 @PluginDescriptor(
+    configName = "TicTac7xDailyPlugin",
     name = "Daily Tasks",
     description = "Daily infoboxes to annoy you to do your tasks",
     tags = {
