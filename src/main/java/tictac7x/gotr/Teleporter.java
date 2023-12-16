@@ -2,8 +2,7 @@ package tictac7x.gotr;
 
 import net.runelite.api.ItemID;
 import net.runelite.api.ObjectID;
-
-import java.awt.*;
+import tictac7x.gotr.store.EssenceType;
 
 public class Teleporter {
     final public int teleporter_id;

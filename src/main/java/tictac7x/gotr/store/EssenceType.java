@@ -1,4 +1,4 @@
-package tictac7x.gotr;
+package tictac7x.gotr.store;
 
 public enum EssenceType {
     ELEMENTAL,

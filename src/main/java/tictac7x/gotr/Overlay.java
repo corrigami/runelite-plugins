@@ -23,7 +23,7 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
     private final Teleporters teleporters;
     private final GreatGuardian great_guardian;
     private final Guardians guardians;
-    private final Portal portal;
+
     private final Inventory inventory;
 
     public Overlay(
@@ -34,7 +34,6 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
         final Teleporters teleporters,
         final GreatGuardian great_guardian,
         final Guardians guardians,
-        final Portal portal,
         final Inventory inventory
     ) {
         this.client = client;
@@ -44,7 +43,6 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
         this.teleporters = teleporters;
         this.great_guardian = great_guardian;
         this.guardians = guardians;
-        this.portal = portal;
         this.inventory = inventory;
 
         setPosition(OverlayPosition.DYNAMIC);
@@ -61,19 +59,7 @@ public class Overlay extends net.runelite.client.ui.overlay.Overlay {
     }
 
     private void drawPortal(final Graphics2D graphics) {
-        if (portal.getPortal().isPresent() && portal.getTimeLeft().isPresent()) {
-            final long seconds = Duration.between(Instant.now(), portal.getTimeLeft().get()).getSeconds();
-            if (seconds < 0) return;
 
-            final long milliseconds = Duration.between(Instant.now(), portal.getTimeLeft().get()).getNano() / 1_000_000 % 1000 / 100;
-            final String time = seconds + "." + milliseconds;
-            final Point location =  Perspective.getCanvasTextLocation(client, graphics, portal.getPortal().get().getLocalLocation(), time, 120);
-
-            drawCenteredString(graphics, time, location);
-            client.setHintArrow(portal.getPortal().get().getLocalLocation());
-        } else {
-            client.clearHintArrow();
-        }
     }
 
     private void drawGreatGuardian() {

@@ -1,16 +1,11 @@
 package tictac7x.gotr;
 
 import net.runelite.client.config.*;
+import tictac7x.gotr.store.GameStartBefore;
 
 import java.awt.Color;
 
 import static tictac7x.gotr.TicTac7xGotrImprovedConfig.group;
-
-enum GameStart {
-    ZERO,
-    TEN,
-    THIRTY
-}
 
 @ConfigGroup(group)
 public interface TicTac7xGotrImprovedConfig extends Config {
@@ -71,19 +66,55 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         }
 
     @ConfigSection(
+        name = "Guardians",
+        description = "Guardians",
+        position = 2
+    ) String guardians = "guardians";
+
+        @ConfigItem(
+            keyName = "highlight_guardians",
+            name = "Highlight guardians",
+            description = "Highlight guardians if it's possible to build them",
+            position = 1,
+            section = guardians
+        ) default boolean highlightGuardians() {
+        return true;
+    }
+
+    @ConfigSection(
         name = "Notifications",
         description = "Manage notifications",
-        position = 2
+        position = 3
     ) String notifications = "notifications";
 
         @ConfigItem(
-            keyName = "notification_start",
-            name = "Game starting",
-            description = "Notify about game start",
+            keyName = "notification_before_game_starts",
+            name = "Before game starts",
+            description = "Notify before the game starts ",
             position = 1,
             section = notifications
-        ) default GameStart notifyGameStart() {
-        return GameStart.ZERO;
+        ) default GameStartBefore notifyBeforeGameStarts() {
+        return GameStartBefore.NEVER;
+    }
+
+        @ConfigItem(
+            keyName = "notification_game_started",
+            name = "Game started",
+            description = "Notify that the game has started",
+            position = 2,
+            section = notifications
+        ) default boolean notifyGameStarted() {
+        return true;
+    }
+
+        @ConfigItem(
+            keyName = "notification_portal_opened",
+            name = "Portal opened",
+            description = "Notify about opened portal to huge guardian remains",
+            position = 3,
+            section = notifications
+        ) default boolean notifyPortalOpened() {
+        return true;
     }
 
     @ConfigSection(
