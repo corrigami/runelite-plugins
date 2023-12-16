@@ -66,9 +66,35 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         }
 
     @ConfigSection(
+        name = "Teleporters",
+        description = "Teleporters",
+        position = 2
+    ) String teleporters = "teleporters";
+
+        @ConfigItem(
+            keyName = "highlight_teleporters",
+            name = "Highlight teleporters",
+            description = "Highlight active teleporters",
+            position = 1,
+            section = teleporters
+        ) default boolean highlightActiveTeleporters() {
+            return true;
+        }
+
+        @ConfigItem(
+            keyName = "unusable_teleporters",
+            name = "Indicate unusable teleporters",
+            description = "Indicate that teleporters are unusable, because player has guardian stones in their inventory",
+            position = 1,
+            section = teleporters
+        ) default boolean indicateUnusableTeleporters() {
+            return true;
+        }
+
+    @ConfigSection(
         name = "Guardians",
         description = "Guardians",
-        position = 2
+        position = 3
     ) String guardians = "guardians";
 
         @ConfigItem(
@@ -78,23 +104,39 @@ public interface TicTac7xGotrImprovedConfig extends Config {
             position = 1,
             section = guardians
         ) default boolean highlightGuardians() {
-        return true;
-    }
+            return true;
+        }
+
+        @ConfigItem(
+            keyName = "highlight_guardians_without_cells",
+            name = "Highlight guardians without cells",
+            description = "Highlight guardians even if player has no cells in their inventory",
+            position = 2,
+            section = guardians
+        ) default boolean highlightGuardiansWithoutCells() {
+            return false;
+        }
+
+    @ConfigSection(
+        name = "Great Guardian",
+        description = "Great Guardian",
+        position = 4
+    ) String greatGuardian = "great_guardian";
 
         @ConfigItem(
             keyName = "highlight_great_guardian",
             name = "Highlight great guardian",
-            description = "Highlight great guardian if its possible to use essence on him",
-            position = 2,
-            section = guardians
+            description = "Highlight great guardian if you have guardian stones in your inventory",
+            position = 1,
+            section = greatGuardian
         ) default boolean highlightGreatGuardian() {
-        return true;
-    }
+            return true;
+        }
 
     @ConfigSection(
         name = "Notifications",
         description = "Manage notifications",
-        position = 3
+        position = 4
     ) String notifications = "notifications";
 
         @ConfigItem(

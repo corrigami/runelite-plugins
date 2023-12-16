@@ -57,10 +57,10 @@ public class GreatGuardianOverlay extends Overlay {
         if (!greatGuardian.isPresent()) return null;
 
         // No essence in inventory.
-        if (!inventory.hasEssence()) return null;
+        if (!inventory.hasGuardianStones()) return null;
 
         try {
-            modelOutlineRenderer.drawOutline(greatGuardian.get(), 2, inventory.hasElementalEssence() ? config.getElementalColor() : config.getCatalyticColor(), 2);
+            modelOutlineRenderer.drawOutline(greatGuardian.get(), 2, inventory.hasElementalGuardianStones() ? config.getElementalColor() : config.getCatalyticColor(), 2);
         } catch (final Exception ignored) {}
 
         return null;

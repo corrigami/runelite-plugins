@@ -26,6 +26,7 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 import tictac7x.gotr.overlays.GreatGuardianOverlay;
 import tictac7x.gotr.overlays.GuardiansOverlay;
 import tictac7x.gotr.overlays.PortalOverlay;
+import tictac7x.gotr.overlays.TeleportersOverlay;
 import tictac7x.gotr.store.Energy;
 import tictac7x.gotr.store.Guardians;
 import tictac7x.gotr.store.Inventory;

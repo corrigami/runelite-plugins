@@ -1,4 +1,4 @@
-package tictac7x.gotr;
+package tictac7x.gotr.overlays;
 
 import net.runelite.api.*;
 import net.runelite.api.Point;
@@ -8,6 +8,7 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+import tictac7x.gotr.TicTac7xGotrImprovedConfig;
 import tictac7x.gotr.overlays.GreatGuardianOverlay;
 import tictac7x.gotr.store.Guardians;
 import tictac7x.gotr.store.Inventory;
@@ -50,7 +51,9 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
 
     @Override
     public Dimension render(final Graphics2D graphics) {
-        if (!teleporters.getTimeLeft().isPresent()) return null;
+        // Teleporters highlighting disabled.
+        if (!config.highlightActiveTeleporters()) return null;
+
         final long seconds = Duration.between(Instant.now(), teleporters.getTimeLeft().get()).getSeconds();
         if (seconds < 0) return null;
 
@@ -65,7 +68,11 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
 
             // Outline.
             try {
-                outlines.drawOutline(teleporterGameObject, 2, teleporter.isElemental() ? config.getElementalColor() : config.getCatalyticColor(), 2);
+                outlines.drawOutline(teleporterGameObject, 2,
+                    config.indicateUnusableTeleporters() && inventory.hasGuardianStones() ? Color.red :
+                    teleporter.isElemental() ? config.getElementalColor() :
+                    config.getCatalyticColor(),
+                2);
             } catch (final Exception ignored) {}
 
             // Image.
@@ -92,16 +99,18 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
 
 
     private void drawCenteredString(final Graphics graphics, final String text, final Rectangle rectangle, final Color color, final Font font) {
-        graphics.setFont(font);
-        final FontMetrics metrics = graphics.getFontMetrics();
+        try {
+            graphics.setFont(font);
+            final FontMetrics metrics = graphics.getFontMetrics();
 
-        final int x = rectangle.x + (rectangle.width - metrics.stringWidth(text)) / 2;
-        final int y = rectangle.y + ((rectangle.height - metrics.getHeight()) / 2) + metrics.getAscent();
+            final int x = rectangle.x + (rectangle.width - metrics.stringWidth(text)) / 2;
+            final int y = rectangle.y + ((rectangle.height - metrics.getHeight()) / 2) + metrics.getAscent();
 
-        graphics.setColor(Color.BLACK);
-        graphics.drawString(text, x + 1, y + 1);
+            graphics.setColor(Color.BLACK);
+            graphics.drawString(text, x + 1, y + 1);
 
-        graphics.setColor(color);
-        graphics.drawString(text, x, y);
+            graphics.setColor(color);
+            graphics.drawString(text, x, y);
+        } catch (final Exception ignored) {}
     }
 }

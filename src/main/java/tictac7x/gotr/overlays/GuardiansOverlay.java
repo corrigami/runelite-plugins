@@ -73,7 +73,7 @@ public class GuardiansOverlay extends Overlay {
         if (!guardians.canBuildGuardians()) return null;
 
         // No cell.
-        if (!inventory.hasCell()) return null;
+        if (!config.highlightGuardiansWithoutCells() && !inventory.hasCell()) return null;
 
         try {
             modelOutlineRenderer.drawOutline(elementalGuardian.get(), 2, config.getElementalColor(), 2);

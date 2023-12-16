@@ -20,7 +20,7 @@ public class Inventory {
         return inventory.isPresent() && inventory.get().contains(teleporter.talismanItemId);
     }
 
-    public boolean hasEssence() {
+    public boolean hasGuardianStones() {
         return inventory.isPresent() && (
             inventory.get().contains(ItemID.ELEMENTAL_GUARDIAN_STONE) ||
             inventory.get().contains(ItemID.CATALYTIC_GUARDIAN_STONE) ||
@@ -28,7 +28,7 @@ public class Inventory {
         );
     }
 
-    public boolean hasElementalEssence() {
+    public boolean hasElementalGuardianStones() {
         return inventory.isPresent() && inventory.get().contains(ItemID.ELEMENTAL_GUARDIAN_STONE);
     }
 
