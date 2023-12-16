@@ -1,10 +1,10 @@
-package tictac7x.gotr;
+package tictac7x.gotr.store;
 
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameStateChanged;
+import tictac7x.gotr.types.Teleporter;
 
 import java.time.Instant;
 import java.util.*;
@@ -59,7 +59,7 @@ public class Teleporters {
     }
 
     public void onGameObjectSpawned(final GameObject object) {
-        final Optional<Teleporter> teleporter = Arrays.stream(Teleporter.ALL).filter(t -> t.teleporter_id == object.getId()).findFirst();
+        final Optional<Teleporter> teleporter = Arrays.stream(Teleporter.ALL).filter(t -> t.teleporterGameObjectid == object.getId()).findFirst();
         teleporter.ifPresent(value -> teleporters.put(object, value));
     }
 

@@ -1,7 +1,8 @@
-package tictac7x.gotr;
+package tictac7x.gotr.store;
 
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.config.ConfigManager;
+import tictac7x.gotr.TicTac7xGotrImprovedConfig;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -1,4 +1,4 @@
-package tictac7x.gotr;
+package tictac7x.gotr.store;
 
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -6,6 +6,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
+import tictac7x.gotr.Notifications;
 
 import java.time.Duration;
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package tictac7x.gotr;
+package tictac7x.gotr.store;
 
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
@@ -14,6 +14,7 @@ public class Guardians {
 
     private final Client client;
 
+    private boolean guardiansWidgetVisible = false;
     private Optional<Integer> totalAmount = Optional.empty();
     private Optional<Integer> currentAmount = Optional.empty();
 
@@ -22,13 +23,17 @@ public class Guardians {
     }
 
     public boolean canBuildGuardians() {
-        return (currentAmount.isPresent() && totalAmount.isPresent() && currentAmount.get() < totalAmount.get());
+        return (guardiansWidgetVisible && currentAmount.isPresent() && totalAmount.isPresent() && currentAmount.get() < totalAmount.get());
     }
 
     public void onGameTick() {
         final Optional<Widget> widget = Optional.ofNullable(client.getWidget(GUARDIANS_WIDGET_GROUP, GUARDIANS_WIDGET_CHILD));
-        if (!widget.isPresent() || widget.get().isHidden()) return;
+        if (!widget.isPresent() || widget.get().isHidden()) {
+            guardiansWidgetVisible = false;
+            return;
+        }
 
+        guardiansWidgetVisible = true;
         final Matcher matcher = regexGuardiansAmount.matcher(widget.get().getText());
         if (matcher.find()) {
             currentAmount = Optional.of(Integer.parseInt(matcher.group("current")));

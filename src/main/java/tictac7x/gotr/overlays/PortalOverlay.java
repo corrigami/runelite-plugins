@@ -9,7 +9,7 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
-import tictac7x.gotr.Portal;
+import tictac7x.gotr.store.Portal;
 
 import java.awt.Color;
 import java.awt.Dimension;

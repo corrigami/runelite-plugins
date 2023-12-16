@@ -1,7 +1,7 @@
 package tictac7x.gotr;
 
 import net.runelite.client.config.*;
-import tictac7x.gotr.store.GameStartBefore;
+import tictac7x.gotr.types.BeforeGameStarts;
 
 import java.awt.Color;
 
@@ -81,6 +81,16 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         return true;
     }
 
+        @ConfigItem(
+            keyName = "highlight_great_guardian",
+            name = "Highlight great guardian",
+            description = "Highlight great guardian if its possible to use essence on him",
+            position = 2,
+            section = guardians
+        ) default boolean highlightGreatGuardian() {
+        return true;
+    }
+
     @ConfigSection(
         name = "Notifications",
         description = "Manage notifications",
@@ -93,8 +103,8 @@ public interface TicTac7xGotrImprovedConfig extends Config {
             description = "Notify before the game starts ",
             position = 1,
             section = notifications
-        ) default GameStartBefore notifyBeforeGameStarts() {
-        return GameStartBefore.NEVER;
+        ) default BeforeGameStarts notifyBeforeGameStarts() {
+        return BeforeGameStarts.NEVER;
     }
 
         @ConfigItem(

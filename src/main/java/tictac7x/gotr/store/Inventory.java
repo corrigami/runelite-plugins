@@ -1,23 +1,23 @@
-package tictac7x.gotr;
+package tictac7x.gotr.store;
 
 import net.runelite.api.InventoryID;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import tictac7x.gotr.types.Teleporter;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public class Inventory {
     private Optional<ItemContainer> inventory = Optional.empty();
 
-    public void onItemContainerChanged(final ItemContainer item_container) {
-        if (item_container.getId() == InventoryID.INVENTORY.getId()) {
-            inventory = Optional.of(item_container);
+    public void onItemContainerChanged(final ItemContainer itemContainer) {
+        if (itemContainer.getId() == InventoryID.INVENTORY.getId()) {
+            inventory = Optional.of(itemContainer);
         }
     }
 
     public boolean hasTeleporterTalisman(final Teleporter teleporter) {
-        return inventory.isPresent() && inventory.get().contains(teleporter.talisman_id);
+        return inventory.isPresent() && inventory.get().contains(teleporter.talismanItemId);
     }
 
     public boolean hasEssence() {

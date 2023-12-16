@@ -4,9 +4,12 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.ObjectID;
 import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
-import tictac7x.gotr.Guardians;
+import tictac7x.gotr.store.Guardians;
 import tictac7x.gotr.TicTac7xGotrImprovedConfig;
+import tictac7x.gotr.store.Inventory;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -16,14 +19,19 @@ public class GuardiansOverlay extends Overlay {
     private final ModelOutlineRenderer modelOutlineRenderer;
     private final TicTac7xGotrImprovedConfig config;
     private final Guardians guardians;
+    private final Inventory inventory;
 
     private Optional<GameObject> elementalGuardian = Optional.empty();
     private Optional<GameObject> catalyticGuardian = Optional.empty();
 
-    public GuardiansOverlay(final ModelOutlineRenderer modelOutlineRenderer, final TicTac7xGotrImprovedConfig config, final Guardians guardians) {
+    public GuardiansOverlay(final ModelOutlineRenderer modelOutlineRenderer, final TicTac7xGotrImprovedConfig config, final Guardians guardians, final Inventory inventory) {
         this.modelOutlineRenderer = modelOutlineRenderer;
         this.config = config;
         this.guardians = guardians;
+        this.inventory = inventory;
+
+        setPosition(OverlayPosition.DYNAMIC);
+        setLayer(OverlayLayer.UNDER_WIDGETS);
     }
 
     public void onGameObjectSpawned(final GameObject object) {
@@ -63,6 +71,9 @@ public class GuardiansOverlay extends Overlay {
 
         // No guardians available to build.
         if (!guardians.canBuildGuardians()) return null;
+
+        // No cell.
+        if (!inventory.hasCell()) return null;
 
         try {
             modelOutlineRenderer.drawOutline(elementalGuardian.get(), 2, config.getElementalColor(), 2);

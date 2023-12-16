@@ -2,7 +2,7 @@ package tictac7x.gotr;
 
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.Notifier;
-import tictac7x.gotr.store.GameStartBefore;
+import tictac7x.gotr.types.BeforeGameStarts;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,15 +28,15 @@ public class Notifications {
                 notifier.notify(regexGameStarted.replace("!", ""));
             }
         } else if (message.getMessage().equals(regexGameStartsIn30Seconds)) {
-            if (config.notifyBeforeGameStarts() == GameStartBefore.THIRTY) {
+            if (config.notifyBeforeGameStarts() == BeforeGameStarts.THIRTY) {
                 notifier.notify(regexGameStartsIn30Seconds.replace(".", ""));
             }
         } else if (message.getMessage().equals(regexGameStartsIn10Seconds)) {
-            if (config.notifyBeforeGameStarts() == GameStartBefore.TEN) {
+            if (config.notifyBeforeGameStarts() == BeforeGameStarts.TEN) {
                 notifier.notify(regexGameStartsIn10Seconds.replace(".", ""));
             }
         } else if (message.getMessage().equals(regexGameStartsIn5Seconds)) {
-            if (config.notifyBeforeGameStarts() == GameStartBefore.FIVE) {
+            if (config.notifyBeforeGameStarts() == BeforeGameStarts.FIVE) {
                 notifier.notify(regexGameStartsIn5Seconds.replace(".", ""));
             }
         }
