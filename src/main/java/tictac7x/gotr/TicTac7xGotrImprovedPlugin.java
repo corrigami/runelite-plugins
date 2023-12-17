@@ -37,6 +37,7 @@ import tictac7x.gotr.store.Guardians;
 import tictac7x.gotr.store.Inventory;
 import tictac7x.gotr.store.Portal;
 import tictac7x.gotr.store.Teleporters;
+import tictac7x.gotr.widgets.EnergyWidget;
 import tictac7x.gotr.widgets.InactivePortalWidget;
 
 import javax.inject.Inject;
@@ -106,6 +107,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private UnchargedCellsBenchOverlay unchargedCellsBenchOverlay;
 
 	private InactivePortalWidget inactivePortalWidget;
+	private EnergyWidget energyWidget;
 
 	@Provides
 	TicTac7xGotrImprovedConfig provideConfig(ConfigManager configManager) {
@@ -130,6 +132,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		unchargedCellsBenchOverlay = new UnchargedCellsBenchOverlay(client, modelOutlineRenderer, config, inventory);
 
 		inactivePortalWidget = new InactivePortalWidget(client, spriteManager, portal);
+		energyWidget = new EnergyWidget(client, config);
 
 		overlayManager.add(portalOverlayOverlay);
 		overlayManager.add(guardiansOverlay);
@@ -138,6 +141,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		overlayManager.add(barrierOverlay);
 		overlayManager.add(unchargedCellsBenchOverlay);
 		overlayManager.add(inactivePortalWidget);
+		overlayManager.add(energyWidget);
 	}
 
 	@Override
@@ -149,6 +153,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		overlayManager.remove(barrierOverlay);
 		overlayManager.remove(unchargedCellsBenchOverlay);
 		overlayManager.remove(inactivePortalWidget);
+		overlayManager.remove(energyWidget);
 	}
 
 	@Subscribe

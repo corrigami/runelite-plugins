@@ -64,7 +64,7 @@ public class InactivePortalWidget extends Overlay {
             final String time = minutes + ":" + String.format("%02d", seconds < 0 ? 0 : seconds);
 
             int textHeight = 24;
-            Rectangle rect = new Rectangle(x, y + height, width, textHeight);
+            final Rectangle rect = new Rectangle(x, y + height, width, textHeight);
 
             try {
                 graphics.setFont(FontManager.getRunescapeFont());
