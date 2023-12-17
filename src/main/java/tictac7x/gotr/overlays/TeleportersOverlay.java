@@ -54,9 +54,6 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
         // Teleporters highlighting disabled.
         if (!config.highlightActiveTeleporters()) return null;
 
-        final long seconds = Duration.between(Instant.now(), teleporters.getTimeLeft().get()).getSeconds();
-        if (seconds < 0) return null;
-
         for (final Map.Entry<GameObject, Teleporter> entry : teleporters.getTeleporters().entrySet()) {
             final GameObject teleporterGameObject = entry.getKey();
             final Teleporter teleporter = entry.getValue();
@@ -65,6 +62,9 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
 
             // Teleporter not usable.
             if (!isActive && !hasTalisman) continue;
+
+            // Teleporter level requirement not met.
+            if (client.getBoostedSkillLevel(Skill.RUNECRAFT) < teleporter.level) continue;
 
             // Outline.
             try {
@@ -83,6 +83,7 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
 
             // Remaining time.
             if (isActive && teleporters.getTimeLeft().isPresent()) {
+                final long seconds = Duration.between(Instant.now(), teleporters.getTimeLeft().get()).getSeconds();
                 final long milliseconds = Duration.between(Instant.now(), teleporters.getTimeLeft().get()).getNano() / 1_000_000 % 1000 / 100;
                 final String time = seconds % 60 + "." + milliseconds;
 
@@ -90,7 +91,7 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
                 final Point rune_location = Perspective.getCanvasImageLocation(client, teleporterGameObject.getLocalLocation(), teleporterImage, 500);
                 final Rectangle rectangle = new Rectangle(rune_location.getX() + 16, rune_location.getY() - 18, 0, 24);
 
-                drawCenteredString(graphics, time, rectangle, Color.WHITE, FontManager.getRunescapeSmallFont());
+                drawCenteredString(graphics, time, rectangle, inventory.hasGuardianStones() ? Color.red : Color.WHITE, FontManager.getRunescapeSmallFont());
             }
         }
 

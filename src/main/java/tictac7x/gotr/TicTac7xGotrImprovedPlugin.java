@@ -3,6 +3,8 @@ package tictac7x.gotr;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.GameObject;
+import net.runelite.api.GameState;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
@@ -23,10 +25,12 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
+import tictac7x.gotr.overlays.BarrierOverlay;
 import tictac7x.gotr.overlays.GreatGuardianOverlay;
 import tictac7x.gotr.overlays.GuardiansOverlay;
 import tictac7x.gotr.overlays.PortalOverlay;
 import tictac7x.gotr.overlays.TeleportersOverlay;
+import tictac7x.gotr.store.Barrier;
 import tictac7x.gotr.store.Energy;
 import tictac7x.gotr.store.Guardians;
 import tictac7x.gotr.store.Inventory;
@@ -47,24 +51,24 @@ import javax.inject.Inject;
 	}
 )
 public class TicTac7xGotrImprovedPlugin extends Plugin {
-	private final String plugin_version = "v0.1";
-	private final String plugin_message = "" +
-		"<colHIGHLIGHT>GOTR Improved " + plugin_version + ":<br>";
+	private final String pluginVersion = "v0.1";
+	private final String pluginMessage = "" +
+		"<colHIGHLIGHT>GOTR Improved " + pluginVersion + ":<br>";
 
 	@Inject
 	private Client client;
 
 	@Inject
-	private ClientThread client_thread;
+	private ClientThread clientThread;
 
 	@Inject
-	private ItemManager items;
+	private ItemManager itemManager;
 
 	@Inject
 	private ConfigManager configManager;
 
 	@Inject
-	private InfoBoxManager infoboxes;
+	private InfoBoxManager infoBoxManager;
 
 	@Inject
 	private OverlayManager overlayManager;
@@ -73,7 +77,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private TicTac7xGotrImprovedConfig config;
 
 	@Inject
-	private ChatMessageManager chat_messages;
+	private ChatMessageManager chatMessageManager;
 
 	@Inject
 	private Notifier notifier;
@@ -82,7 +86,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private ModelOutlineRenderer modelOutlineRenderer;
 
 	@Inject
-	private SpriteManager sprites;
+	private SpriteManager spriteManager;
 
 	private Teleporters teleporters;
 	private GreatGuardianOverlay greatGuardianOverlay;
@@ -90,11 +94,13 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private Portal portal;
 	private Inventory inventory;
 	private Energy energy;
+	private Barrier barrier;
 	private Notifications notifications;
 
 	private PortalOverlay portalOverlayOverlay;
 	private GuardiansOverlay guardiansOverlay;
 	private TeleportersOverlay teleportersOverlay;
+	private BarrierOverlay barrierOverlay;
 
 	@Provides
 	TicTac7xGotrImprovedConfig provideConfig(ConfigManager configManager) {
@@ -103,22 +109,25 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		notifications = new Notifications(notifier, config);
+		notifications = new Notifications(client, notifier, config);
 		teleporters = new Teleporters();
 		guardians = new Guardians(client);
 		portal = new Portal(client, notifications);
 		inventory = new Inventory();
 		energy = new Energy(configManager);
+		barrier = new Barrier(notifications);
 
 		portalOverlayOverlay = new PortalOverlay(client, portal);
 		guardiansOverlay = new GuardiansOverlay(modelOutlineRenderer, config, guardians, inventory);
 		greatGuardianOverlay = new GreatGuardianOverlay(modelOutlineRenderer, config, inventory);
-		teleportersOverlay = new TeleportersOverlay(client, items, modelOutlineRenderer, config, teleporters, inventory);
+		teleportersOverlay = new TeleportersOverlay(client, itemManager, modelOutlineRenderer, config, teleporters, inventory);
+		barrierOverlay = new BarrierOverlay(client, modelOutlineRenderer, barrier);
 
 		overlayManager.add(portalOverlayOverlay);
 		overlayManager.add(guardiansOverlay);
 		overlayManager.add(greatGuardianOverlay);
 		overlayManager.add(teleportersOverlay);
+		overlayManager.add(barrierOverlay);
 	}
 
 	@Override
@@ -127,6 +136,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		overlayManager.remove(guardiansOverlay);
 		overlayManager.remove(greatGuardianOverlay);
 		overlayManager.remove(teleportersOverlay);
+		overlayManager.remove(barrierOverlay);
 	}
 
 	@Subscribe
@@ -136,15 +146,23 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		teleporters.onGameObjectSpawned(event.getGameObject());
-		portalOverlayOverlay.onGameObjectSpawned(event.getGameObject());
-		guardiansOverlay.onGameObjectSpawned(event.getGameObject());
+		final GameObject gameObject = event.getGameObject();
+
+		teleporters.onGameObjectSpawned(gameObject);
+		portalOverlayOverlay.onGameObjectSpawned(gameObject);
+		guardiansOverlay.onGameObjectSpawned(gameObject);
+		barrier.onGameObjectSpawned(gameObject);
+		barrierOverlay.onGameObjectSpawned(gameObject);
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(final GameObjectDespawned event) {
-		portalOverlayOverlay.onGameObjectDespawned(event.getGameObject());
-		guardiansOverlay.onGameObjectDespawned(event.getGameObject());
+		final GameObject gameObject = event.getGameObject();
+
+		portalOverlayOverlay.onGameObjectDespawned(gameObject);
+		guardiansOverlay.onGameObjectDespawned(gameObject);
+		barrier.onGameObjectDespawned(gameObject);
+		barrierOverlay.onGameObjectDespawned(gameObject);
 	}
 
 	@Subscribe
@@ -167,18 +185,22 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	}
 
 	@Subscribe
-	public void onGameTick(final GameTick gametick) {
+	public void onGameTick(final GameTick ignored) {
 		teleporters.onGameTick();
 		portal.onGameTick();
 		guardians.onGameTick();
+		barrier.onGameTick();
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		teleporters.onGameStateChanged(event.getGameState());
-		greatGuardianOverlay.onGameStateChanged(event.getGameState());
-		portalOverlayOverlay.onGameStateChanged(event.getGameState());
-		guardiansOverlay.onGameStateChanged(event.getGameState());
+		final GameState gameState = event.getGameState();
+
+		teleporters.onGameStateChanged(gameState);
+		greatGuardianOverlay.onGameStateChanged(gameState);
+		portalOverlayOverlay.onGameStateChanged(gameState);
+		guardiansOverlay.onGameStateChanged(gameState);
+		barrierOverlay.onGameStateChanged(gameState);
 	}
 }
 

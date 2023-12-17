@@ -1,5 +1,6 @@
 package tictac7x.gotr;
 
+import net.runelite.api.Client;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.Notifier;
 import tictac7x.gotr.types.BeforeGameStarts;
@@ -8,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Notifications {
+    private final Client client;
     private final Notifier notifier;
     private TicTac7xGotrImprovedConfig config;
 
@@ -17,7 +19,8 @@ public class Notifications {
     private final String regexGameStarted = "The rift becomes active!";
     private final Pattern regexPortalOpened = Pattern.compile("(?<location>.*) - .*");
 
-    public Notifications(final Notifier notifier, final TicTac7xGotrImprovedConfig config) {
+    public Notifications(final Client client, final Notifier notifier, final TicTac7xGotrImprovedConfig config) {
+        this.client = client;
         this.notifier = notifier;
         this.config = config;
     }
@@ -58,5 +61,21 @@ public class Notifications {
             location.equals("W") ? "west" :
             "") + "!"
         );
+    }
+
+    public void notifyAboutPassableBarrier() {
+        if (config.notifyBarrierPassable() && shouldNotifyAboutBarrier()) {
+            notifier.notify("Barrier is now passable!");
+        }
+    }
+
+    public void notifyBeforePassableBarrier() {
+        if (config.notifyBeforePassableBarrier() && shouldNotifyAboutBarrier()) {
+            notifier.notify("Barrier will be passable in 3 seconds!");
+        }
+    }
+
+    private boolean shouldNotifyAboutBarrier() {
+        return client.getLocalPlayer().getWorldLocation().getY() <= 9482;
     }
 }

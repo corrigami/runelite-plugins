@@ -82,10 +82,20 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         }
 
         @ConfigItem(
+            keyName = "teleporters_level_requirements",
+            name = "Check level requirements",
+            description = "Check teleporter level requirement for highlighting",
+            position = 2,
+            section = teleporters
+        ) default boolean checkTeleporterLevelRequirements() {
+        return true;
+    }
+
+        @ConfigItem(
             keyName = "unusable_teleporters",
             name = "Indicate unusable teleporters",
             description = "Indicate that teleporters are unusable, because player has guardian stones in their inventory",
-            position = 1,
+            position = 3,
             section = teleporters
         ) default boolean indicateUnusableTeleporters() {
             return true;
@@ -166,6 +176,26 @@ public interface TicTac7xGotrImprovedConfig extends Config {
             position = 3,
             section = notifications
         ) default boolean notifyPortalOpened() {
+        return true;
+    }
+
+        @ConfigItem(
+            keyName = "barrier_passable",
+            name = "Passable barrier",
+            description = "Notify about barrier being passable",
+            position = 4,
+            section = notifications
+        ) default boolean notifyBarrierPassable() {
+        return true;
+    }
+
+        @ConfigItem(
+            keyName = "before_barrier_passable",
+            name = "before barrier passable",
+            description = "Notify about barrier being passable",
+            position = 5,
+            section = notifications
+        ) default boolean notifyBeforePassableBarrier() {
         return true;
     }
 

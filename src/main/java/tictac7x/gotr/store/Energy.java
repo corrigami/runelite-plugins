@@ -11,7 +11,7 @@ public class Energy {
     private final ConfigManager configManager;
 
     private final Pattern regexCheck = Pattern.compile("You have (?<catalytic>.+) catalytic energy and (?<elemental>.+) elemental energy. You can use them to search the rift (?<searches>.+) times. You have searched the rift (?<total>.+) times.");
-    private final Pattern regexTotal = Pattern.compile("Total elemental energy: (?<elemental>.+). Total catalytic energy: (?<catalytic>.+).");
+    private final Pattern regexTotal = Pattern.compile("Total elemental energy: (?<elemental>.+). Total catalytic energy: ( )?(?<catalytic>.+).");
 
     public Energy(final ConfigManager configManager) {
         this.configManager = configManager;

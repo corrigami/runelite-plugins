@@ -24,6 +24,7 @@ public class Portal {
     private final Notifications notifications;
 
     private Optional<Instant> portalTimeLeft = Optional.empty();
+    private Optional<Instant> timeFromPortal = Optional.empty();
 
     public Portal(final Client client, final Notifications notifications) {
         this.client = client;
@@ -32,6 +33,10 @@ public class Portal {
 
     public Optional<Instant> getTimeLeft() {
         return portalTimeLeft;
+    }
+
+    public Optional<Instant> getTimeFromPortal() {
+        return timeFromPortal;
     }
 
     public void onGameTick() {
@@ -51,6 +56,8 @@ public class Portal {
         // Portal opened.
         final Matcher matcher = regexPortalOpened.matcher(widget.get().getText());
         if (!matcher.find()) return;
+
+        timeFromPortal = Optional.of(Instant.now());
 
         // Notify about portal.
         notifications.notifyAboutPortal(widget.get().getText());
