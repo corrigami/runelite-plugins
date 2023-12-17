@@ -87,11 +87,15 @@ public class TeleportersOverlay extends net.runelite.client.ui.overlay.Overlay {
                 final long milliseconds = Duration.between(Instant.now(), teleporters.getTimeLeft().get()).getNano() / 1_000_000 % 1000 / 100;
                 final String time = seconds % 60 + "." + milliseconds;
 
-                graphics.setFont(FontManager.getRunescapeSmallFont());
-                final Point rune_location = Perspective.getCanvasImageLocation(client, teleporterGameObject.getLocalLocation(), teleporterImage, 500);
-                final Rectangle rectangle = new Rectangle(rune_location.getX() + 16, rune_location.getY() - 18, 0, 24);
-
-                drawCenteredString(graphics, time, rectangle, inventory.hasGuardianStones() ? Color.red : Color.WHITE, FontManager.getRunescapeSmallFont());
+                try {
+                    graphics.setFont(FontManager.getRunescapeSmallFont());
+                    final Point rune_location = Perspective.getCanvasImageLocation(client, teleporterGameObject.getLocalLocation(), teleporterImage, 500);
+                    final Rectangle rectangle = new Rectangle(rune_location.getX() + 16, rune_location.getY() - 18, 0, 24);
+                    drawCenteredString(graphics, time, rectangle,
+                        inventory.hasGuardianStones() ? Color.red :
+                        Color.WHITE,
+                    FontManager.getRunescapeSmallFont());
+                } catch (final Exception ignored) {}
             }
         }
 

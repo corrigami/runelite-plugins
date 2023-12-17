@@ -81,7 +81,7 @@ public class GreatGuardianOverlay extends Overlay {
 
         // Image.
         try {
-            OverlayUtil.renderImageLocation(client, graphics, greatGuardian.get().getLocalLocation(), inventory.hasElementalGuardianStones() ? imageElementalGuardianStones : imageCatalyticGuardianStones, 500);
+            OverlayUtil.renderImageLocation(client, graphics, greatGuardian.get().getLocalLocation(), inventory.hasElementalGuardianStones() ? imageElementalGuardianStones : imageCatalyticGuardianStones, 550);
         } catch (final Exception ignored) {}
 
         return null;
