@@ -144,9 +144,25 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         }
 
     @ConfigSection(
+        name = "Uncharged Cells",
+        description = "Uncharged Cells",
+        position = 5
+    ) String unchargedCells = "unchargedCells";
+
+        @ConfigItem(
+            keyName = "highlightUnchargedCellsBench",
+            name = "Highlight Uncharged Cells Bench",
+            description = "Highlight uncharged cells bench if player has no uncharged cells in their inventory",
+            position = 1,
+            section = unchargedCells
+        ) default boolean highlightUnchargedCellsBench() {
+        return true;
+    }
+
+    @ConfigSection(
         name = "Notifications",
         description = "Manage notifications",
-        position = 4
+        position = 6
     ) String notifications = "notifications";
 
         @ConfigItem(

@@ -49,7 +49,7 @@ public class Barrier {
         if (barrierReenterTimeLeft.isPresent()) {
             final long seconds = Duration.between(Instant.now(), barrierReenterTimeLeft.get()).getSeconds();
 
-            if (seconds < 3 && !notifiedBeforePassableBarrier) {
+            if (seconds < 5 && !notifiedBeforePassableBarrier) {
                 notifiedBeforePassableBarrier = true;
                 notifications.notifyBeforePassableBarrier();
             }

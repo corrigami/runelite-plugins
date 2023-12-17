@@ -35,4 +35,8 @@ public class Inventory {
     public boolean hasCell() {
         return inventory.isPresent() && (inventory.get().contains(ItemID.WEAK_CELL) || inventory.get().contains(ItemID.MEDIUM_CELL) || inventory.get().contains(ItemID.STRONG_CELL) || inventory.get().contains(ItemID.OVERCHARGED_CELL));
     }
+
+    public boolean hasUnchargedCells() {
+        return inventory.isPresent() && inventory.get().contains(ItemID.UNCHARGED_CELL);
+    }
 }

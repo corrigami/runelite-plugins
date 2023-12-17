@@ -71,7 +71,7 @@ public class Notifications {
 
     public void notifyBeforePassableBarrier() {
         if (config.notifyBeforePassableBarrier() && shouldNotifyAboutBarrier()) {
-            notifier.notify("Barrier will be passable in 3 seconds!");
+            notifier.notify("Barrier will be passable in 5 seconds!");
         }
     }
 

@@ -54,6 +54,7 @@ public class BarrierOverlay extends Overlay {
     public Dimension render(final Graphics2D graphics) {
         if (!barrier.getBarrierReenterTimeLeft().isPresent()) return null;
         if (!barrierGameObject.isPresent()) return null;
+        if (!isBehindBarrier()) return null;
 
         final long seconds = Duration.between(Instant.now(), barrier.getBarrierReenterTimeLeft().get()).getSeconds();
 
@@ -67,12 +68,16 @@ public class BarrierOverlay extends Overlay {
             } catch (final Exception ignored) {}
         }
 
-        if (seconds <= 0) {
+        if (seconds < 0) {
             try {
                 modelOutlineRenderer.drawOutline(barrierGameObject.get(), 2, Color.green, 2);
             } catch (final Exception ignored) {}
         }
 
         return null;
+    }
+
+    private boolean isBehindBarrier() {
+        return client.getLocalPlayer().getWorldLocation().getY() <= 9482;
     }
 }

@@ -30,6 +30,7 @@ import tictac7x.gotr.overlays.GreatGuardianOverlay;
 import tictac7x.gotr.overlays.GuardiansOverlay;
 import tictac7x.gotr.overlays.PortalOverlay;
 import tictac7x.gotr.overlays.TeleportersOverlay;
+import tictac7x.gotr.overlays.UnchargedCellsBenchOverlay;
 import tictac7x.gotr.store.Barrier;
 import tictac7x.gotr.store.Energy;
 import tictac7x.gotr.store.Guardians;
@@ -101,6 +102,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private GuardiansOverlay guardiansOverlay;
 	private TeleportersOverlay teleportersOverlay;
 	private BarrierOverlay barrierOverlay;
+	private UnchargedCellsBenchOverlay unchargedCellsBenchOverlay;
 
 	@Provides
 	TicTac7xGotrImprovedConfig provideConfig(ConfigManager configManager) {
@@ -119,15 +121,17 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 
 		portalOverlayOverlay = new PortalOverlay(client, portal);
 		guardiansOverlay = new GuardiansOverlay(modelOutlineRenderer, config, guardians, inventory);
-		greatGuardianOverlay = new GreatGuardianOverlay(modelOutlineRenderer, config, inventory);
+		greatGuardianOverlay = new GreatGuardianOverlay(client, itemManager, modelOutlineRenderer, config, inventory);
 		teleportersOverlay = new TeleportersOverlay(client, itemManager, modelOutlineRenderer, config, teleporters, inventory);
 		barrierOverlay = new BarrierOverlay(client, modelOutlineRenderer, barrier);
+		unchargedCellsBenchOverlay = new UnchargedCellsBenchOverlay(client, modelOutlineRenderer, config, inventory);
 
 		overlayManager.add(portalOverlayOverlay);
 		overlayManager.add(guardiansOverlay);
 		overlayManager.add(greatGuardianOverlay);
 		overlayManager.add(teleportersOverlay);
 		overlayManager.add(barrierOverlay);
+		overlayManager.add(unchargedCellsBenchOverlay);
 	}
 
 	@Override
@@ -137,6 +141,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		overlayManager.remove(greatGuardianOverlay);
 		overlayManager.remove(teleportersOverlay);
 		overlayManager.remove(barrierOverlay);
+		overlayManager.remove(unchargedCellsBenchOverlay);
 	}
 
 	@Subscribe
@@ -153,6 +158,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardiansOverlay.onGameObjectSpawned(gameObject);
 		barrier.onGameObjectSpawned(gameObject);
 		barrierOverlay.onGameObjectSpawned(gameObject);
+		unchargedCellsBenchOverlay.onGameObjectSpawned(gameObject);
 	}
 
 	@Subscribe
@@ -163,6 +169,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardiansOverlay.onGameObjectDespawned(gameObject);
 		barrier.onGameObjectDespawned(gameObject);
 		barrierOverlay.onGameObjectDespawned(gameObject);
+		unchargedCellsBenchOverlay.onGameObjectDespawned(gameObject);
 	}
 
 	@Subscribe
@@ -201,6 +208,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		portalOverlayOverlay.onGameStateChanged(gameState);
 		guardiansOverlay.onGameStateChanged(gameState);
 		barrierOverlay.onGameStateChanged(gameState);
+		unchargedCellsBenchOverlay.onGameStateChanged(gameState);
 	}
 }
 
