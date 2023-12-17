@@ -121,7 +121,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardians = new Guardians(client);
 		portal = new Portal(client, notifications);
 		inventory = new Inventory();
-		energy = new Energy(configManager);
+		energy = new Energy(configManager, config);
 		barrier = new Barrier(notifications);
 
 		portalOverlayOverlay = new PortalOverlay(client, portal);
