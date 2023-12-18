@@ -35,7 +35,6 @@ public class InactivePortalWidget extends Overlay {
     public InactivePortalWidget(final Client client, final SpriteManager spriteManager, final Portal portal) {
         this.client = client;
         this.spriteManager = spriteManager;
-        this.inactivePortalImage = getInactivePortalImage();
         this.portal = portal;
 
         this.setPosition(OverlayPosition.DYNAMIC);

@@ -28,6 +28,10 @@ public class Inventory {
         );
     }
 
+    public boolean hasGuardianEssence() {
+        return inventory.isPresent() && inventory.get().contains(ItemID.GUARDIAN_ESSENCE);
+    }
+
     public boolean hasElementalGuardianStones() {
         return inventory.isPresent() && inventory.get().contains(ItemID.ELEMENTAL_GUARDIAN_STONE);
     }
@@ -38,5 +42,30 @@ public class Inventory {
 
     public boolean hasUnchargedCells() {
         return inventory.isPresent() && inventory.get().contains(ItemID.UNCHARGED_CELL);
+    }
+
+    public boolean hasPieceOfEyeEquipmentInInventory() {
+        if (inventory.isPresent()) {
+            return (
+                inventory.get().contains(ItemID.HAT_OF_THE_EYE) ||
+                inventory.get().contains(ItemID.HAT_OF_THE_EYE_BLUE) ||
+                inventory.get().contains(ItemID.HAT_OF_THE_EYE_GREEN) ||
+                inventory.get().contains(ItemID.HAT_OF_THE_EYE_RED) ||
+
+                inventory.get().contains(ItemID.ROBE_TOP_OF_THE_EYE) ||
+                inventory.get().contains(ItemID.ROBE_TOP_OF_THE_EYE_BLUE) ||
+                inventory.get().contains(ItemID.ROBE_TOP_OF_THE_EYE_GREEN) ||
+                inventory.get().contains(ItemID.ROBE_TOP_OF_THE_EYE_RED) ||
+
+                inventory.get().contains(ItemID.ROBE_BOTTOMS_OF_THE_EYE) ||
+                inventory.get().contains(ItemID.ROBE_BOTTOMS_OF_THE_EYE_BLUE) ||
+                inventory.get().contains(ItemID.ROBE_BOTTOMS_OF_THE_EYE_GREEN) ||
+                inventory.get().contains(ItemID.ROBE_BOTTOMS_OF_THE_EYE_RED) ||
+
+                inventory.get().contains(ItemID.BOOTS_OF_THE_EYE)
+            );
+        }
+
+        return false;
     }
 }

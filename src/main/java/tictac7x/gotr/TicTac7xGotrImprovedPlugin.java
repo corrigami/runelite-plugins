@@ -116,11 +116,11 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		notifications = new Notifications(client, notifier, config);
+		inventory = new Inventory();
+		notifications = new Notifications(client, notifier, inventory, config);
 		teleporters = new Teleporters();
 		guardians = new Guardians(client);
 		portal = new Portal(client, notifications);
-		inventory = new Inventory();
 		energy = new Energy(configManager, config);
 		barrier = new Barrier(notifications);
 
@@ -128,7 +128,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardiansOverlay = new GuardiansOverlay(modelOutlineRenderer, config, guardians, inventory);
 		greatGuardianOverlay = new GreatGuardianOverlay(client, itemManager, modelOutlineRenderer, config, inventory);
 		teleportersOverlay = new TeleportersOverlay(client, itemManager, modelOutlineRenderer, config, teleporters, inventory);
-		barrierOverlay = new BarrierOverlay(client, modelOutlineRenderer, barrier);
+		barrierOverlay = new BarrierOverlay(client, modelOutlineRenderer, barrier, config);
 		unchargedCellsBenchOverlay = new UnchargedCellsBenchOverlay(client, modelOutlineRenderer, config, inventory);
 
 		inactivePortalWidget = new InactivePortalWidget(client, spriteManager, portal);
@@ -171,6 +171,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		barrier.onGameObjectSpawned(gameObject);
 		barrierOverlay.onGameObjectSpawned(gameObject);
 		unchargedCellsBenchOverlay.onGameObjectSpawned(gameObject);
+		notifications.onGameObjectSpawned(gameObject);
 	}
 
 	@Subscribe

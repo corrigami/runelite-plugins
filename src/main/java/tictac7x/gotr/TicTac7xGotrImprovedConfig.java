@@ -160,9 +160,35 @@ public interface TicTac7xGotrImprovedConfig extends Config {
     }
 
     @ConfigSection(
+        name = "Barrier",
+        description = "Barrier",
+        position = 6
+    ) String barrier = "barrier";
+
+        @ConfigItem(
+            keyName = "barrierTimeRemaining",
+            name = "Remaining Time",
+            description = "Show remaining time until the barrier is passable",
+            position = 1,
+            section = barrier
+        ) default boolean showBarrierRemainingTime() {
+        return true;
+    }
+
+        @ConfigItem(
+            keyName = "barrierPie",
+            name = "Remaining Time Pie",
+            description = "Show remaining time as pie",
+            position = 2,
+            section = barrier
+        ) default boolean showBarrierRemainingTimePie() {
+        return true;
+    }
+
+    @ConfigSection(
         name = "Notifications",
         description = "Manage notifications",
-        position = 6
+        position = 7
     ) String notifications = "notifications";
 
         @ConfigItem(
@@ -207,11 +233,21 @@ public interface TicTac7xGotrImprovedConfig extends Config {
 
         @ConfigItem(
             keyName = "before_barrier_passable",
-            name = "before barrier passable",
+            name = "Before passable barrier",
             description = "Notify about barrier being passable",
             position = 5,
             section = notifications
         ) default boolean notifyBeforePassableBarrier() {
+        return true;
+    }
+
+        @ConfigItem(
+            keyName = "notify_eye_robes",
+            name = "Unused eye robes",
+            description = "Notify about unused eye robes when you are near altar with essence in inventory",
+            position = 6,
+            section = notifications
+        ) default boolean notifyUnusedEyeRobes() {
         return true;
     }
 
