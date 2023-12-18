@@ -5,6 +5,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.game.SpriteManager;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.util.ImageUtil;
 import tictac7x.gotr.store.Portal;
 
@@ -29,13 +30,15 @@ public class InactivePortalWidget extends Overlay {
     private final SpriteManager spriteManager;
     private final Portal portal;
 
-    private final BufferedImage inactivePortalImage;
+    private BufferedImage inactivePortalImage;
 
     public InactivePortalWidget(final Client client, final SpriteManager spriteManager, final Portal portal) {
         this.client = client;
         this.spriteManager = spriteManager;
         this.inactivePortalImage = getInactivePortalImage();
         this.portal = portal;
+
+        this.setPosition(OverlayPosition.DYNAMIC);
     }
 
     @Override
@@ -46,15 +49,14 @@ public class InactivePortalWidget extends Overlay {
         if (activePortalWidget.isPresent() && !activePortalWidget.get().isHidden()) return null;
         if (!portal.getTimeToPortal().isPresent()) return null;
 
-        int x = gotrWidget.get().getRelativeX() + 189;
-        int y = gotrWidget.get().getRelativeY() + 33;
+        int x = gotrWidget.get().getCanvasLocation().getX() + 192;
+        int y = gotrWidget.get().getCanvasLocation().getY() + 65;
         int width = 32;
         int height = 32;
 
         // Inactive portal image.
         try {
-            final BufferedImage image = spriteManager.getSprite(PORTAL_SPRITE_ID, 0);
-            graphics.drawImage(ImageUtil.grayscaleImage(image), x, y, width, height, null);
+            graphics.drawImage(getInactivePortalImage(), x, y, width, height, null);
         } catch (final Exception ignored) {}
 
         // Inactive portal text.
@@ -86,6 +88,14 @@ public class InactivePortalWidget extends Overlay {
     }
 
     private BufferedImage getInactivePortalImage() {
-        return null;
+        if (this.inactivePortalImage == null) {
+            try {
+                BufferedImage inactivePortalImage = spriteManager.getSprite(PORTAL_SPRITE_ID, 0);
+                inactivePortalImage = ImageUtil.grayscaleImage(inactivePortalImage);
+                this.inactivePortalImage = inactivePortalImage;
+            } catch (final Exception ignored) {}
+        }
+
+        return this.inactivePortalImage;
     }
 }

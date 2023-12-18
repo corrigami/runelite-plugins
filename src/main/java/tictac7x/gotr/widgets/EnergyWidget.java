@@ -4,6 +4,7 @@ import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import tictac7x.gotr.TicTac7xGotrImprovedConfig;
 
 import java.awt.Color;
@@ -30,6 +31,7 @@ public class EnergyWidget extends Overlay {
     public EnergyWidget(final Client client, final TicTac7xGotrImprovedConfig config) {
         this.client = client;
         this.config = config;
+        setPosition(OverlayPosition.DYNAMIC);
     }
 
     @Override
@@ -52,14 +54,14 @@ public class EnergyWidget extends Overlay {
         final double elementalEnergy = Integer.parseInt(matcherElementalEnergy.group("energy"));
         final double catalyticEnergy = Integer.parseInt(matcherCatalyticEnergy.group("energy"));
 
-        int x = widgetGotr.get().getRelativeX();
-        int y = widgetGotr.get().getRelativeY();
+        int x = widgetGotr.get().getCanvasLocation().getX();
+        int y = widgetGotr.get().getCanvasLocation().getY();
 
-        drawCenteredString(graphics, "Elemental:", new Rectangle(x + 44, y + 47, 0, 0), config.getElementalColor());
-        drawCenteredString(graphics, config.getElementalEnergy() + " + " + elementalEnergy / 100, new Rectangle(x + 44, y + 62, 0, 0), config.getElementalColor());
+        drawCenteredString(graphics, "Elemental:", new Rectangle(x + 46, y + 79, 0, 0), config.getElementalColor());
+        drawCenteredString(graphics, config.getElementalEnergy() + " + " + elementalEnergy / 100, new Rectangle(x + 46, y + 95, 0, 0), config.getElementalColor());
 
-        drawCenteredString(graphics, "Catalytic:", new Rectangle(x + 124, y + 47, 0, 0), config.getCatalyticColor());
-        drawCenteredString(graphics, config.getCatalyticEnergy() + " + " + catalyticEnergy / 100, new Rectangle(x + 124, y + 62, 0, 0), config.getCatalyticColor());
+        drawCenteredString(graphics, "Catalytic:", new Rectangle(x + 124, y + 79, 0, 0), config.getCatalyticColor());
+        drawCenteredString(graphics, config.getCatalyticEnergy() + " + " + catalyticEnergy / 100, new Rectangle(x + 124, y + 95, 0, 0), config.getCatalyticColor());
 
         return null;
     }
