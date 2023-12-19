@@ -11,6 +11,7 @@ import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.MenuEntryAdded;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.Notifier;
@@ -122,7 +123,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		guardians = new Guardians(client);
 		portal = new Portal(client, notifications);
 		energy = new Energy(configManager, config);
-		barrier = new Barrier(notifications);
+		barrier = new Barrier(client, notifications, config);
 
 		portalOverlayOverlay = new PortalOverlay(client, portal);
 		guardiansOverlay = new GuardiansOverlay(modelOutlineRenderer, config, guardians, inventory);
@@ -217,12 +218,18 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	public void onGameStateChanged(final GameStateChanged event) {
 		final GameState gameState = event.getGameState();
 
+		barrier.onGameStateChanged(gameState);
 		teleporters.onGameStateChanged(gameState);
 		greatGuardianOverlay.onGameStateChanged(gameState);
 		portalOverlayOverlay.onGameStateChanged(gameState);
 		guardiansOverlay.onGameStateChanged(gameState);
 		barrierOverlay.onGameStateChanged(gameState);
 		unchargedCellsBenchOverlay.onGameStateChanged(gameState);
+	}
+
+	@Subscribe
+	public void onMenuEntryAdded(final MenuEntryAdded event) {
+		barrier.onMenuEntryAdded(event.getMenuEntry());
 	}
 }
 

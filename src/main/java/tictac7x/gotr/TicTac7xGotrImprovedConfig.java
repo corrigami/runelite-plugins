@@ -166,10 +166,21 @@ public interface TicTac7xGotrImprovedConfig extends Config {
     ) String barrier = "barrier";
 
         @ConfigItem(
+            keyName = "barrierLeavePreventer",
+            name = "Prevent leave",
+            description = "Rename quick-pass option to make sure you can't left click it after passing",
+            position = 1,
+            section = barrier
+        ) default boolean preventQuickLeave() {
+        return true;
+    }
+
+
+        @ConfigItem(
             keyName = "barrierTimeRemaining",
             name = "Remaining Time",
             description = "Show remaining time until the barrier is passable",
-            position = 1,
+            position = 2,
             section = barrier
         ) default boolean showBarrierRemainingTime() {
         return true;
@@ -179,7 +190,7 @@ public interface TicTac7xGotrImprovedConfig extends Config {
             keyName = "barrierPie",
             name = "Remaining Time Pie",
             description = "Show remaining time as pie",
-            position = 2,
+            position = 3,
             section = barrier
         ) default boolean showBarrierRemainingTimePie() {
         return true;
