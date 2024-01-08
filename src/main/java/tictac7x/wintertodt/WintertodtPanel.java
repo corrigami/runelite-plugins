@@ -24,7 +24,7 @@ public class WintertodtPanel extends OverlayPanel {
     private int inventory_brumas = 0;
 
     private final static int WIDGET_POINTS_GROUP = 396;
-    private final static int WIDGET_POINTS_CHILD = 7;
+    private final static int WIDGET_POINTS_CHILD = 6;
 
     public WintertodtPanel(final Client client, final WintertodtConfig config) {
         this.client = client;
@@ -43,11 +43,11 @@ public class WintertodtPanel extends OverlayPanel {
         if (widget_points == null || widget_points.isHidden() || !config.showGoalPanel()) return null;
 
         final int points = Integer.parseInt(widget_points.getText().replaceAll("Points<br>", ""));
-        final int logs_needed = Math.max(0, (config.getGoal() - points) / 25 - inventory_brumas);
+        final int logs_needed = Math.max(0, (config.getGoal() - points) / (config.isFletchingForGoal() ? 25 : 10) - inventory_brumas);
 
         panelComponent.getChildren().clear();
         panelComponent.getChildren().add(LineComponent.builder()
-            .left("Brumas left:")
+            .left("Logs left:")
             .right(String.valueOf(logs_needed))
             .rightColor(logs_needed > 0 ? Color.green : Color.red)
             .build()

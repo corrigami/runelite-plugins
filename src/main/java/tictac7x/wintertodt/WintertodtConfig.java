@@ -16,7 +16,9 @@ public interface WintertodtConfig extends Config {
         name = "Version",
         description = "Version of the plugin for update message",
         hidden = true
-    ) default String getVersion() { return ""; }
+    ) default String getVersion() {
+        return "";
+    }
 
     @ConfigSection(
         name = "Notifications",
@@ -30,7 +32,9 @@ public interface WintertodtConfig extends Config {
             description = "Notify about the brazier that you are standing next to that is about to break",
             position = 1,
             section = notifications
-        ) default boolean notifyBreakingBrazier() { return true; }
+        ) default boolean notifyBreakingBrazier() {
+            return true;
+        }
 
         @ConfigItem(
             keyName = "falling_snow",
@@ -38,7 +42,9 @@ public interface WintertodtConfig extends Config {
             description = "Notify about the falling snow that is about to fall on you",
             position = 2,
             section = notifications
-        ) default boolean notifyFallingSnow() { return true; }
+        ) default boolean notifyFallingSnow() {
+            return true;
+        }
 
     @ConfigSection(
         name = "Highlights",
@@ -53,7 +59,9 @@ public interface WintertodtConfig extends Config {
             description = "Highlight breaking braziers",
             position = 1,
             section = highlights
-        ) default Color highlightBreakingBrazier() { return new Color(255, 0, 0, 80); }
+        ) default Color highlightBreakingBrazier() {
+            return new Color(255, 0, 0, 80);
+        }
 
         @Alpha
         @ConfigItem(
@@ -62,7 +70,9 @@ public interface WintertodtConfig extends Config {
             description = "Highlight falling snow tiles",
             position = 2,
             section = highlights
-        ) default Color highlightFallingSnow() { return new Color(255, 0, 0, 80); }
+        ) default Color highlightFallingSnow() {
+            return new Color(255, 0, 0, 80);
+        }
 
     @ConfigSection(
         name = "Goal panel",
@@ -76,7 +86,9 @@ public interface WintertodtConfig extends Config {
             description = "Show goal panel",
             position = 1,
             section = panel
-        ) default boolean showGoalPanel() { return true; }
+        ) default boolean showGoalPanel() {
+            return true;
+        }
 
         @ConfigItem(
             keyName = "goal",
@@ -84,5 +96,17 @@ public interface WintertodtConfig extends Config {
             description = "Amount of points you want to get",
             position = 2,
             section = panel
-        ) default int getGoal() { return 13500; }
+        ) default int getGoal() {
+            return 500;
+        }
+
+        @ConfigItem(
+            keyName = "goal_fletching",
+            name = "Fletching",
+            description = "Calculate points based on if you fletch the logs ",
+            position = 3,
+            section = panel
+        ) default boolean isFletchingForGoal() {
+            return true;
+        }
 }
