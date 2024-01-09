@@ -12,7 +12,6 @@ import net.runelite.api.events.GroundObjectSpawned;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -87,11 +86,6 @@ public class RooftopsPlugin extends Plugin {
 	@Subscribe
 	public void onChatMessage(final ChatMessage event) {
 		course_manager.onChatMessage(event);
-	}
-
-	@Subscribe
-	public void onMenuOptionClicked(final MenuOptionClicked event) {
-		course_manager.onMenuOptionClicked(event);
 	}
 
 	@Subscribe

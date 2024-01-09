@@ -55,8 +55,6 @@ public class RooftopsCourseManager {
     private final List<TileObject> obstacles = new ArrayList<>();
     private final List<Tile> marks_of_graces = new ArrayList<>();
 
-    private boolean obstacle_clicked;
-
     // Keep track of next obstacle id locally until obstacle is completed.
     private int[] next_obstacle_ids;
 
@@ -91,12 +89,6 @@ public class RooftopsCourseManager {
         }
 
         detectCourse();
-    }
-
-    public void onMenuOptionClicked(final MenuOptionClicked event) {
-        // Click on interface or item in invetory doesn't stop from doing the obstacle.
-        if (event.getId() == 1 && event.getItemId() == -1 || event.getItemId() != -1 && !event.getMenuTarget().contains("->")) return;
-        checkForClickedObstacle(event.getId());
     }
 
     public void onStatChanged(final StatChanged event) {
@@ -193,7 +185,6 @@ public class RooftopsCourseManager {
         if (course == null) return;
 
         start_obstacle = -1;
-        obstacle_clicked = false;
         course.startObstacle();
     }
 
@@ -201,24 +192,6 @@ public class RooftopsCourseManager {
         if (this.course == null) return;
         course.completeObstacle();
         next_obstacle_ids = course.getNextObstacle().getIds();
-    }
-
-    private void checkForClickedObstacle(final int id) {
-        if (course == null) return;
-
-        // Next obstacle clicked.
-        if (Arrays.stream(next_obstacle_ids).anyMatch(i -> i == id)) {
-            obstacle_clicked = true;
-
-            // Mark obstacle to be started after 1 gametick.
-            if (isNearObstacle()) {
-                start_obstacle = 1;
-            }
-
-            // Some action happened that is stopping us from doing an obstacle.
-        } else {
-            obstacle_clicked = false;
-        }
     }
 
     private void detectCourse() {
@@ -269,7 +242,7 @@ public class RooftopsCourseManager {
         }
 
         // Obstacle detected from further away.
-        if (obstacle_clicked && isNearObstacle()) {
+        if (isNearObstacle()) {
             start_obstacle = 1;
         }
     }
