@@ -222,11 +222,11 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         return true;
     }
 
-        @Range(min = 0, max = 110)
+        @Range(min = -1, max = 110)
         @ConfigItem(
             keyName = "notification_before_first_rift",
             name = "Time until first rift",
-            description = "Notify before the first rift is opened",
+            description = "Notify before the first rift is opened. -1 to disable.",
             position = 3,
             section = notifications
         ) default int notifyBeforeFirstRift() {

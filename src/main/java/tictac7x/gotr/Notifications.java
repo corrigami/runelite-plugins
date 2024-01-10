@@ -98,4 +98,10 @@ public class Notifications {
     private boolean shouldNotifyAboutBarrier() {
         return client.getLocalPlayer().getWorldLocation().getY() <= 9482;
     }
+
+    public void notifyBeforeFirstRift(final int seconds) {
+        if (config.notifyBeforeFirstRift() != -1) {
+            notifier.notify(seconds + " seconds before creatures start attacking!");
+        }
+    }
 }

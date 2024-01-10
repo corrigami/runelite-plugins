@@ -37,6 +37,7 @@ import tictac7x.gotr.store.Energy;
 import tictac7x.gotr.store.Guardians;
 import tictac7x.gotr.store.Inventory;
 import tictac7x.gotr.store.Portal;
+import tictac7x.gotr.store.Creatures;
 import tictac7x.gotr.store.Teleporters;
 import tictac7x.gotr.widgets.EnergyWidget;
 import tictac7x.gotr.widgets.InactivePortalWidget;
@@ -100,6 +101,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 	private Energy energy;
 	private Barrier barrier;
 	private Notifications notifications;
+	private Creatures creatures;
 
 	private PortalOverlay portalOverlayOverlay;
 	private GuardiansOverlay guardiansOverlay;
@@ -124,6 +126,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		portal = new Portal(client, notifications);
 		energy = new Energy(configManager, config);
 		barrier = new Barrier(client, notifications, config);
+		creatures = new Creatures(client, notifications, config);
 
 		portalOverlayOverlay = new PortalOverlay(client, portal);
 		guardiansOverlay = new GuardiansOverlay(modelOutlineRenderer, config, guardians, inventory);
@@ -194,6 +197,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		energy.onChatMessage(message);
 		notifications.onChatMessage(message);
 		portal.onChatMessage(message);
+		creatures.onChatMessage(message);
 	}
 
 	@Subscribe
@@ -212,6 +216,7 @@ public class TicTac7xGotrImprovedPlugin extends Plugin {
 		portal.onGameTick();
 		guardians.onGameTick();
 		barrier.onGameTick();
+		creatures.onGameTick();
 	}
 
 	@Subscribe
