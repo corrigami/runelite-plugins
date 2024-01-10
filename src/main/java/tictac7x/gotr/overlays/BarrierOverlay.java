@@ -70,25 +70,20 @@ public class BarrierOverlay extends Overlay {
             pie.setFill(seconds > 0 ? Color.RED : Color.GREEN);
             pie.setBorder(seconds > 0 ? Color.RED : Color.GREEN, 1);
             pie.setProgress((double) Duration.between(Instant.now(), barrier.getBarrierReenterTimeLeft().get()).getSeconds() / ((double) (BARRIER_REENTER_GAMETICKS * GAMETICK_DURATION) / 1000) - 1);
-            pie.render(graphics);
+            try { pie.render(graphics); } catch (final Exception ignored) {}
         }
 
         if (config.showBarrierRemainingTime()) {
             if (seconds >= 0) {
                 final long milliseconds = Duration.between(Instant.now(), barrier.getBarrierReenterTimeLeft().get()).getNano() / 1_000_000 % 1000 / 100;
-
                 final String time = seconds + "." + milliseconds;
                 final Point location =  Perspective.getCanvasTextLocation(client, graphics, barrierGameObject.get().getLocalLocation(), time, 410);
 
-                try {
-                    OverlayUtil.renderTextLocation(graphics, location, time, Color.WHITE);
-                } catch (final Exception ignored) {}
+                try { OverlayUtil.renderTextLocation(graphics, location, time, Color.WHITE); } catch (final Exception ignored) {}
             }
 
             if (seconds < 0) {
-                try {
-                    modelOutlineRenderer.drawOutline(barrierGameObject.get(), 2, Color.green, 2);
-                } catch (final Exception ignored) {}
+                try { modelOutlineRenderer.drawOutline(barrierGameObject.get(), 2, Color.green, 2); } catch (final Exception ignored) {}
             }
         }
 

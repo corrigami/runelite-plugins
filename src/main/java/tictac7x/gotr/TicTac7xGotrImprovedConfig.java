@@ -222,41 +222,52 @@ public interface TicTac7xGotrImprovedConfig extends Config {
         return true;
     }
 
+        @Range(min = 0, max = 110)
+        @ConfigItem(
+            keyName = "notification_before_first_rift",
+            name = "Time until first rift",
+            description = "Notify before the first rift is opened",
+            position = 3,
+            section = notifications
+        ) default int notifyBeforeFirstRift() {
+        return 35;
+    }
+
         @ConfigItem(
             keyName = "notification_portal_opened",
             name = "Portal opened",
             description = "Notify about opened portal to huge guardian remains",
-            position = 3,
+            position = 4,
             section = notifications
         ) default boolean notifyPortalOpened() {
         return true;
     }
 
         @ConfigItem(
-            keyName = "barrier_passable",
+            keyName = "notification_barrier_passable",
             name = "Passable barrier",
             description = "Notify about barrier being passable",
-            position = 4,
+            position = 5,
             section = notifications
         ) default boolean notifyBarrierPassable() {
         return true;
     }
 
         @ConfigItem(
-            keyName = "before_barrier_passable",
+            keyName = "notification_before_barrier_passable",
             name = "Before passable barrier",
             description = "Notify about barrier being passable",
-            position = 5,
+            position = 6,
             section = notifications
         ) default boolean notifyBeforePassableBarrier() {
         return true;
     }
 
         @ConfigItem(
-            keyName = "notify_eye_robes",
+            keyName = "notification_eye_robes",
             name = "Unused eye robes",
             description = "Notify about unused eye robes when you are near altar with essence in inventory",
-            position = 6,
+            position = 7,
             section = notifications
         ) default boolean notifyUnusedEyeRobes() {
         return true;
