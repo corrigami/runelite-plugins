@@ -15,7 +15,7 @@ import java.util.Set;
 public class MotherlodeObjectsOverlay extends Overlay {
     private final MotherlodeConfig config;
     private final Motherlode motherlode;
-    private final MotherlodeInventory inventory;
+    private final Inventory inventory;
     private final MotherlodeSack motherlode_sack;
 
     private final int
@@ -96,11 +96,11 @@ public class MotherlodeObjectsOverlay extends Overlay {
             renderClickbox(graphics, ladder_up, config.getOreVeinsDepletedColor());
         }
 
-        if (crate != null && pay_dirt_needed == 0 && inventory.countPayDirt() > 0 && motherlode_sack.isFull() && motherlode.isDownStairs() && broken_struts.size() == 2) {
+        if (crate != null && pay_dirt_needed == 0 && inventory.getAmountOfPayDirtCurrentlyInInventory() > 0 && motherlode_sack.isFull() && motherlode.isDownStairs() && broken_struts.size() == 2) {
             renderClickbox(graphics, crate, config.getOreVeinsColor());
         }
 
-        if (hopper != null && inventory.countPayDirt() > 0) {
+        if (hopper != null && inventory.getAmountOfPayDirtCurrentlyInInventory() > 0) {
             if (pay_dirt_needed < 0) {
                 renderClickbox(graphics, hopper, config.getOreVeinsStoppingColor());
             } else if (pay_dirt_needed == 0) {

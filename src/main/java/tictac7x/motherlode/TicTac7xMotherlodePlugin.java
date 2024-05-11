@@ -48,7 +48,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	}
 
 	private Motherlode motherlode;
-	private MotherlodeInventory inventory;
+	private Inventory inventory;
 	private MotherlodeSack sack;
 	private MotherlodeVeins veins;
 	private MotherlodeSackWidget widget_sack;

@@ -22,7 +22,7 @@ public class MotherlodeSackWidget extends OverlayPanel {
     private final Motherlode motherlode;
     private final Client client;
     private final MotherlodeSack sack;
-    private final MotherlodeInventory inventory;
+    private final Inventory inventory;
     private final PanelComponent panel = new PanelComponent();
 
     @Nullable
@@ -66,7 +66,7 @@ public class MotherlodeSackWidget extends OverlayPanel {
     }
 
     private int getTotalPayDirtCount() {
-        return inventory.countPayDirt() + sack.countPayDirt();
+        return inventory.getAmountOfPayDirtCurrentlyInInventory() + sack.countPayDirt();
     }
 
     /**
@@ -76,8 +76,8 @@ public class MotherlodeSackWidget extends OverlayPanel {
      */
     private boolean isPayDirtTotalPerfect(final int pay_dirt_needed) {
         return (
-            this.getTotalPayDirtCount() == sack.getSize() && inventory.countPayDirt() != 0 ||
-            sack.countPayDirt() == sack.getSize() && inventory.countPayDirt() == inventory.getSize() ||
+            this.getTotalPayDirtCount() == sack.getSize() && inventory.getAmountOfPayDirtCurrentlyInInventory() != 0 ||
+            sack.countPayDirt() == sack.getSize() && inventory.getAmountOfPayDirtCurrentlyInInventory() == inventory.getSize() ||
             sack.countPayDirt() == sack.getSize() && pay_dirt_needed == 0
         );
     }
@@ -93,7 +93,7 @@ public class MotherlodeSackWidget extends OverlayPanel {
 
         // Panel background color.
         final Color color_background =
-            (this.isPayDirtTotalPerfect(pay_dirt_needed) || pay_dirt_needed == 0 && inventory.countPayDirt() > 0) ? Color.green :
+            (this.isPayDirtTotalPerfect(pay_dirt_needed) || pay_dirt_needed == 0 && inventory.getAmountOfPayDirtCurrentlyInInventory() > 0) ? Color.green :
             (sack.isFull() || pay_dirt_needed < 0) ? Color.red :
             (sack.shouldBeEmptied()) ? Color.orange :
             null;
@@ -121,7 +121,7 @@ public class MotherlodeSackWidget extends OverlayPanel {
         if (config.showSackNeeded()) {
             final Color color_needed = (color_background != null || pay_dirt_needed == 0) ? Color.white : Color.green;
             panel.getChildren().add(LineComponent.builder()
-                .left("Needed:").leftColor(color_background != null ? Color.white : Color.orange)
+                .left("Needed:").leftColor(Color.white)
                 .right(String.valueOf(pay_dirt_needed)).rightColor(color_needed)
                 .build()
             );

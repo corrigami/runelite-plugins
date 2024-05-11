@@ -14,7 +14,7 @@ import net.runelite.client.events.ConfigChanged;
 public class Motherlode {
     private final Client client;
     private final MotherlodeConfig config;
-    private final MotherlodeInventory inventory;
+    private final Inventory inventory;
     private final MotherlodeSack sack;
     private final MotherlodeVeins veins;
     private final MotherlodeRockfalls rockfalls;
@@ -34,13 +34,13 @@ public class Motherlode {
     public Motherlode(final Client client, final MotherlodeConfig config) {
         this.client = client;
         this.config = config;
-        this.inventory = new MotherlodeInventory(this);
+        this.inventory = new Inventory();
         this.sack = new MotherlodeSack(this, inventory, client);
         this.veins = new MotherlodeVeins(this);
         this.rockfalls = new MotherlodeRockfalls(this);
     }
 
-    public MotherlodeInventory getInventory() {
+    public Inventory getInventory() {
         return inventory;
     }
 
@@ -175,9 +175,9 @@ public class Motherlode {
     public void updatePayDirtNeeded() {
         final int sack_size = sack.getSize();
         final int sack_pay_dirt = sack.countPayDirt();
-        final int inventory_pay_dirt = inventory.countPayDirt();
-        final int inventory_items = inventory.countItems();
-        final int inventory_size = inventory.getSize();
+        final int inventory_pay_dirt = inventory.getAmountOfPayDirtCurrentlyInInventory();
+        final int inventory_items = inventory.getAmountOfItemsInInventory();
+        final int inventory_size = 28;
 
         // Sack is full, but pay-dirt can be deposited one more time.
         // Or user doesn't care about maximizing pay-dirt.
@@ -225,7 +225,7 @@ public class Motherlode {
     }
 
     public boolean needToDepositPayDirt() {
-        return pay_dirt_needed == 0 && inventory.countPayDirt() > 0;
+        return pay_dirt_needed == 0 && inventory.getAmountOfPayDirtCurrentlyInInventory() > 0;
     }
 
     public boolean isDownStairs() {

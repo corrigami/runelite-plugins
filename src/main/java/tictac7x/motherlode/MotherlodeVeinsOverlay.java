@@ -20,7 +20,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
     private final MotherlodeConfig config;
     private final Motherlode motherlode;
     private final MotherlodeVeins veins;
-    private final MotherlodeInventory inventory;
+    private final Inventory inventory;
     private final MotherlodeSack sack;
     private final Client client;
 
@@ -68,10 +68,10 @@ public class MotherlodeVeinsOverlay extends Overlay {
         if (player == null) return null;
 
         final int pay_dirt_needed = motherlode.getPayDirtNeeded();
-        final int inventory_pay_dirt = inventory.countPayDirt();
+        final int inventory_pay_dirt = inventory.getAmountOfPayDirtCurrentlyInInventory();
 
         // Inventory is full of pay-dirt.
-        if (pay_dirt_needed == 0 && inventory.countItems() == inventory.getSize()) return null;
+        if (pay_dirt_needed == 0 && inventory.getAmountOfItemsInInventory() == inventory.getSize()) return null;
 
         // Sack should be emptied first.
         if (sack.shouldBeEmptied()) return null;
@@ -85,7 +85,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
             if (vein.isDepleted()) {
                 if (motherlode.getPlayerSectors().contains(vein.sector) && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
                     // Can't be mined.
-                    if (pay_dirt_needed == 0 && inventory.countItems() != inventory.getSize() || pay_dirt_needed < 0) {
+                    if (pay_dirt_needed == 0 && inventory.getAmountOfItemsInInventory() != inventory.getSize() || pay_dirt_needed < 0) {
                         renderPie(graphics, ore_vein, config.getOreVeinsStoppingColor(), veins.getOreVeinProgress(ore_vein));
 
                     // Can be mined.
@@ -98,7 +98,7 @@ public class MotherlodeVeinsOverlay extends Overlay {
             } else {
                 if (motherlode.getPlayerSectors().contains(vein.sector) && player.getLocalLocation().distanceTo(ore_vein.getLocalLocation()) <= config.getDrawDistance()) {
                     // Can't be mined.
-                    if (pay_dirt_needed == 0 && inventory.countItems() != inventory.getSize() || pay_dirt_needed < 0) {
+                    if (pay_dirt_needed == 0 && inventory.getAmountOfItemsInInventory() != inventory.getSize() || pay_dirt_needed < 0) {
                         renderPie(graphics, ore_vein, config.getOreVeinsStoppingColor(), 1);
 
                     // Can be mined.

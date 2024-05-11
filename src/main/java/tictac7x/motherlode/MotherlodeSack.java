@@ -4,7 +4,7 @@ import net.runelite.api.Client;
 
 public class MotherlodeSack {
     private final Motherlode motherlode;
-    private final MotherlodeInventory inventory;
+    private final Inventory inventory;
     private final Client client;
 
     private final int VARBIT_SACK_UPGRADED = 5556;
@@ -18,7 +18,7 @@ public class MotherlodeSack {
     private boolean upgraded = false;
     private boolean should_be_emptied = false;
 
-    public MotherlodeSack(final Motherlode motherlode, final MotherlodeInventory inventory, final Client client) {
+    public MotherlodeSack(final Motherlode motherlode, final Inventory inventory, final Client client) {
         this.motherlode = motherlode;
         this.inventory = inventory;
         this.client = client;
@@ -36,7 +36,7 @@ public class MotherlodeSack {
 
         // Player put pay-dirt inside the hopper, add it to the sack pay-dirt even before it has been cleaned.
         if (hopper_pay_dirt == 0 && client.getLocalPlayer() != null && client.getLocalPlayer().getAnimation() == ANIMATION_HOPPER_DEPOSIT) {
-            hopper_pay_dirt += Math.max(inventory.countPayDirt(), inventory.countPayDirtOld());
+            hopper_pay_dirt += Math.max(inventory.getAmountOfPayDirtCurrentlyInInventory(), inventory.getAmountOfPayDirtPreviouslyInInventory());
             motherlode.updatePayDirtNeeded();
         }
     }
