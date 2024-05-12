@@ -1,44 +1,74 @@
 package tictac7x.motherlode;
 
+import net.runelite.api.WallObject;
+
+import java.awt.*;
+
 public class OreVein {
+    private final MotherlodeConfig config;
+
     public final int x;
     public final int y;
-    public final Sector sector;
-    private int game_ticks;
-    private boolean depleted;
+    private boolean isDepleted;
+    private boolean isMined = false;
+    private int gameTick = 0;
 
-    /**
-     * OreVein
-     * @param x - World location X.
-     * @param y - World location y.
-     * @param sector - Custom defined sector (different sectors for upstairs).
-     * @param depleted - Is ore vein depleted or not.
-     */
-    public OreVein(final int x, final int y, final Sector sector, final boolean depleted) {
+    private final int RESPAWN_TIME_GAMETICKS = 100;
+    private final int DESPAWN_TIME_UPPERFLOOR_GAMETICKS = 63;
+    private static final int[] ORE_VEINS_IDS = new int[]{ 26661, 26662, 26663, 26664};
+    private static final int[] DEPLETED_ORE_VEINS_IDS = new int[]{ 26665, 26666, 26667, 26668 };
+
+    public OreVein(final int x, final int y, final boolean isDepleted, final MotherlodeConfig config) {
         this.x = x;
         this.y = y;
-        this.sector = sector;
-        this.depleted = depleted;
-        this.game_ticks = 0;
+        this.isDepleted = isDepleted;
+        this.config = config;
+    }
+
+    public void setDepleted(final boolean isDepleted) {
+        if (this.isDepleted == isDepleted) return;
+
+        this.isDepleted = isDepleted;
+        this.gameTick = 0;
+        this.isMined = false;
+    }
+
+    public void setMined() {
+        if (isMined || isDepleted) return;
+
+        isMined = true;
+        gameTick = 0;
     }
 
     public void onGameTick() {
-        this.game_ticks++;
+        if (isMined || isDepleted) {
+            gameTick++;
+        }
     }
 
-    public int getGameTicks() {
-        return game_ticks;
+    public float getPieProgress() {
+        return isDepleted
+            ? Math.max(0 - (float) gameTick / RESPAWN_TIME_GAMETICKS, -1)
+            : Math.max(1 - (float) gameTick / DESPAWN_TIME_UPPERFLOOR_GAMETICKS, 0);
     }
 
-    public void resetGameTicks() {
-        game_ticks = 0;
+    public Color getPieColor() {
+        return isDepleted ? config.getOreVeinsDepletedColor() : config.getOreVeinsColor();
     }
 
-    public void setDepleted(final boolean depleted) {
-        this.depleted = depleted;
+    public static boolean isOreVein(final WallObject wallObject) {
+        for (final int oreVeinId : ORE_VEINS_IDS) {
+            if (wallObject.getId() == oreVeinId) return true;
+        }
+
+        return false;
     }
 
-    public boolean isDepleted() {
-        return depleted;
+    public static boolean isDepletedOreVein(final WallObject wallObject) {
+        for (final int depletedOreVeinId : DEPLETED_ORE_VEINS_IDS) {
+            if (wallObject.getId() == depletedOreVeinId) return true;
+        }
+
+        return false;
     }
 }
