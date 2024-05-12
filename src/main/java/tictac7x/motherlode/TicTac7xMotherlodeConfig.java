@@ -3,8 +3,8 @@ package tictac7x.motherlode;
 import net.runelite.client.config.*;
 import java.awt.Color;
 
-@ConfigGroup(MotherlodeConfig.group)
-public interface MotherlodeConfig extends Config {
+@ConfigGroup(TicTac7xMotherlodeConfig.group)
+public interface TicTac7xMotherlodeConfig extends Config {
 	String group = "tictac7x-motherlode";
 
 	@ConfigSection(

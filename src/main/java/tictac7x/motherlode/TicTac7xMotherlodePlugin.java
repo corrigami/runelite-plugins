@@ -22,27 +22,26 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	private Client client;
 
 	@Inject
-	private MotherlodeConfig config;
+	private TicTac7xMotherlodeConfig config;
 
 	@Inject
 	private OverlayManager overlayManager;
 
-	@Inject
 	private Player player;
-
-	@Inject
 	private Inventory inventory;
-
-	@Inject
 	private OreVeins oreVeins;
 
 	@Provides
-	MotherlodeConfig provideConfig(ConfigManager configManager) {
-		return configManager.getConfig(MotherlodeConfig.class);
+	TicTac7xMotherlodeConfig provideConfig(ConfigManager configManager) {
+		return configManager.getConfig(TicTac7xMotherlodeConfig.class);
 	}
 
 	@Override
 	protected void startUp() {
+		player = new Player(client);
+		inventory = new Inventory();
+		oreVeins = new OreVeins(config, player);
+
 		overlayManager.add(oreVeins);
 	}
 
@@ -87,6 +86,11 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 
 	@Subscribe
 	public void onGameTick(final GameTick event) {
+		if (!player.isInMotherlode()) return;
+
+		player.onGameTick();
 		oreVeins.onGameTick();
+
+		System.out.println(player.getSectors());
 	}
 }

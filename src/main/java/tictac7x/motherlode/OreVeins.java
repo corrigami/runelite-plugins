@@ -10,26 +10,25 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
-import javax.inject.Inject;
 import java.awt.*;
 import java.util.*;
 
 import static tictac7x.motherlode.Orientation.*;
 
 public class OreVeins extends Overlay {
-    @Inject
-    private Client client;
+    private final TicTac7xMotherlodeConfig config;
+    private final Player player;
 
-    @Inject
-    private MotherlodeConfig config;
+    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player) {
+        this.config = config;
+        this.player = player;
 
-    public Map<String, OreVein> oreVeins = new HashMap<>();
-    public Set<WallObject> oreVeinsWallObjects = new HashSet<>();
-
-    public OreVeins() {
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
+
+    public Map<String, OreVein> oreVeins = new HashMap<>();
+    public Set<WallObject> oreVeinsWallObjects = new HashSet<>();
 
     public void onWallObjectSpawned(final WallObjectSpawned event) {
         final WallObject wallObject = event.getWallObject();
@@ -114,7 +113,9 @@ public class OreVeins extends Overlay {
             final Optional<OreVein> oreVein = getOreVeinFromWallObject(wallObject);
             if (!oreVein.isPresent()) continue;
 
-            renderPie(graphics2D, wallObject, oreVein.get().getPieColor(), oreVein.get().getPieProgress());
+            if (player.getSectors().contains(oreVein.get().sector)) {
+                renderPie(graphics2D, wallObject, oreVein.get().getPieColor(), oreVein.get().getPieProgress());
+            }
         }
 
         return null;

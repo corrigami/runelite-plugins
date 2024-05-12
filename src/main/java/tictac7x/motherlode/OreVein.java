@@ -5,23 +5,25 @@ import net.runelite.api.WallObject;
 import java.awt.*;
 
 public class OreVein {
-    private final MotherlodeConfig config;
-
     public final int x;
     public final int y;
     private boolean isDepleted;
     private boolean isMined = false;
     private int gameTick = 0;
+    public final Sector sector;
 
+    private final TicTac7xMotherlodeConfig config;
     private final int RESPAWN_TIME_GAMETICKS = 100;
+    private final int DESPAWN_TIME_DOWNSTAIRS_GAMETICKS = 42;
     private final int DESPAWN_TIME_UPPERFLOOR_GAMETICKS = 63;
     private static final int[] ORE_VEINS_IDS = new int[]{ 26661, 26662, 26663, 26664};
     private static final int[] DEPLETED_ORE_VEINS_IDS = new int[]{ 26665, 26666, 26667, 26668 };
 
-    public OreVein(final int x, final int y, final boolean isDepleted, final MotherlodeConfig config) {
+    public OreVein(final int x, final int y, final boolean isDepleted, final TicTac7xMotherlodeConfig config) {
         this.x = x;
         this.y = y;
         this.isDepleted = isDepleted;
+        this.sector = Motherlode.getSectors(x, y, false).get(0);
         this.config = config;
     }
 
@@ -49,7 +51,7 @@ public class OreVein {
     public float getPieProgress() {
         return isDepleted
             ? Math.max(0 - (float) gameTick / RESPAWN_TIME_GAMETICKS, -1)
-            : Math.max(1 - (float) gameTick / DESPAWN_TIME_UPPERFLOOR_GAMETICKS, 0);
+            : Math.max(1 - (float) gameTick / (sector == Sector.DOWNSTAIRS ? DESPAWN_TIME_DOWNSTAIRS_GAMETICKS : DESPAWN_TIME_UPPERFLOOR_GAMETICKS), 0);
     }
 
     public Color getPieColor() {
