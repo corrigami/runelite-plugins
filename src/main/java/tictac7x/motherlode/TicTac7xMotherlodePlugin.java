@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
 import net.runelite.api.Client;
+import net.runelite.api.TileObject;
+import net.runelite.api.WallObject;
 import net.runelite.api.events.*;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.eventbus.Subscribe;
@@ -30,6 +32,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	private Player player;
 	private Inventory inventory;
 	private OreVeins oreVeins;
+	private Rockfalls rockfalls;
 
 	@Provides
 	TicTac7xMotherlodeConfig provideConfig(ConfigManager configManager) {
@@ -41,19 +44,23 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 		player = new Player(client);
 		inventory = new Inventory();
 		oreVeins = new OreVeins(config, player);
+		rockfalls = new Rockfalls(config, player);
 
 		overlayManager.add(oreVeins);
+		overlayManager.add(rockfalls);
 	}
 
 	@Override
 	protected void shutDown() {
 		overlayManager.remove(oreVeins);
+		overlayManager.remove(rockfalls);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		player.onGameStateChanged(event);
 		oreVeins.onGameStateChanged(event);
+		rockfalls.onGameStateChanged(event);
 	}
 
 	@Subscribe
@@ -85,12 +92,28 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	}
 
 	@Subscribe
+	public void onGameObjectSpawned(final GameObjectSpawned event) {
+		if (!player.isInMotherlode()) return;
+
+		rockfalls.onGameObjectSpawned(event);
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(final GameObjectDespawned event) {
+		if (!player.isInMotherlode()) return;
+
+		rockfalls.onGameObjectDespawned(event);
+	}
+
+	@Subscribe
 	public void onGameTick(final GameTick event) {
 		if (!player.isInMotherlode()) return;
 
 		player.onGameTick();
 		oreVeins.onGameTick();
+	}
 
-		System.out.println(player.getSectors());
+	public static String getWorldObjectKey(final TileObject tileObject) {
+		return tileObject.getWorldLocation().getX() + "_" + tileObject.getWorldLocation().getY();
 	}
 }

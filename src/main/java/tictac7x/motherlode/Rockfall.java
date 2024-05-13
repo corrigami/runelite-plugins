@@ -1,22 +1,45 @@
 package tictac7x.motherlode;
 
-/**
- * Rockfall that can be predefined if it needs to be shown in specific sector only.
- */
+import net.runelite.api.GameObject;
+
+import java.awt.*;
+import java.util.Collections;
+import java.util.List;
+
 public class Rockfall {
     public final int x;
     public final int y;
-    public final Sector[] sectors;
+    public final List<Sector> sectors;
 
-    /**
-     * Rockfall.
-     * @param x - World location x.
-     * @param y - World location y.
-     * @param sectors - Custom defined sector (different sectors for upstairs).
-     */
-    public Rockfall(final int x, final int y, final Sector ...sectors) {
+    public Rockfall(final int x, final int y) {
         this.x = x;
         this.y = y;
-        this.sectors = sectors;
+        this.sectors = Motherlode.getSectors(x, y, true);
+    }
+
+    public Color getTileColor(final TicTac7xMotherlodeConfig config) {
+        return config.getRockfallsColor();
+    }
+
+    public boolean isRendering(final TicTac7xMotherlodeConfig config, final Player player) {
+        if (config.upstairsOnly() && sectors.contains(Sector.DOWNSTAIRS)) {
+            return false;
+        }
+
+        if (Collections.disjoint(player.getSectors(), sectors)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isRockfall(final GameObject gameObject) {
+        switch (gameObject.getId()) {
+            case 26679:
+            case 26680:
+                return true;
+            default:
+                return false;
+        }
     }
 }

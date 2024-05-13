@@ -10,10 +10,12 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.*;
 
 import static tictac7x.motherlode.Orientation.*;
+import static tictac7x.motherlode.TicTac7xMotherlodePlugin.getWorldObjectKey;
 
 public class OreVeins extends Overlay {
     private final TicTac7xMotherlodeConfig config;
@@ -68,7 +70,7 @@ public class OreVeins extends Overlay {
     }
 
     private void updateOreVein(final WallObject wallObject, final boolean isDepleted) {
-        final String key = getOreVeinKey(wallObject);
+        final String key = getWorldObjectKey(wallObject);
 
         if (oreVeins.containsKey(key)) {
             oreVeins.get(key).setDepleted(isDepleted);
@@ -76,8 +78,7 @@ public class OreVeins extends Overlay {
             oreVeins.put(key, new OreVein(
                 wallObject.getWorldLocation().getX(),
                 wallObject.getWorldLocation().getY(),
-                isDepleted,
-                config
+                isDepleted
             ));
         }
     }
@@ -101,21 +102,18 @@ public class OreVeins extends Overlay {
         }
     }
 
-    private Optional<OreVein> getOreVeinFromWallObject(final WallObject wallObject) {
-        if (!oreVeins.containsKey(getOreVeinKey(wallObject))) return Optional.empty();
-
-        return Optional.of(oreVeins.get(getOreVeinKey(wallObject)));
+    @Nullable
+    private OreVein getOreVeinFromWallObject(final WallObject wallObject) {
+        return oreVeins.getOrDefault(getWorldObjectKey(wallObject), null);
     }
 
     @Override
     public Dimension render(final Graphics2D graphics2D) {
         for (final WallObject wallObject : oreVeinsWallObjects) {
-            final Optional<OreVein> oreVein = getOreVeinFromWallObject(wallObject);
-            if (!oreVein.isPresent()) continue;
+            final OreVein oreVein = getOreVeinFromWallObject(wallObject);
+            if (oreVein == null || !oreVein.isRendering(config, player)) continue;
 
-            if (player.getSectors().contains(oreVein.get().sector)) {
-                renderPie(graphics2D, wallObject, oreVein.get().getPieColor(), oreVein.get().getPieProgress());
-            }
+            renderPie(graphics2D, wallObject, oreVein.getPieColor(config), oreVein.getPieProgress());
         }
 
         return null;
@@ -130,10 +128,6 @@ public class OreVeins extends Overlay {
             progressPieComponent.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(color.getAlpha() - 20, 0)));
             progressPieComponent.render(graphics);
         } catch (final Exception ignored) {}
-    }
-
-    private String getOreVeinKey(final WallObject wallObject) {
-        return wallObject.getWorldLocation().getX() + "_" + wallObject.getWorldLocation().getY();
     }
 
     private boolean isMiningAnimation(final AnimationChanged event) {
