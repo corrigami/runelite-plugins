@@ -1,8 +1,13 @@
-package tictac7x.motherlode;
+package tictac7x.motherlode.oreveins;
 
 import net.runelite.api.WallObject;
+import tictac7x.motherlode.sectors.Sectors;
+import tictac7x.motherlode.Player;
+import tictac7x.motherlode.Sack;
+import tictac7x.motherlode.sectors.Sector;
+import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class OreVein {
     public final int x;
@@ -22,7 +27,7 @@ public class OreVein {
         this.x = x;
         this.y = y;
         this.isDepleted = isDepleted;
-        this.sector = Motherlode.getSectors(x, y, false).get(0);
+        this.sector = Sectors.getSectors(x, y, false).get(0);
     }
 
     public void setDepleted(final boolean isDepleted) {

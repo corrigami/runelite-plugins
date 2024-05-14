@@ -1,11 +1,13 @@
 package tictac7x.motherlode;
 
 import net.runelite.api.Client;
+import tictac7x.motherlode.sectors.Sector;
+import tictac7x.motherlode.sectors.Sectors;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static tictac7x.motherlode.Sector.DOWNSTAIRS;
+import static tictac7x.motherlode.sectors.Sector.DOWNSTAIRS;
 
 public class Player {
     private final Client client;
@@ -28,7 +30,7 @@ public class Player {
     }
 
     public void onGameTick() {
-        this.sectors = Motherlode.getSectors(client.getLocalPlayer().getWorldLocation().getX(), client.getLocalPlayer().getWorldLocation().getY(), true);
+        this.sectors = Sectors.getSectors(client.getLocalPlayer().getWorldLocation().getX(), client.getLocalPlayer().getWorldLocation().getY(), true);
     }
 
     public void checkIsInMotherlode() {

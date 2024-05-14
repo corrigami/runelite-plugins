@@ -1,10 +1,10 @@
-package tictac7x.motherlode;
+package tictac7x.motherlode.sectors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Motherlode {
+public class Sectors {
     public static List<Sector> getSectors(final int x, final int y, final boolean multi) {
         final List<Sector> sectors = new ArrayList<>();
         final int[] location = new int[]{x, y};

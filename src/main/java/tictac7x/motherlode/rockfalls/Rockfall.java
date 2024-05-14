@@ -1,8 +1,12 @@
-package tictac7x.motherlode;
+package tictac7x.motherlode.rockfalls;
 
 import net.runelite.api.GameObject;
+import tictac7x.motherlode.sectors.Sectors;
+import tictac7x.motherlode.Player;
+import tictac7x.motherlode.sectors.Sector;
+import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +18,7 @@ public class Rockfall {
     public Rockfall(final int x, final int y) {
         this.x = x;
         this.y = y;
-        this.sectors = Motherlode.getSectors(x, y, true);
+        this.sectors = Sectors.getSectors(x, y, true);
     }
 
     public Color getTileColor(final TicTac7xMotherlodeConfig config) {

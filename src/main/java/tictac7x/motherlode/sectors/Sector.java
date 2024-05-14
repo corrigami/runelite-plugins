@@ -1,4 +1,4 @@
-package tictac7x.motherlode;
+package tictac7x.motherlode.sectors;
 
 public enum Sector {
     DOWNSTAIRS,

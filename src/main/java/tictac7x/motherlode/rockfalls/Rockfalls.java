@@ -1,4 +1,4 @@
-package tictac7x.motherlode;
+package tictac7x.motherlode.rockfalls;
 
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
@@ -8,11 +8,19 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
+import tictac7x.motherlode.Player;
+import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
 import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.*;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static tictac7x.motherlode.TicTac7xMotherlodePlugin.getWorldObjectKey;
 

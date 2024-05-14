@@ -1,6 +1,9 @@
-package tictac7x.motherlode;
+package tictac7x.motherlode.oreveins;
 
-import net.runelite.api.*;
+import net.runelite.api.Actor;
+import net.runelite.api.AnimationID;
+import net.runelite.api.GameState;
+import net.runelite.api.WallObject;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.WallObjectDespawned;
@@ -9,24 +12,30 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
+import tictac7x.motherlode.Player;
+import tictac7x.motherlode.Sack;
+import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
 import javax.annotation.Nullable;
-import java.awt.*;
-import java.util.*;
 
-import static tictac7x.motherlode.Orientation.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import static tictac7x.motherlode.TicTac7xMotherlodePlugin.getWorldObjectKey;
 
 public class OreVeins extends Overlay {
     private final TicTac7xMotherlodeConfig config;
     private final Player player;
-    private final Inventory inventory;
     private final Sack sack;
 
-    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player, final Inventory inventory, final Sack sack) {
+    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player, final Sack sack) {
         this.config = config;
         this.player = player;
-        this.inventory = inventory;
         this.sack = sack;
 
         setPosition(OverlayPosition.DYNAMIC);
@@ -91,15 +100,19 @@ public class OreVeins extends Overlay {
         final Actor actor = event.getActor();
         final int x = actor.getWorldLocation().getX();
         final int y = actor.getWorldLocation().getY();
-        final Orientation orientation = getOrientationSimplified(actor.getOrientation());
+        final int orientation = actor.getOrientation();
 
         // Find correct ore vein based on actor orientation when mining.
         for (final OreVein oreVein : oreVeins.values()) {
             if (
-                orientation == SOUTH && x == oreVein.x && y == oreVein.y + 1 ||
-                orientation == WEST && x == oreVein.x + 1 && y == oreVein.y ||
-                orientation == EAST && x == oreVein.x - 1 && y == oreVein.y ||
-                orientation == NORTH && x == oreVein.x && y == oreVein.y - 1
+                // Facing south.
+                orientation == 0 && x == oreVein.x && y == oreVein.y + 1 ||
+                // Facing west.
+                orientation == 512 && x == oreVein.x + 1 && y == oreVein.y ||
+                // Facing east.
+                orientation == 1024 && x == oreVein.x - 1 && y == oreVein.y ||
+                // Facing north.
+                orientation == 1536 && x == oreVein.x && y == oreVein.y - 1
             ) {
                 oreVein.setMined();
             }
@@ -156,21 +169,5 @@ public class OreVeins extends Overlay {
             default:
                 return false;
         }
-    }
-
-    private Orientation getOrientationSimplified(final int orientation) {
-        if (orientation >= 0 && orientation < 256) {
-            return SOUTH;
-        }
-
-        if (orientation >= 256 && orientation < 768) {
-            return WEST;
-        }
-
-        if (orientation >= 768 && orientation < 1280) {
-            return NORTH;
-        }
-
-        return EAST;
     }
 }

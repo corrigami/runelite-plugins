@@ -12,6 +12,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import tictac7x.motherlode.oreveins.OreVeins;
+import tictac7x.motherlode.rockfalls.Rockfalls;
 
 @Slf4j
 @PluginDescriptor(
@@ -46,7 +48,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 		player = new Player(client);
 		inventory = new Inventory();
 		sack = new Sack(client, config, inventory);
-		oreVeins = new OreVeins(config, player, inventory, sack);
+		oreVeins = new OreVeins(config, player, sack);
 		rockfalls = new Rockfalls(config, player);
 
 		overlayManager.add(oreVeins);
@@ -71,21 +73,18 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
 		if (!player.isInMotherlode()) return;
-
 		inventory.onItemContainerChanged(event);
 	}
 
 	@Subscribe
 	public void onWallObjectSpawned(final WallObjectSpawned event) {
 		if (!player.isInMotherlode()) return;
-
 		oreVeins.onWallObjectSpawned(event);
 	}
 
 	@Subscribe
 	public void onWallObjectDespawned(final WallObjectDespawned event) {
 		if (!player.isInMotherlode()) return;
-
 		oreVeins.onWallObjectDespawned(event);
 	}
 
@@ -94,19 +93,18 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 		if (!player.isInMotherlode()) return;
 
 		oreVeins.onAnimationChanged(event);
+		sack.onAnimationChanged(event);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
 		if (!player.isInMotherlode()) return;
-
 		rockfalls.onGameObjectSpawned(event);
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(final GameObjectDespawned event) {
 		if (!player.isInMotherlode()) return;
-
 		rockfalls.onGameObjectDespawned(event);
 	}
 
@@ -122,15 +120,19 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event) {
 		if (!player.isInMotherlode()) return;
-
 		sack.onConfigChanged(event);
 	}
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
 		if (!player.isInMotherlode()) return;
-
 		sack.onWidgetLoaded(event);
+	}
+
+	@Subscribe
+	public void onVarbitChanged(final VarbitChanged event) {
+		if (!player.isInMotherlode()) return;
+		sack.onVarbitChanged(event);
 	}
 
 	public static String getWorldObjectKey(final TileObject tileObject) {

@@ -7,7 +7,6 @@ import net.runelite.api.events.ItemContainerChanged;
 
 public class Inventory {
     private int payDirtCurrentlyInInventory = 0;
-    private int payDirtPreviouslyInInventory = 0;
     private int otherItemsInInventory = 0;
 
     public void onItemContainerChanged(final ItemContainerChanged event) {
@@ -23,28 +22,15 @@ public class Inventory {
             payDirtCurrentlyInInventory += item.getId() == ItemID.PAYDIRT ? 1 : 0;
         }
 
-        this.payDirtPreviouslyInInventory = this.payDirtCurrentlyInInventory;
         this.payDirtCurrentlyInInventory = payDirtCurrentlyInInventory;
         this.otherItemsInInventory = otherItemsInInventory;
-    }
-
-    public int getAmountOfPayDirtPreviouslyInInventory() {
-        return payDirtPreviouslyInInventory;
     }
 
     public int getAmountOfPayDirtCurrentlyInInventory() {
         return payDirtCurrentlyInInventory;
     }
 
-    public int getAmountOfOtherItemsInInventory() {
-        return otherItemsInInventory;
-    }
-
     public int getMaximumAmountOfPaydirtThatCanBeHold() {
         return 28 - otherItemsInInventory;
-    }
-
-    public boolean isFull() {
-        return otherItemsInInventory + payDirtCurrentlyInInventory == 28;
     }
 }
