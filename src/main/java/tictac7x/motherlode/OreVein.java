@@ -52,8 +52,11 @@ public class OreVein {
             : Math.max(1 - (float) gameTick / (sector == Sector.DOWNSTAIRS ? DESPAWN_TIME_DOWNSTAIRS_GAMETICKS : DESPAWN_TIME_UPPERFLOOR_GAMETICKS), 0);
     }
 
-    public Color getPieColor(final TicTac7xMotherlodeConfig config) {
-        return isDepleted ? config.getOreVeinsDepletedColor() : config.getOreVeinsColor();
+    public Color getPieColor(final TicTac7xMotherlodeConfig config, final Sack sack) {
+        return
+            sack.isAdditionalPaydirtNotNeeded() ? config.getOreVeinsStoppingColor() :
+            isDepleted ? config.getOreVeinsDepletedColor() :
+            config.getOreVeinsColor();
     }
 
     public boolean isRendering(final TicTac7xMotherlodeConfig config, final Player player) {

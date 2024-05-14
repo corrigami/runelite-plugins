@@ -20,10 +20,14 @@ import static tictac7x.motherlode.TicTac7xMotherlodePlugin.getWorldObjectKey;
 public class OreVeins extends Overlay {
     private final TicTac7xMotherlodeConfig config;
     private final Player player;
+    private final Inventory inventory;
+    private final Sack sack;
 
-    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player) {
+    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player, final Inventory inventory, final Sack sack) {
         this.config = config;
         this.player = player;
+        this.inventory = inventory;
+        this.sack = sack;
 
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
@@ -113,7 +117,7 @@ public class OreVeins extends Overlay {
             final OreVein oreVein = getOreVeinFromWallObject(wallObject);
             if (oreVein == null || !oreVein.isRendering(config, player)) continue;
 
-            renderPie(graphics2D, wallObject, oreVein.getPieColor(config), oreVein.getPieProgress());
+            renderPie(graphics2D, wallObject, oreVein.getPieColor(config, sack), oreVein.getPieProgress());
         }
 
         return null;
