@@ -27,13 +27,18 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	private Client client;
 
 	@Inject
+	private ConfigManager configManager;
+
+	@Inject
 	private TicTac7xMotherlodeConfig config;
 
 	@Inject
 	private OverlayManager overlayManager;
 
 	private Player player;
+	private Bank bank;
 	private Inventory inventory;
+	private Hopper hopper;
 	private OreVeins oreVeins;
 	private Rockfalls rockfalls;
 	private Sack sack;
@@ -46,8 +51,10 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Override
 	protected void startUp() {
 		player = new Player(client);
+		bank = new Bank(configManager, config);
 		inventory = new Inventory();
-		sack = new Sack(client, config, inventory);
+		hopper = new Hopper(client, inventory);
+		sack = new Sack(client, config, bank, inventory, hopper);
 		oreVeins = new OreVeins(config, player, sack);
 		rockfalls = new Rockfalls(config, player);
 
@@ -74,6 +81,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	public void onItemContainerChanged(final ItemContainerChanged event) {
 		if (!player.isInMotherlode()) return;
 		inventory.onItemContainerChanged(event);
+		bank.onItemContainerChanged(event);
 	}
 
 	@Subscribe
@@ -91,9 +99,8 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Subscribe
 	public void onAnimationChanged(final AnimationChanged event) {
 		if (!player.isInMotherlode()) return;
-
 		oreVeins.onAnimationChanged(event);
-		sack.onAnimationChanged(event);
+		hopper.onAnimationChanged(event);
 	}
 
 	@Subscribe
@@ -132,7 +139,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Subscribe
 	public void onVarbitChanged(final VarbitChanged event) {
 		if (!player.isInMotherlode()) return;
-		sack.onVarbitChanged(event);
+		hopper.onVarbitChanged(event);
 	}
 
 	public static String getWorldObjectKey(final TileObject tileObject) {

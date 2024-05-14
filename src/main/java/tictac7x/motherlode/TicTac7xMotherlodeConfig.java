@@ -7,6 +7,14 @@ import java.awt.Color;
 public interface TicTac7xMotherlodeConfig extends Config {
 	String group = "tictac7x-motherlode";
 	String sack_custom = "sack_custom";
+	String bank_golden_nuggets = "bank_golden_nuggets";
+
+	@ConfigItem(
+		keyName = bank_golden_nuggets,
+		name = bank_golden_nuggets,
+		description = bank_golden_nuggets,
+		hidden = true
+	) default int getBankGoldenNuggets() { return 0; }
 
 	@ConfigSection(
 		name = "General",
