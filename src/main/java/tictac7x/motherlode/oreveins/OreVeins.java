@@ -12,12 +12,11 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
+import tictac7x.motherlode.Motherlode;
 import tictac7x.motherlode.Player;
-import tictac7x.motherlode.Sack;
 import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
 import javax.annotation.Nullable;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -31,12 +30,12 @@ import static tictac7x.motherlode.TicTac7xMotherlodePlugin.getWorldObjectKey;
 public class OreVeins extends Overlay {
     private final TicTac7xMotherlodeConfig config;
     private final Player player;
-    private final Sack sack;
+    private final Motherlode motherlode;
 
-    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player, final Sack sack) {
+    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player, final Motherlode motherlode) {
         this.config = config;
         this.player = player;
-        this.sack = sack;
+        this.motherlode = motherlode;
 
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
@@ -130,7 +129,7 @@ public class OreVeins extends Overlay {
             final OreVein oreVein = getOreVeinFromWallObject(wallObject);
             if (oreVein == null || !oreVein.isRendering(config, player)) continue;
 
-            renderPie(graphics2D, wallObject, oreVein.getPieColor(config, sack), oreVein.getPieProgress());
+            renderPie(graphics2D, wallObject, oreVein.getPieColor(config, motherlode), oreVein.getPieProgress());
         }
 
         return null;

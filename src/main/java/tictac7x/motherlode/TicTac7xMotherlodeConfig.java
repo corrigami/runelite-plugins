@@ -8,6 +8,7 @@ public interface TicTac7xMotherlodeConfig extends Config {
 	String group = "tictac7x-motherlode";
 	String sack_custom = "sack_custom";
 	String bank_golden_nuggets = "bank_golden_nuggets";
+	String version = "version";
 
 	@ConfigItem(
 		keyName = bank_golden_nuggets,
@@ -16,25 +17,40 @@ public interface TicTac7xMotherlodeConfig extends Config {
 		hidden = true
 	) default int getBankGoldenNuggets() { return 0; }
 
+	@ConfigItem(
+		keyName = version,
+		name = version,
+		description = version,
+		hidden = true
+	) default String getVersion() { return "0"; }
+
 	@ConfigSection(
 		name = "General",
 		description = "General options to improve overall experience.",
 		position = 1
 	) String general = "general";
 
-	@ConfigItem(
-		keyName = "upstairs_only",
-		name = "Only upstairs veins and rockfalls",
-		description = "Highlight only upstairs ore veins and rockfalls.",
-		position = 1,
-		section = general
-	) default boolean upstairsOnly() { return false; }
+		@ConfigItem(
+			keyName = "upstairs_only",
+			name = "Only upstairs veins and rockfalls",
+			description = "Highlight only upstairs ore veins and rockfalls.",
+			position = 1,
+			section = general
+		) default boolean upstairsOnly() { return false; }
 
-	@ConfigSection(
-		name = "Ore veins and rockfalls",
-		description = "Highlight ore veins and rockfalls.",
-		position = 2
-	) String ore_veins_and_rockfalls = "ore_veins_and_rockfalls";
+		@ConfigItem(
+			keyName = "notify_to_stop_mining",
+			name = "Only upstairs veins and rockfalls",
+			description = "Highlight only upstairs ore veins and rockfalls.",
+			position = 2,
+			section = general
+		) default boolean notifyToStopMining() { return true; }
+
+		@ConfigSection(
+			name = "Notify to stop mining",
+			description = "Notify to stop mining if the sack will be too full.",
+			position = 2
+		) String ore_veins_and_rockfalls = "ore_veins_and_rockfalls";
 
 		@Alpha
 		@ConfigItem(
@@ -92,7 +108,7 @@ public interface TicTac7xMotherlodeConfig extends Config {
 			description = "Show total number of pay-dirt in sack and hopper.",
 			position = 2,
 			section = custom_sack_widget
-		) default boolean showSackPaydirt() { return true; }
+		) default boolean showSackAndHopperPaydirt() { return true; }
 
 		@ConfigItem(
 			keyName = "sack_paydirt_inventory",
@@ -126,5 +142,19 @@ public interface TicTac7xMotherlodeConfig extends Config {
 			section = custom_sack_widget
 		) default boolean showSackNeeded() { return true; }
 
+		@ConfigItem(
+			keyName = "show_golden_nuggets_total",
+			name = "Total golden nuggets",
+			description = "Show the total number of golden nuggets that you have.",
+			position = 7,
+			section = custom_sack_widget
+		) default boolean showGoldenNuggetsTotal() { return true; }
 
+	@ConfigItem(
+			keyName = "show_golden_nuggets_session",
+			name = "Session golden nuggets",
+			description = "Show the total number of golden nuggets you have found during this session.",
+			position = 8,
+			section = custom_sack_widget
+	) default boolean showGoldenNuggetsSession() { return false; }
 }

@@ -22,7 +22,7 @@ public class Hopper {
 
     public void onAnimationChanged(final AnimationChanged event) {
         if (event.getActor() == client.getLocalPlayer() && event.getActor().getAnimation() == AnimationID.LOOKING_INTO) {
-            paydirt = inventory.getAmountOfPayDirtCurrentlyInInventory();
+            paydirt = inventory.getPaydirt();
         }
     }
 

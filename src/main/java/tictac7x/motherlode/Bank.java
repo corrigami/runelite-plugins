@@ -22,7 +22,19 @@ public class Bank {
     public void onItemContainerChanged(final ItemContainerChanged event) {
         if (event.getContainerId() != InventoryID.BANK.getId()) return;
 
-        final Item goldenNuggets = event.getItemContainer().getItem(ItemID.GOLDEN_NUGGET);
-        configManager.setConfiguration(TicTac7xMotherlodeConfig.group, TicTac7xMotherlodeConfig.bank_golden_nuggets, goldenNuggets != null ? goldenNuggets.getQuantity() : 0);
+        for (final Item item : event.getItemContainer().getItems()) {
+            if (item.getId() == ItemID.GOLDEN_NUGGET) {
+                setGoldenNuggets(item.getQuantity());
+                return;
+            }
+        }
+    }
+
+    public void depositGoldenNuggets(final int quantity) {
+        setGoldenNuggets(config.getBankGoldenNuggets() + quantity);
+    }
+
+    private void setGoldenNuggets(final int quantity) {
+        configManager.setConfiguration(TicTac7xMotherlodeConfig.group, TicTac7xMotherlodeConfig.bank_golden_nuggets, quantity);
     }
 }

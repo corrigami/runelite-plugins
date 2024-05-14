@@ -1,9 +1,9 @@
 package tictac7x.motherlode.oreveins;
 
 import net.runelite.api.WallObject;
+import tictac7x.motherlode.Motherlode;
 import tictac7x.motherlode.sectors.Sectors;
 import tictac7x.motherlode.Player;
-import tictac7x.motherlode.Sack;
 import tictac7x.motherlode.sectors.Sector;
 import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
@@ -57,9 +57,9 @@ public class OreVein {
             : Math.max(1 - (float) gameTick / (sector == Sector.DOWNSTAIRS ? DESPAWN_TIME_DOWNSTAIRS_GAMETICKS : DESPAWN_TIME_UPPERFLOOR_GAMETICKS), 0);
     }
 
-    public Color getPieColor(final TicTac7xMotherlodeConfig config, final Sack sack) {
+    public Color getPieColor(final TicTac7xMotherlodeConfig config, final Motherlode motherlode) {
         return
-            sack.isAdditionalPaydirtNotNeeded() ? config.getOreVeinsStoppingColor() :
+                motherlode.shouldStopMining() ? config.getOreVeinsStoppingColor() :
             isDepleted ? config.getOreVeinsDepletedColor() :
             config.getOreVeinsColor();
     }

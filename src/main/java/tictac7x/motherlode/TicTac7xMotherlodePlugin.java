@@ -1,19 +1,36 @@
 package tictac7x.motherlode;
 
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.TileObject;
-import net.runelite.api.events.*;
+import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WallObjectDespawned;
+import net.runelite.api.events.WallObjectSpawned;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.client.Notifier;
+import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import tictac7x.motherlode.oreveins.OreVeins;
 import tictac7x.motherlode.rockfalls.Rockfalls;
+
+import javax.inject.Inject;
 
 @Slf4j
 @PluginDescriptor(
@@ -23,8 +40,19 @@ import tictac7x.motherlode.rockfalls.Rockfalls;
 	conflicts = "Motherlode Mine"
 )
 public class TicTac7xMotherlodePlugin extends Plugin {
+	private final String pluginVersion = "v0.4";
+	private final String pluginMessage = "" +
+		"<colHIGHLIGHT>Motherlode Mine Improved " + pluginVersion + ":<br>" +
+		"<colHIGHLIGHT>* Ore veins show depletion and respawn timers.<br>" +
+		"<colHIGHLIGHT>* Notification when you should stop mining.<br>" +
+		"<colHIGHLIGHT>* Number of golden nuggets on the widget."
+	;
+
 	@Inject
 	private Client client;
+
+	@Inject
+	private ClientThread clientThread;
 
 	@Inject
 	private ConfigManager configManager;
@@ -35,6 +63,12 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Inject
+	private Notifier notifier;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
+
 	private Player player;
 	private Bank bank;
 	private Inventory inventory;
@@ -42,6 +76,8 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	private OreVeins oreVeins;
 	private Rockfalls rockfalls;
 	private Sack sack;
+	private Motherlode motherlode;
+	private Widget widget;
 
 	@Provides
 	TicTac7xMotherlodeConfig provideConfig(ConfigManager configManager) {
@@ -54,27 +90,30 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 		bank = new Bank(configManager, config);
 		inventory = new Inventory();
 		hopper = new Hopper(client, inventory);
-		sack = new Sack(client, config, bank, inventory, hopper);
-		oreVeins = new OreVeins(config, player, sack);
+		sack = new Sack(client);
+		motherlode = new Motherlode(client, clientThread, notifier, config, bank, inventory, sack, hopper);
+		widget = new Widget(client, config, motherlode);
+		oreVeins = new OreVeins(config, player, motherlode);
 		rockfalls = new Rockfalls(config, player);
 
 		overlayManager.add(oreVeins);
 		overlayManager.add(rockfalls);
-		overlayManager.add(sack);
+		overlayManager.add(widget);
 	}
 
 	@Override
 	protected void shutDown() {
-		sack.shutDown();
+		widget.shutDown();
 		overlayManager.remove(oreVeins);
 		overlayManager.remove(rockfalls);
-		overlayManager.remove(sack);
+		overlayManager.remove(widget);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		oreVeins.onGameStateChanged(event);
 		rockfalls.onGameStateChanged(event);
+		sendMessageAboutPluginVersion(event);
 	}
 
 	@Subscribe
@@ -82,6 +121,13 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 		if (!player.isInMotherlode()) return;
 		inventory.onItemContainerChanged(event);
 		bank.onItemContainerChanged(event);
+		motherlode.onItemContainerChanged(event);
+	}
+
+	@Subscribe
+	public void onChatMessage(final ChatMessage event) {
+		if (!player.isInMotherlode()) return;
+		motherlode.onChatMessage(event);
 	}
 
 	@Subscribe
@@ -127,19 +173,31 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event) {
 		if (!player.isInMotherlode()) return;
-		sack.onConfigChanged(event);
+		widget.onConfigChanged(event);
 	}
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
 		if (!player.isInMotherlode()) return;
-		sack.onWidgetLoaded(event);
+		widget.onWidgetLoaded(event);
 	}
 
 	@Subscribe
 	public void onVarbitChanged(final VarbitChanged event) {
 		if (!player.isInMotherlode()) return;
 		hopper.onVarbitChanged(event);
+		motherlode.onVarbitChanged(event);
+	}
+
+	private void sendMessageAboutPluginVersion(final GameStateChanged event) {
+		if (event.getGameState() == GameState.LOGGED_IN && !config.getVersion().equals(pluginVersion)) {
+			configManager.setConfiguration(TicTac7xMotherlodeConfig.group, TicTac7xMotherlodeConfig.version, pluginVersion);
+			chatMessageManager.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(pluginMessage)
+				.build()
+			);
+		}
 	}
 
 	public static String getWorldObjectKey(final TileObject tileObject) {

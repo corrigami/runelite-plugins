@@ -6,31 +6,31 @@ import net.runelite.api.ItemID;
 import net.runelite.api.events.ItemContainerChanged;
 
 public class Inventory {
-    private int payDirtCurrentlyInInventory = 0;
-    private int otherItemsInInventory = 0;
+    private int paydirt = 0;
+    private int otherItems = 0;
 
     public void onItemContainerChanged(final ItemContainerChanged event) {
         if (event.getContainerId() != InventoryID.INVENTORY.getId()) return;
 
-        int payDirtCurrentlyInInventory = 0;
-        int otherItemsInInventory = 0;
+        int paydirt = 0;
+        int otherItems = 0;
 
         for (final Item item : event.getItemContainer().getItems()) {
-            if (item.getId() < 0) continue;
-
-            otherItemsInInventory += item.getId() == ItemID.PAYDIRT ? 0 : 1;
-            payDirtCurrentlyInInventory += item.getId() == ItemID.PAYDIRT ? 1 : 0;
+            if (item.getId() >= 0) {
+                otherItems += item.getId() == ItemID.PAYDIRT ? 0 : 1;
+                paydirt += item.getId() == ItemID.PAYDIRT ? 1 : 0;
+            }
         }
 
-        this.payDirtCurrentlyInInventory = payDirtCurrentlyInInventory;
-        this.otherItemsInInventory = otherItemsInInventory;
+        this.paydirt = paydirt;
+        this.otherItems = otherItems;
     }
 
-    public int getAmountOfPayDirtCurrentlyInInventory() {
-        return payDirtCurrentlyInInventory;
+    public int getPaydirt() {
+        return paydirt;
     }
 
-    public int getMaximumAmountOfPaydirtThatCanBeHold() {
-        return 28 - otherItemsInInventory;
+    public int getMaximumAvailablePayDirt() {
+        return 28 - otherItems;
     }
 }
