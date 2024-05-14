@@ -109,20 +109,24 @@ public class Widget extends OverlayPanel {
             panelComponent.getChildren().add(LineComponent.builder().left("Sack:").right(paydirt).build());
         }
 
-        panelComponent.getChildren().add(LineComponent.builder()
-            .left("Deposits:")
-            .right(motherlode.getDepositsLeft() + "")
-            .build()
-        );
+        if (config.showSackDeposits()) {
+            panelComponent.getChildren().add(LineComponent.builder()
+                .left("Deposits:")
+                .right(motherlode.getDepositsLeft() + "")
+                .build()
+            );
+        }
 
-        panelComponent.getChildren().add(LineComponent.builder()
-            .left("Needed:")
-            .right(motherlode.getNeededPaydirt() + "").rightColor(
-                (motherlode.getSpaceLeftToDeposit() == 0 || motherlode.getNeededPaydirt() == 0) ? Color.WHITE :
-                motherlode.getNeededPaydirt() < 0 ? Color.RED :
-                Color.GREEN )
-            .build()
-        );
+        if (config.showSackNeeded()) {
+            panelComponent.getChildren().add(LineComponent.builder()
+                .left("Needed:")
+                .right(motherlode.getNeededPaydirt() + "").rightColor(
+                    (motherlode.getSpaceLeftToDeposit() == 0 || motherlode.getNeededPaydirt() == 0) ? Color.WHITE :
+                    motherlode.getNeededPaydirt() < 0 ? Color.RED :
+                    Color.GREEN )
+                .build()
+            );
+        }
 
         return super.render(graphics2D);
     }

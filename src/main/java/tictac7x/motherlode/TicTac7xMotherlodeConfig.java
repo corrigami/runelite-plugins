@@ -103,10 +103,26 @@ public interface TicTac7xMotherlodeConfig extends Config {
 		) default boolean showCustomSackWidget() { return true; }
 
 		@ConfigItem(
+			keyName = "show_golden_nuggets_total",
+			name = "Total golden nuggets",
+			description = "Show the total number of golden nuggets that you have.",
+			position = 2,
+			section = custom_sack_widget
+		) default boolean showGoldenNuggetsTotal() { return true; }
+
+		@ConfigItem(
+			keyName = "show_golden_nuggets_session",
+			name = "Session golden nuggets",
+			description = "Show the total number of golden nuggets you have found during this session.",
+			position = 3,
+			section = custom_sack_widget
+		) default boolean showGoldenNuggetsSession() { return false; }
+
+		@ConfigItem(
 			keyName = "sack_paydirt",
 			name = "Sack pay-dirt",
 			description = "Show total number of pay-dirt in sack and hopper.",
-			position = 2,
+			position = 4,
 			section = custom_sack_widget
 		) default boolean showSackAndHopperPaydirt() { return true; }
 
@@ -114,7 +130,7 @@ public interface TicTac7xMotherlodeConfig extends Config {
 			keyName = "sack_paydirt_inventory",
 			name = "Pay-dirt from inventory",
 			description = "Show how many pay dirt will be added to the sack.",
-			position = 3,
+			position = 5,
 			section = custom_sack_widget
 		) default boolean showSackPaydirtFromInventory() { return false; }
 
@@ -122,7 +138,7 @@ public interface TicTac7xMotherlodeConfig extends Config {
 			keyName = "sack_size",
 			name = "Sack total size",
 			description = "Show total size of the sack.",
-			position = 4,
+			position = 6,
 			section = custom_sack_widget
 		) default boolean showSackSize() { return true; }
 
@@ -130,7 +146,7 @@ public interface TicTac7xMotherlodeConfig extends Config {
 			keyName = "sack_deposits",
 			name = "Deposits left",
 			description = "Show number of inventories you can store before sack gets full.",
-			position = 5,
+			position = 7,
 			section = custom_sack_widget
 		) default boolean showSackDeposits() { return true; }
 
@@ -138,23 +154,9 @@ public interface TicTac7xMotherlodeConfig extends Config {
 			keyName = "sack_needed",
 			name = "Needed pay-dirt",
 			description = "Show number of pay-dirt needed to mine before you should deposit the pay-dirt.",
-			position = 6,
+			position = 8,
 			section = custom_sack_widget
 		) default boolean showSackNeeded() { return true; }
 
-		@ConfigItem(
-			keyName = "show_golden_nuggets_total",
-			name = "Total golden nuggets",
-			description = "Show the total number of golden nuggets that you have.",
-			position = 7,
-			section = custom_sack_widget
-		) default boolean showGoldenNuggetsTotal() { return true; }
 
-	@ConfigItem(
-			keyName = "show_golden_nuggets_session",
-			name = "Session golden nuggets",
-			description = "Show the total number of golden nuggets you have found during this session.",
-			position = 8,
-			section = custom_sack_widget
-	) default boolean showGoldenNuggetsSession() { return false; }
 }
