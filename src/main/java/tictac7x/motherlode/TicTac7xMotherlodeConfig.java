@@ -40,8 +40,8 @@ public interface TicTac7xMotherlodeConfig extends Config {
 
 		@ConfigItem(
 			keyName = "notify_to_stop_mining",
-			name = "Only upstairs veins and rockfalls",
-			description = "Highlight only upstairs ore veins and rockfalls.",
+			name = "Notify to stop mining",
+			description = "Notifies user to stop mining when sack would become full with already owned paydirt.",
 			position = 2,
 			section = general
 		) default boolean notifyToStopMining() { return true; }
