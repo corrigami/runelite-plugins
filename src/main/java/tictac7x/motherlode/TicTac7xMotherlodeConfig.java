@@ -47,8 +47,8 @@ public interface TicTac7xMotherlodeConfig extends Config {
 		) default boolean notifyToStopMining() { return true; }
 
 		@ConfigSection(
-			name = "Notify to stop mining",
-			description = "Notify to stop mining if the sack will be too full.",
+			name = "Ore veins and rockfalls",
+			description = "Highlight ore veins and rockfalls based on their states.",
 			position = 2
 		) String ore_veins_and_rockfalls = "ore_veins_and_rockfalls";
 
