@@ -137,12 +137,18 @@ public class OreVeins extends Overlay {
 
     private void renderPie(final Graphics2D graphics, final WallObject object, final Color color, final float progress) {
         try {
-            final ProgressPieComponent progressPieComponent = new ProgressPieComponent();
-            progressPieComponent.setPosition(object.getCanvasLocation(160));
-            progressPieComponent.setProgress(progress);
-            progressPieComponent.setBorderColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 255));
-            progressPieComponent.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(color.getAlpha() - 20, 0)));
-            progressPieComponent.render(graphics);
+            final ProgressPieComponent progressPieComponentBackground = new ProgressPieComponent();
+            progressPieComponentBackground.setPosition(object.getCanvasLocation(160));
+            progressPieComponentBackground.setProgress(1);
+            progressPieComponentBackground.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(color.getAlpha() - 100, 0)));
+            progressPieComponentBackground.render(graphics);
+
+            final ProgressPieComponent progressPieComponentTimer = new ProgressPieComponent();
+            progressPieComponentTimer.setPosition(object.getCanvasLocation(160));
+            progressPieComponentTimer.setProgress(progress);
+            progressPieComponentTimer.setBorderColor(color);
+            progressPieComponentTimer.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(color.getAlpha() - 20, 0)));
+            progressPieComponentTimer.render(graphics);
         } catch (final Exception ignored) {}
     }
 
