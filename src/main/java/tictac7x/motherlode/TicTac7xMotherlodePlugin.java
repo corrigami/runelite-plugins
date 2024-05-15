@@ -37,7 +37,7 @@ import javax.inject.Inject;
 	name = "Motherlode Mine Improved",
 	description = "Better indicators for ore veins",
 	tags = { "motherlode", "prospector", "golden", "nugget" },
-	conflicts = "Motherlode Mine"
+	conflicts = {"Motherlode Mine", "MLM Mining Markers"}
 )
 public class TicTac7xMotherlodePlugin extends Plugin {
 	private final String pluginVersion = "v0.4";
