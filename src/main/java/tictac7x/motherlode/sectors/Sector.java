@@ -1,8 +1,5 @@
-package tictac7x.motherlode;
+package tictac7x.motherlode.sectors;
 
-/**
- * Custom sectors for motherlode, upstairs has specific ones.
- */
 public enum Sector {
     DOWNSTAIRS,
     UPSTAIRS_W,

@@ -1,166 +1,206 @@
 package tictac7x.motherlode;
 
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 import com.google.inject.Provides;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.WallObjectSpawned;
-import net.runelite.api.events.WallObjectDespawned;
+import net.runelite.api.GameState;
+import net.runelite.api.TileObject;
+import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.GroundObjectDespawned;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.events.ConfigChanged;
+import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WallObjectDespawned;
+import net.runelite.api.events.WallObjectSpawned;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import tictac7x.motherlode.oreveins.OreVeins;
+import tictac7x.motherlode.rockfalls.Rockfalls;
+
+import javax.inject.Inject;
 
 @Slf4j
 @PluginDescriptor(
 	name = "Motherlode Mine Improved",
 	description = "Better indicators for ore veins",
-	tags = { "motherlode", "prospector", "golden", "nugget" }
+	tags = { "motherlode", "prospector", "golden", "nugget" },
+	conflicts = "Motherlode Mine"
 )
 public class TicTac7xMotherlodePlugin extends Plugin {
+	private final String pluginVersion = "v0.4";
+	private final String pluginMessage = "" +
+		"<colHIGHLIGHT>Motherlode Mine Improved " + pluginVersion + ":<br>" +
+		"<colHIGHLIGHT>* Ore veins show depletion and respawn timers.<br>" +
+		"<colHIGHLIGHT>* Notification when you should stop mining.<br>" +
+		"<colHIGHLIGHT>* Number of golden nuggets on the widget."
+	;
+
 	@Inject
 	private Client client;
 
 	@Inject
-	private MotherlodeConfig config;
+	private ClientThread clientThread;
 
 	@Inject
-	private OverlayManager overlays;
+	private ConfigManager configManager;
 
 	@Inject
-	private ClientThread client_thread;
+	private TicTac7xMotherlodeConfig config;
+
+	@Inject
+	private OverlayManager overlayManager;
+
+	@Inject
+	private Notifier notifier;
+
+	@Inject
+	private ChatMessageManager chatMessageManager;
+
+	private Player player;
+	private Bank bank;
+	private Inventory inventory;
+	private Hopper hopper;
+	private OreVeins oreVeins;
+	private Rockfalls rockfalls;
+	private Sack sack;
+	private Motherlode motherlode;
+	private Widget widget;
 
 	@Provides
-	MotherlodeConfig provideConfig(ConfigManager configManager) {
-		return configManager.getConfig(MotherlodeConfig.class);
+	TicTac7xMotherlodeConfig provideConfig(ConfigManager configManager) {
+		return configManager.getConfig(TicTac7xMotherlodeConfig.class);
 	}
-
-	private Motherlode motherlode;
-	private Inventory inventory;
-	private MotherlodeSack sack;
-	private MotherlodeVeins veins;
-	private MotherlodeSackWidget widget_sack;
-	private MotherlodeVeinsOverlay overlay_veins;
-	private MotherlodeRockfallsOverlay overlay_rockfalls;
-	private MotherlodeObjectsOverlay overlay_objects;
 
 	@Override
 	protected void startUp() {
-		if (motherlode == null) {
-			motherlode = new Motherlode(client, config);
-			inventory = motherlode.getInventory();
-			sack = motherlode.getSack();
-			veins = motherlode.getVeins();
+		player = new Player(client);
+		bank = new Bank(configManager, config);
+		inventory = new Inventory();
+		hopper = new Hopper(client, inventory);
+		sack = new Sack(client);
+		motherlode = new Motherlode(client, clientThread, notifier, config, bank, inventory, sack, hopper);
+		widget = new Widget(client, config, motherlode);
+		oreVeins = new OreVeins(config, player, motherlode);
+		rockfalls = new Rockfalls(config, player);
 
-			overlay_veins = new MotherlodeVeinsOverlay(config, motherlode, client);
-			widget_sack = new MotherlodeSackWidget(config, motherlode, client);
-			overlay_rockfalls = new MotherlodeRockfallsOverlay(config, motherlode, client);
-			overlay_objects = new MotherlodeObjectsOverlay(config, motherlode);
-		}
-
-		client_thread.invokeLater(() -> {
-			widget_sack.loadNativeWidget();
-			motherlode.updatePayDirtNeeded();
-		});
-
-		overlays.add(overlay_veins);
-		overlays.add(overlay_rockfalls);
-		overlays.add(overlay_objects);
-		overlays.add(widget_sack);
+		overlayManager.add(oreVeins);
+		overlayManager.add(rockfalls);
+		overlayManager.add(widget);
 	}
 
 	@Override
 	protected void shutDown() {
-		overlay_veins.clear();
-		widget_sack.updateMotherlodeNativeWidget(false);
-		overlay_rockfalls.clear();
-
-		overlays.remove(overlay_veins);
-		overlays.remove(overlay_rockfalls);
-		overlays.remove(overlay_objects);
-		overlays.remove(widget_sack);
-	}
-
-	@Subscribe
-	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		overlay_veins.onTileObjectSpawned(event.getGameObject());
-		overlay_rockfalls.onTileObjectSpawned(event.getGameObject());
-		overlay_objects.onTileObjectSpawned(event.getGameObject());
-	}
-
-	@Subscribe
-	public void onGameObjectDespawned(final GameObjectDespawned event) {
-		overlay_veins.onTileObjectDespawned(event.getGameObject());
-		overlay_rockfalls.onTileObjectDespawned(event.getGameObject());
-		overlay_objects.onTileObjectDespawned(event.getGameObject());
-	}
-
-	@Subscribe
-	public void onGroundObjectSpawned(final GroundObjectSpawned event) {
-		overlay_objects.onTileObjectSpawned(event.getGroundObject());
-	}
-
-	@Subscribe
-	public void onGroundObjectDespawned(final GroundObjectDespawned event) {
-		overlay_objects.onTileObjectDespawned(event.getGroundObject());
-	}
-
-	@Subscribe
-	public void onWallObjectSpawned(final WallObjectSpawned event) {
-		veins.onTileObjectSpawned(event.getWallObject());
-		overlay_veins.onTileObjectSpawned(event.getWallObject());
-	}
-
-	@Subscribe
-	public void onWallObjectDespawned(final WallObjectDespawned event) {
-		veins.onTileObjectDespawned(event.getWallObject());
-		overlay_veins.onTileObjectDespawned(event.getWallObject());
+		widget.shutDown();
+		overlayManager.remove(oreVeins);
+		overlayManager.remove(rockfalls);
+		overlayManager.remove(widget);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		motherlode.onGameStateChanged(event);
-		overlay_veins.onGameStateChanged(event);
-		overlay_rockfalls.onGameStateChanged(event);
-	}
-
-	@Subscribe
-	public void onGameTick(final GameTick event) {
-		motherlode.onGameTick();
-		sack.onGameTick();
-		veins.onGameTick();
-	}
-
-	@Subscribe
-	public void onVarbitChanged(final VarbitChanged event) {
-		sack.onVarbitChanged();
-	}
-
-	@Subscribe
-	public void onWidgetLoaded(final WidgetLoaded event) {
-		client_thread.invokeLater(() -> widget_sack.onWidgetLoaded(event));
+		oreVeins.onGameStateChanged(event);
+		rockfalls.onGameStateChanged(event);
+		sendMessageAboutPluginVersion(event);
 	}
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
+		if (!player.isInMotherlode()) return;
 		inventory.onItemContainerChanged(event);
+		bank.onItemContainerChanged(event);
+		motherlode.onItemContainerChanged(event);
 	}
 
 	@Subscribe
-	public void onConfigChanged (final ConfigChanged event) {
-		motherlode.onConfigChanged(event);
-		widget_sack.onConfigChanged(event);
+	public void onChatMessage(final ChatMessage event) {
+		if (!player.isInMotherlode()) return;
+		motherlode.onChatMessage(event);
+	}
+
+	@Subscribe
+	public void onWallObjectSpawned(final WallObjectSpawned event) {
+		if (!player.isInMotherlode()) return;
+		oreVeins.onWallObjectSpawned(event);
+	}
+
+	@Subscribe
+	public void onWallObjectDespawned(final WallObjectDespawned event) {
+		if (!player.isInMotherlode()) return;
+		oreVeins.onWallObjectDespawned(event);
+	}
+
+	@Subscribe
+	public void onAnimationChanged(final AnimationChanged event) {
+		if (!player.isInMotherlode()) return;
+		oreVeins.onAnimationChanged(event);
+		hopper.onAnimationChanged(event);
+	}
+
+	@Subscribe
+	public void onGameObjectSpawned(final GameObjectSpawned event) {
+		if (!player.isInMotherlode()) return;
+		rockfalls.onGameObjectSpawned(event);
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(final GameObjectDespawned event) {
+		if (!player.isInMotherlode()) return;
+		rockfalls.onGameObjectDespawned(event);
+	}
+
+	@Subscribe
+	public void onGameTick(final GameTick event) {
+		player.checkIsInMotherlode();
+		if (!player.isInMotherlode()) return;
+
+		player.onGameTick();
+		oreVeins.onGameTick();
+	}
+
+	@Subscribe
+	public void onConfigChanged(final ConfigChanged event) {
+		if (!player.isInMotherlode()) return;
+		widget.onConfigChanged(event);
+	}
+
+	@Subscribe
+	public void onWidgetLoaded(final WidgetLoaded event) {
+		if (!player.isInMotherlode()) return;
+		widget.onWidgetLoaded(event);
+	}
+
+	@Subscribe
+	public void onVarbitChanged(final VarbitChanged event) {
+		if (!player.isInMotherlode()) return;
+		hopper.onVarbitChanged(event);
+		motherlode.onVarbitChanged(event);
+	}
+
+	private void sendMessageAboutPluginVersion(final GameStateChanged event) {
+		if (event.getGameState() == GameState.LOGGED_IN && !config.getVersion().equals(pluginVersion)) {
+			configManager.setConfiguration(TicTac7xMotherlodeConfig.group, TicTac7xMotherlodeConfig.version, pluginVersion);
+			chatMessageManager.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(pluginMessage)
+				.build()
+			);
+		}
+	}
+
+	public static String getWorldObjectKey(final TileObject tileObject) {
+		return tileObject.getWorldLocation().getX() + "_" + tileObject.getWorldLocation().getY();
 	}
 }
