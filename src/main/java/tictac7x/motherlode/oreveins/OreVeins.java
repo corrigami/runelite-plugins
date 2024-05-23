@@ -71,7 +71,6 @@ public class OreVeins extends Overlay {
     }
 
     public void onAnimationChanged(final AnimationChanged event) {
-        if (!isMiningAnimation(event)) return;
         setOreVeinMinedFromAnimation(event);
     }
 
@@ -96,6 +95,8 @@ public class OreVeins extends Overlay {
     }
 
     private void setOreVeinMinedFromAnimation(final AnimationChanged event) {
+        if (!isMiningAnimation(event)) return;
+
         final Actor actor = event.getActor();
         final int x = actor.getWorldLocation().getX();
         final int y = actor.getWorldLocation().getY();
@@ -108,10 +109,10 @@ public class OreVeins extends Overlay {
                 orientation == 0 && x == oreVein.x && y == oreVein.y + 1 ||
                 // Facing west.
                 orientation == 512 && x == oreVein.x + 1 && y == oreVein.y ||
-                // Facing east.
-                orientation == 1024 && x == oreVein.x - 1 && y == oreVein.y ||
                 // Facing north.
-                orientation == 1536 && x == oreVein.x && y == oreVein.y - 1
+                orientation == 1024 && x == oreVein.x && y == oreVein.y - 1 ||
+                // Facing east.
+                orientation == 1536 && x == oreVein.x - 1 && y == oreVein.y
             ) {
                 oreVein.setMined();
             }
