@@ -86,6 +86,7 @@ public class RooftopsCourseManager {
         // Clear previous obstacles objects (since they will spawn again).
         if (event.getGameState() == GameState.LOADING) {
             obstacles.clear();
+            marks_of_graces.clear();
         }
 
         detectCourse();
