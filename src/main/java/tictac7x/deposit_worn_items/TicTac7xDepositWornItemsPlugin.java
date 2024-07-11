@@ -9,10 +9,10 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -31,17 +31,25 @@ public class TicTac7xDepositWornItemsPlugin extends Plugin {
 	@Inject
 	private ConfigManager configManager;
 
+	@Inject
+	private OverlayManager overlayManager;
+
 	@Provides
 	TicTac7xDepositWornItemsConfig provideConfig(final ConfigManager configManager) {
 		return configManager.getConfig(TicTac7xDepositWornItemsConfig.class);
 	}
 
+	@Inject
+	private LockIconOverlay lockIconOverlay;
+
 	@Override
 	protected void startUp() {
+		overlayManager.add(lockIconOverlay);
 	}
 
 	@Override
 	protected void shutDown() {
+		overlayManager.remove(lockIconOverlay);
 	}
 
 	@Subscribe
@@ -55,7 +63,6 @@ public class TicTac7xDepositWornItemsPlugin extends Plugin {
 		if (config.isDepositWornItemsEnabled()) {
 			for (final MenuEntry menuEntry : currentMenuEntries) {
 				if (menuEntry.getOption().equals("Deposit worn items")) {
-					newMenuEntries.add(menuEntry);
 					newMenuEntries.add(client.createMenuEntry(0).setOption("Disable deposit button").onClick(e -> {
 						configManager.setConfiguration(
 							TicTac7xDepositWornItemsConfig.group,
@@ -63,9 +70,8 @@ public class TicTac7xDepositWornItemsPlugin extends Plugin {
 							false
 						);
 					}));
-				} else {
-					newMenuEntries.add(menuEntry);
 				}
+				newMenuEntries.add(menuEntry);
 			}
 
 		// Deposit disabled.
@@ -79,9 +85,10 @@ public class TicTac7xDepositWornItemsPlugin extends Plugin {
 			}));
 
 			for (final MenuEntry menuEntry : currentMenuEntries) {
-				if (!menuEntry.getOption().equals("Deposit worn items")) {
-					newMenuEntries.add(menuEntry);
+				if (menuEntry.getOption().equals("Deposit worn items")) {
+					menuEntry.setDeprioritized(true);
 				}
+				newMenuEntries.add(menuEntry);
 			}
 
 			newMenuEntries.add(client.createMenuEntry(0).setOption("Disabled"));
