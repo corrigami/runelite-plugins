@@ -17,8 +17,8 @@ import java.util.List;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Deposit Worn Items Customization",
-	description = "Customize the deposit worn items button",
+	name = "Deposit Worn Items",
+	description = "Disable/Enable the deposit worn items button",
 	tags = { "deposit", "worn", "items"}
 )
 public class TicTac7xDepositWornItemsPlugin extends Plugin {
@@ -62,7 +62,7 @@ public class TicTac7xDepositWornItemsPlugin extends Plugin {
 		// Deposit enabled.
 		if (config.isDepositWornItemsEnabled()) {
 			for (final MenuEntry menuEntry : currentMenuEntries) {
-				if (menuEntry.getOption().equals("Deposit worn items")) {
+				if (menuEntry.getOption().equals("Deposit worn items") && config.isDepositWornItemsToggleable()) {
 					newMenuEntries.add(client.createMenuEntry(0).setOption("Disable deposit button").onClick(e -> {
 						configManager.setConfiguration(
 							TicTac7xDepositWornItemsConfig.group,
@@ -76,19 +76,21 @@ public class TicTac7xDepositWornItemsPlugin extends Plugin {
 
 		// Deposit disabled.
 		} else {
-			newMenuEntries.add(client.createMenuEntry(0).setOption("Enable deposit button").onClick(e -> {
-				configManager.setConfiguration(
-					TicTac7xDepositWornItemsConfig.group,
-					TicTac7xDepositWornItemsConfig.deposit_worn_items_enabled,
-					true
-				);
-			}));
-
 			for (final MenuEntry menuEntry : currentMenuEntries) {
 				if (menuEntry.getOption().equals("Deposit worn items")) {
 					menuEntry.setDeprioritized(true);
 				}
 				newMenuEntries.add(menuEntry);
+			}
+
+			if (config.isDepositWornItemsToggleable()) {
+				newMenuEntries.add(client.createMenuEntry(0).setOption("Enable deposit button").onClick(e -> {
+					configManager.setConfiguration(
+							TicTac7xDepositWornItemsConfig.group,
+							TicTac7xDepositWornItemsConfig.deposit_worn_items_enabled,
+							true
+					);
+				}));
 			}
 
 			newMenuEntries.add(client.createMenuEntry(0).setOption("Disabled"));

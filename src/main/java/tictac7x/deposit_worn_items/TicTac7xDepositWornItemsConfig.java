@@ -16,4 +16,10 @@ public interface TicTac7xDepositWornItemsConfig extends Config {
 		name = "Enable Deposit Worn Items",
 		description = "Weather deposit worn items button is enabled or not"
 	) default boolean isDepositWornItemsEnabled() { return true; }
+
+	@ConfigItem(
+		keyName = "toggle_deposit_worn_items",
+		name = "Show toggle option",
+		description = "Weather to show the option to enable/disable button from right click menu"
+	) default boolean isDepositWornItemsToggleable() { return true; }
 }

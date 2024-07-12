@@ -25,18 +25,21 @@ public class LockIconOverlay extends Overlay {
     @Inject
     private SpriteManager spriteManager;
 
-    private BufferedImage lockImage = null;
+    private BufferedImage lockIcon = null;
+
+    public LockIconOverlay() {
+        setLayer(OverlayLayer.ABOVE_WIDGETS);
+        setPosition(OverlayPosition.DYNAMIC);
+    }
 
     @Override
     public Dimension render(final Graphics2D graphics2D) {
         if (config.isDepositWornItemsEnabled()) return null;
-        setLayer(OverlayLayer.ABOVE_WIDGETS);
-        setPosition(OverlayPosition.DYNAMIC);
 
-        if (lockImage == null) {
-            lockImage = spriteManager.getSprite(SpriteID.BANK_PLACEHOLDERS_LOCK, 0);
-            lockImage = ImageUtil.resizeImage(lockImage, 12, 14);
-            lockImage = ImageUtil.alphaOffset(lockImage, -50);
+        if (lockIcon == null) {
+            lockIcon = spriteManager.getSprite(SpriteID.BANK_PLACEHOLDERS_LOCK, 0);
+            lockIcon = ImageUtil.resizeImage(lockIcon, 12, 14);
+            lockIcon = ImageUtil.alphaOffset(lockIcon, -50);
         }
 
         @Nullable
@@ -47,18 +50,18 @@ public class LockIconOverlay extends Overlay {
 
         if (widgetBankDepositWornItems != null) {
             graphics2D.drawImage(
-                    lockImage,
-                widgetBankDepositWornItems.getCanvasLocation().getX() - 1,
-                widgetBankDepositWornItems.getCanvasLocation().getY() - lockImage.getHeight(),
+                lockIcon,
+                widgetBankDepositWornItems.getCanvasLocation().getX() + 4,
+                widgetBankDepositWornItems.getCanvasLocation().getY() + widgetBankDepositWornItems.getHeight() - lockIcon.getHeight() - 5,
                 null
             );
         }
 
         if (widgetDepositBoxDepositWornItems != null) {
             graphics2D.drawImage(
-                    lockImage,
-                widgetDepositBoxDepositWornItems.getCanvasLocation().getX() - 1,
-                widgetDepositBoxDepositWornItems.getCanvasLocation().getY() - lockImage.getHeight(),
+                lockIcon,
+                widgetDepositBoxDepositWornItems.getCanvasLocation().getX() + 3,
+                widgetDepositBoxDepositWornItems.getCanvasLocation().getY() + widgetDepositBoxDepositWornItems.getHeight() - lockIcon.getHeight() - 5,
                 null
             );
         }
