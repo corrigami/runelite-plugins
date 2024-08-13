@@ -30,14 +30,12 @@ import tictac7x.rooftops.courses.RooftopCourseSeers;
 import tictac7x.rooftops.courses.RooftopCourseVarrock;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class RooftopsCourseManager {
-    @Inject
-    private Client client;
+public class RooftopsCoursesManager {
+    private final Client client;
 
     private final Pattern regexLapComplete = Pattern.compile(".*lap count is:.*");
 
@@ -57,6 +55,10 @@ public class RooftopsCourseManager {
     private final List<Tile> marksOfGraces = new ArrayList<>();
     @Nullable private Course course;
     private int lastMenuOptionClickedId;
+
+    public RooftopsCoursesManager(final Client client) {
+        this.client = client;
+    }
 
     public void onTileObjectSpawned(final TileObject tileObject) {
         detectCourse();

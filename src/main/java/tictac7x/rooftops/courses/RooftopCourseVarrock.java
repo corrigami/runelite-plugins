@@ -6,7 +6,7 @@ public class RooftopCourseVarrock extends Course {
     public RooftopCourseVarrock() {
         super("Varrock",
             // Regions.
-            new int[]{12597, 12853},
+            new int[]{12596,12597,12598,12852,12853,12854},
 
             // Obstacles.
             new Obstacle[]{

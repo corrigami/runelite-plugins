@@ -6,7 +6,7 @@ public class RooftopCourseSeers extends Course {
     public RooftopCourseSeers() {
         super("Seers' Village",
             // Regions.
-            new int[]{10806},
+            new int[]{10549,10550,10551,10805,10806,10807,11061,11062,11063},
 
             // Obstacles.
             new Obstacle[]{

@@ -7,7 +7,6 @@ import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 
-import javax.inject.Inject;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,31 +14,28 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 
 public class RooftopsOverlay extends Overlay {
-    @Inject
-    private Client client;
+    private final RooftopsConfig config;
+    private final RooftopsCoursesManager coursesManager;
 
-    @Inject
-    private RooftopsConfig config;
+    public RooftopsOverlay(final RooftopsConfig config, final RooftopsCoursesManager coursesManager) {
+        this.config = config;
+        this.coursesManager = coursesManager;
 
-    @Inject
-    private RooftopsCourseManager courseManager;
-
-    public RooftopsOverlay() {
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
     }
 
     @Override
     public Dimension render(Graphics2D graphics) {
-        if (courseManager.getCourse() == null) return null;
+        if (coursesManager.getCourse() == null) return null;
 
         // Obstacles.
-        for (final TileObject obstacle : courseManager.getObstaclesTileObjects()) {
+        for (final TileObject obstacle : coursesManager.getObstaclesTileObjects()) {
              final Color color =
-                courseManager.isStoppingObstacle(obstacle.getId())
+                coursesManager.isStoppingObstacle(obstacle.getId())
                     ? config.getObstacleStopColor()
-                    : courseManager.getCourse().getNextObstacle().hasId(obstacle.getId())
-                        ? courseManager.getCourse().isDoingObstacle()
+                    : coursesManager.getCourse().getNextObstacle().hasId(obstacle.getId())
+                        ? coursesManager.getCourse().isDoingObstacle()
                             ? config.getObstacleNextUnavailableColor()
                             : config.getObstacleNextColor()
                         : config.getObstacleUnavailableColor();
@@ -48,7 +44,7 @@ public class RooftopsOverlay extends Overlay {
         }
 
         // Mark of graces.
-        for (final Tile mark : courseManager.getMarksOfGraces()) {
+        for (final Tile mark : coursesManager.getMarksOfGraces()) {
             renderShape(graphics, mark.getItemLayer().getCanvasTilePoly(), config.getMarkOfGraceColor());
         }
 

@@ -6,7 +6,7 @@ public class RooftopCourseArdougne extends Course {
     public RooftopCourseArdougne() {
         super("Ardougne",
             // Regions.
-            new int[]{10547},
+            new int[]{10290,10291,10292,10546,10547,10548,10802,10803,10804},
 
             // Obstacles.
             new Obstacle[]{

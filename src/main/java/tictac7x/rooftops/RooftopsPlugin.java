@@ -38,19 +38,19 @@ public class RooftopsPlugin extends Plugin {
 	@Inject
 	private RooftopsConfig config;
 
-	@Inject
-	private RooftopsCourseManager courseManager;
+	private RooftopsCoursesManager coursesManager;
 
-	@Inject
 	private RooftopsOverlay overlayRooftops;
 
 	@Provides
-	RooftopsConfig provideConfig(ConfigManager configManager) {
+	RooftopsConfig provideConfig(final ConfigManager configManager) {
 		return configManager.getConfig(RooftopsConfig.class);
 	}
 
 	@Override
 	protected void startUp() {
+		coursesManager = new RooftopsCoursesManager(client);
+		overlayRooftops = new RooftopsOverlay(config, coursesManager);
 		overlays.add(overlayRooftops);
 	}
 
@@ -61,56 +61,60 @@ public class RooftopsPlugin extends Plugin {
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		courseManager.onTileObjectSpawned(event.getGameObject());
+		coursesManager.onTileObjectSpawned(event.getGameObject());
 	}
 
 	@Subscribe
 	public void onGroundObjectSpawned(final GroundObjectSpawned event) {
-		courseManager.onTileObjectSpawned(event.getGroundObject());
+		coursesManager.onTileObjectSpawned(event.getGroundObject());
 	}
 
 	@Subscribe
 	public void onDecorativeObjectSpawned(final DecorativeObjectSpawned event) {
-		courseManager.onTileObjectSpawned(event.getDecorativeObject());
+		coursesManager.onTileObjectSpawned(event.getDecorativeObject());
 	}
 
 	@Subscribe
 	public void onItemSpawned(final ItemSpawned event) {
-		courseManager.onItemSpawned(event);
+		coursesManager.onItemSpawned(event);
 	}
 
 	@Subscribe
 	public void onItemDespawned(final ItemDespawned event) {
-		courseManager.onItemDespawned(event);
+		coursesManager.onItemDespawned(event);
 	}
 
 	@Subscribe
 	public void onChatMessage(final ChatMessage event) {
-		courseManager.onChatMessage(event);
+		coursesManager.onChatMessage(event);
 	}
 
 	@Subscribe
 	public void onStatChanged(final StatChanged event) {
-		courseManager.onStatChanged(event);
+		coursesManager.onStatChanged(event);
 	}
 
 	@Subscribe
 	public void onHitsplatApplied(final HitsplatApplied event) {
-		courseManager.onHitsplatApplied(event);
+		coursesManager.onHitsplatApplied(event);
 	}
 
 	@Subscribe
 	public void onGameTick(final GameTick gametick) {
-		courseManager.onGameTick(gametick);
+		coursesManager.onGameTick(gametick);
 	}
 
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
-		courseManager.onGameStateChanged(event);
+		coursesManager.onGameStateChanged(event);
+		for (int r : client.getMapRegions()) {
+			System.out.println(r);
+		}
+		System.out.println("");
 	}
 
 	@Subscribe
 	public void onMenuOptionClicked(final MenuOptionClicked event) {
-		courseManager.onMenuOptionClicked(event);
+		coursesManager.onMenuOptionClicked(event);
 	}
 }

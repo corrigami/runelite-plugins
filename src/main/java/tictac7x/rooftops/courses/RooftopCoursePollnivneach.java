@@ -6,7 +6,7 @@ public class RooftopCoursePollnivneach extends Course {
     public RooftopCoursePollnivneach() {
         super("Pollnivneach",
             // Regions.
-            new int[]{13358},
+            new int[]{13101,13102,13103,13357,13358,13359,13613,13614,13615},
 
             // Obstacles.
             new Obstacle[]{

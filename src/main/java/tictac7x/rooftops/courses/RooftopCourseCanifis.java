@@ -6,7 +6,7 @@ public class RooftopCourseCanifis extends Course {
     public RooftopCourseCanifis() {
         super("Canifis",
             // Regions.
-            new int[]{13878},
+            new int[]{13621,13622,13623,13877,13878,13879,14133,14134,14135},
 
             // Obstacles.
             new Obstacle[]{

@@ -6,7 +6,7 @@ public class RooftopCourseFalador extends Course {
     public RooftopCourseFalador() {
         super("Falador",
             // Regions.
-            new int[]{11828, 12084},
+            new int[]{11827,11828,11829,12083,12084,12085},
 
             // Obstacles.
             new Obstacle[]{
