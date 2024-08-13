@@ -107,10 +107,6 @@ public class RooftopsPlugin extends Plugin {
 	@Subscribe
 	public void onGameStateChanged(final GameStateChanged event) {
 		coursesManager.onGameStateChanged(event);
-		for (int r : client.getMapRegions()) {
-			System.out.println(r);
-		}
-		System.out.println("");
 	}
 
 	@Subscribe
