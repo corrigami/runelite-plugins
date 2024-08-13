@@ -6,7 +6,7 @@ public class RooftopCourseRellekka extends Course {
     public RooftopCourseRellekka() {
         super("Rellekka",
             // Regions.
-            new int[]{10553, 10297},
+            new int[]{10552, 10553, 10297},
 
             // Obstacles.
             new Obstacle[]{

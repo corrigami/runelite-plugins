@@ -6,7 +6,7 @@ public class RooftopCourseDraynor extends Course {
     public RooftopCourseDraynor() {
         super("Draynor Village",
             // Regions.
-            new int[]{12339},
+            new int[]{12338, 12339},
 
             // Obstacles.
             new Obstacle[]{

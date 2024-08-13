@@ -3,85 +3,57 @@ package tictac7x.rooftops.courses;
 import tictac7x.rooftops.MarkOfGrace;
 
 public abstract class Course {
-    private final String id;
-    private final int[] regions;
-    private final Obstacle[] obstacles;
-    private final MarkOfGrace[] mark_of_graces;
+    public final String id;
+    public final int[] regions;
+    public final Obstacle[] obstacles;
+    public final MarkOfGrace[] markOfGraces;
 
-    private int obstacle_index = 0;
-    private boolean doing_obstacle;
+    private int obstacleIndex = 0;
+    private boolean doingObstacle;
 
     public Course(
         final String id,
         final int[] regions,
         final Obstacle[] obstacles,
-        final MarkOfGrace[] mark_of_graces
+        final MarkOfGrace[] markOfGraces
     ) {
         this.id = id;
         this.regions = regions;
         this.obstacles = obstacles;
-        this.mark_of_graces = mark_of_graces;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public int[] getRegions() {
-        return regions;
-    }
-
-    public Obstacle[] getObstacles() {
-        return obstacles;
-    }
-
-    public MarkOfGrace[] getMarkOfGraces() {
-        return mark_of_graces;
+        this.markOfGraces = markOfGraces;
     }
 
     public Obstacle getNextObstacle() {
-        return obstacles[obstacle_index];
+        return obstacles[obstacleIndex];
     }
 
     public void startObstacle() {
         // Obstacle already started.
-        if (doing_obstacle) return;
+        if (doingObstacle) return;
 
-        doing_obstacle = true;
-        obstacle_index = obstacle_index + 1 == obstacles.length
+        doingObstacle = true;
+        obstacleIndex = obstacleIndex + 1 == obstacles.length
             ? 0
-            : obstacle_index + 1;
+            : obstacleIndex + 1;
     }
 
     public void completeObstacle() {
-        doing_obstacle = false;
+        doingObstacle = false;
     }
 
-    public void reset() {
-        doing_obstacle = false;
-        obstacle_index = 0;
+    public void completeCourse() {
+        doingObstacle = false;
+        obstacleIndex = 0;
     }
 
     public boolean isDoingObstacle() {
-        return doing_obstacle;
+        return doingObstacle;
     }
 
-    public boolean isInRegion(final int region) {
-        for (final int r : this.regions) {
-            if (r == region) {
+    public boolean isNearRegion(final int region) {
+        for (final int courseRegion : this.regions) {
+            if (courseRegion == region) {
                 return true;
-            }
-        }
-
-        return false;
-    }
-
-    public boolean isNearRegion(final int[] regions) {
-        for (final int region : regions) {
-            for (final int course_region : this.regions) {
-                if (course_region == region) {
-                    return true;
-                }
             }
         }
 

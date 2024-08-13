@@ -30,15 +30,16 @@ import tictac7x.rooftops.courses.RooftopCourseSeers;
 import tictac7x.rooftops.courses.RooftopCourseVarrock;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class RooftopsCourseManager {
-    private final Client client;
+    @Inject
+    private Client client;
 
-    private final Pattern lap_complete = Pattern.compile(".*lap count is:.*");
+    private final Pattern regexLapComplete = Pattern.compile(".*lap count is:.*");
 
     private final Course[] courses = new Course[]{
         new RooftopCourseDraynor(),
@@ -52,32 +53,18 @@ public class RooftopsCourseManager {
         new RooftopCourseArdougne(),
     };
 
-    private final List<TileObject> obstacles = new ArrayList<>();
-    private final List<Tile> marks_of_graces = new ArrayList<>();
+    private final List<TileObject> obstaclesTileObjects = new ArrayList<>();
+    private final List<Tile> marksOfGraces = new ArrayList<>();
+    @Nullable private Course course;
+    private int lastMenuOptionClickedId;
 
-    // Keep track of next obstacle id locally until obstacle is completed.
-    private int[] next_obstacle_ids;
-
-    //  n: gameticks to wait before starting an obstacle
-    //  0: start the obstacle
-    // -1: don't start an obstacle
-    private int start_obstacle = -1;
-
-    @Nullable
-    private Course course;
-
-    private boolean is_near_course;
-
-    public RooftopsCourseManager(final Client client) {
-        this.client = client;
-    }
-
-    public void onTileObjectSpawned(final TileObject object) {
+    public void onTileObjectSpawned(final TileObject tileObject) {
+        detectCourse();
         if (course == null) return;
 
-        for (final Obstacle obstacle : course.getObstacles()) {
-            if (obstacle.hasId(object.getId())) {
-                obstacles.add(object);
+        for (final Obstacle obstacle : course.obstacles) {
+            if (obstacle.hasId(tileObject.getId())) {
+                obstaclesTileObjects.add(tileObject);
             }
         }
     }
@@ -85,11 +72,10 @@ public class RooftopsCourseManager {
     public void onGameStateChanged(final GameStateChanged event) {
         // Clear previous obstacles objects (since they will spawn again).
         if (event.getGameState() == GameState.LOADING) {
-            obstacles.clear();
-            marks_of_graces.clear();
+            obstaclesTileObjects.clear();
+            marksOfGraces.clear();
+            course = null;
         }
-
-        detectCourse();
     }
 
     public void onStatChanged(final StatChanged event) {
@@ -99,27 +85,26 @@ public class RooftopsCourseManager {
 
     public void onHitsplatApplied(final HitsplatApplied event) {
         if (course == null || event.getActor() != client.getLocalPlayer()) return;
-        resetCourse();
+        completeCourse();
     }
 
     public void onGameTick(final GameTick ignored) {
-        checkNearCourse();
         checkStartObstacle();
     }
 
     public void onChatMessage(final ChatMessage event) {
-        if (course == null || event.getType() != ChatMessageType.GAMEMESSAGE || !lap_complete.matcher(event.getMessage()).find()) return;
-        resetCourse();
+        if (course == null || event.getType() != ChatMessageType.GAMEMESSAGE || !regexLapComplete.matcher(event.getMessage()).find()) return;
+        completeCourse();
     }
 
     public void onItemSpawned(final ItemSpawned event) {
         if (event.getItem().getId() != ItemID.MARK_OF_GRACE) return;
-        marks_of_graces.add(event.getTile());
+        marksOfGraces.add(event.getTile());
     }
 
     public void onItemDespawned(final ItemDespawned event) {
         if (event.getItem().getId() != ItemID.MARK_OF_GRACE) return;
-        marks_of_graces.remove(event.getTile());
+        marksOfGraces.remove(event.getTile());
     }
 
     @Nullable
@@ -127,23 +112,19 @@ public class RooftopsCourseManager {
         return course;
     }
 
-    public List<TileObject> getObstacles() {
-        return obstacles;
+    public List<TileObject> getObstaclesTileObjects() {
+        return obstaclesTileObjects;
     }
 
     public List<Tile> getMarksOfGraces() {
-        return marks_of_graces;
-    }
-
-    public boolean isNearCourse() {
-        return is_near_course;
+        return marksOfGraces;
     }
 
     public boolean isStoppingObstacle(final int obstacle_id) {
         if (course == null) return false;
 
-        for (final Tile tile : marks_of_graces) {
-            for (final MarkOfGrace mark : course.getMarkOfGraces()) {
+        for (final Tile tile : marksOfGraces) {
+            for (final MarkOfGrace mark : course.markOfGraces) {
                 if (mark.obstacle == obstacle_id && mark.x == tile.getWorldLocation().getX() && mark.y == tile.getWorldLocation().getY()) {
                     return true;
                 }
@@ -157,7 +138,7 @@ public class RooftopsCourseManager {
     private TileObject getNextObstacle() {
         if (course == null) return null;
 
-        for (final TileObject obstacle : obstacles) {
+        for (final TileObject obstacle : obstaclesTileObjects) {
             if (course.getNextObstacle().hasId(obstacle.getId())) {
                 return obstacle;
             }
@@ -166,7 +147,7 @@ public class RooftopsCourseManager {
         return null;
     }
 
-    private boolean isNearObstacle() {
+    private boolean isNearNextObstacle() {
         if (course == null) return false;
 
         final TileObject obstacle = getNextObstacle();
@@ -184,73 +165,50 @@ public class RooftopsCourseManager {
 
     private void startObstacle() {
         if (course == null) return;
-
-        start_obstacle = -1;
         course.startObstacle();
+        lastMenuOptionClickedId = -1;
     }
 
     private void completeObstacle() {
         if (this.course == null) return;
         course.completeObstacle();
-        next_obstacle_ids = course.getNextObstacle().getIds();
     }
 
     private void detectCourse() {
-        final int[] regions = client.getMapRegions();
-        if (regions == null) return;
+        if (course != null || client.getLocalPlayer() == null || client.getLocalPlayer().getWorldLocation() == null) return;
 
         for (final Course course : courses) {
-            if (course.isNearRegion(regions)) {
-                // If player is specifically in another course region, don't change the course.
-                if (this.course != null && this.course.isInRegion(client.getLocalPlayer().getWorldLocation().getRegionID())) {
-                    continue;
-                }
+            if (course.isNearRegion(client.getLocalPlayer().getWorldLocation().getRegionID())) {
+                if (course == this.course) return;
 
-                // New course found, reset previous.
-                if (this.course != null && this.course != course) {
-                    this.course.reset();
-                }
-
-                // New course found.
-                if (this.course != course) {
-                    this.next_obstacle_ids = course.getNextObstacle().getIds();
+                // New course found, complete previous.
+                if (this.course != null) {
+                    completeCourse();
                 }
 
                 this.course = course;
-                // Cant break here since some courses share regions and we need to check all of them.
+                return;
             }
         }
-    }
 
-    private void checkNearCourse() {
-        if (course == null) return;
-        is_near_course = course.isInRegion(client.getLocalPlayer().getWorldLocation().getRegionID());
+        this.course = null;
     }
 
     private void checkStartObstacle() {
-        if (course == null) return;
-
-        // Delay starting the obstacle.
-        if (start_obstacle > 0) {
-            start_obstacle--;
-            return;
-        }
+        if (course == null || course.isDoingObstacle()) return;
 
         // Start obstacle.
-        if (start_obstacle == 0) {
+        if (isNearNextObstacle() && course.getNextObstacle().hasId(lastMenuOptionClickedId)) {
             startObstacle();
-            return;
-        }
-
-        // Obstacle detected from further away.
-        if (isNearObstacle()) {
-            start_obstacle = 1;
         }
     }
 
-    private void resetCourse() {
+    private void completeCourse() {
         if (course == null) return;
-        course.reset();
-        next_obstacle_ids = course.getNextObstacle().getIds();
+        course.completeCourse();
+    }
+
+    public void onMenuOptionClicked(final MenuOptionClicked event) {
+        lastMenuOptionClickedId = event.getId();
     }
 }
