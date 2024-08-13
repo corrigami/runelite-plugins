@@ -6,7 +6,7 @@ public abstract class Course {
     public final String id;
     public final int[] regions;
     public final Obstacle[] obstacles;
-    public final MarkOfGrace[] markOfGraces;
+    public final MarkOfGrace[] marksOfGraces;
 
     private int obstacleIndex = 0;
     private boolean doingObstacle;
@@ -15,12 +15,12 @@ public abstract class Course {
         final String id,
         final int[] regions,
         final Obstacle[] obstacles,
-        final MarkOfGrace[] markOfGraces
+        final MarkOfGrace[] marksOfGraces
     ) {
         this.id = id;
         this.regions = regions;
         this.obstacles = obstacles;
-        this.markOfGraces = markOfGraces;
+        this.marksOfGraces = marksOfGraces;
     }
 
     public Obstacle getNextObstacle() {

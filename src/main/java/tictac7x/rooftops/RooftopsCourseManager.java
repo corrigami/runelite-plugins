@@ -124,7 +124,7 @@ public class RooftopsCourseManager {
         if (course == null) return false;
 
         for (final Tile tile : marksOfGraces) {
-            for (final MarkOfGrace mark : course.markOfGraces) {
+            for (final MarkOfGrace mark : course.marksOfGraces) {
                 if (mark.obstacle == obstacle_id && mark.x == tile.getWorldLocation().getX() && mark.y == tile.getWorldLocation().getY()) {
                     return true;
                 }
