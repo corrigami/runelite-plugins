@@ -9,10 +9,10 @@ import java.util.List;
 
 import static tictac7x.motherlode.sectors.Sector.DOWNSTAIRS;
 
-public class Player {
+public class Character {
     private final Client client;
 
-    public Player(final Client client) {
+    public Character(final Client client) {
         this.client = client;
     }
 

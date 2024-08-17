@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Player;
 import net.runelite.api.TileObject;
+import net.runelite.api.WorldView;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameObjectDespawned;
@@ -31,6 +33,10 @@ import tictac7x.motherlode.oreveins.OreVeins;
 import tictac7x.motherlode.rockfalls.Rockfalls;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
@@ -69,7 +75,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 	@Inject
 	private ChatMessageManager chatMessageManager;
 
-	private Player player;
+	private Character character;
 	private Bank bank;
 	private Inventory inventory;
 	private Hopper hopper;
@@ -86,15 +92,15 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 
 	@Override
 	protected void startUp() {
-		player = new Player(client);
+		character = new Character(client);
 		bank = new Bank(configManager, config);
 		inventory = new Inventory();
 		hopper = new Hopper(client, inventory);
 		sack = new Sack(client);
 		motherlode = new Motherlode(client, clientThread, notifier, config, bank, inventory, sack, hopper);
-		widget = new Widget(client, config, motherlode, player);
-		oreVeins = new OreVeins(config, player, motherlode);
-		rockfalls = new Rockfalls(config, player);
+		widget = new Widget(client, config, motherlode, character);
+		oreVeins = new OreVeins(client, config, character, motherlode);
+		rockfalls = new Rockfalls(config, character);
 
 		overlayManager.add(oreVeins);
 		overlayManager.add(rockfalls);
@@ -118,7 +124,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 
 	@Subscribe
 	public void onItemContainerChanged(final ItemContainerChanged event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		inventory.onItemContainerChanged(event);
 		bank.onItemContainerChanged(event);
 		motherlode.onItemContainerChanged(event);
@@ -126,65 +132,65 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 
 	@Subscribe
 	public void onChatMessage(final ChatMessage event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		motherlode.onChatMessage(event);
 	}
 
 	@Subscribe
 	public void onWallObjectSpawned(final WallObjectSpawned event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		oreVeins.onWallObjectSpawned(event);
 	}
 
 	@Subscribe
 	public void onWallObjectDespawned(final WallObjectDespawned event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		oreVeins.onWallObjectDespawned(event);
 	}
 
 	@Subscribe
 	public void onAnimationChanged(final AnimationChanged event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		oreVeins.onAnimationChanged(event);
 		hopper.onAnimationChanged(event);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(final GameObjectSpawned event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		rockfalls.onGameObjectSpawned(event);
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(final GameObjectDespawned event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		rockfalls.onGameObjectDespawned(event);
 	}
 
 	@Subscribe
 	public void onGameTick(final GameTick event) {
-		player.checkIsInMotherlode();
-		if (!player.isInMotherlode()) return;
+		character.checkIsInMotherlode();
+		if (!character.isInMotherlode()) return;
 
-		player.onGameTick();
+		character.onGameTick();
 		oreVeins.onGameTick();
 	}
 
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		widget.onConfigChanged(event);
 	}
 
 	@Subscribe
 	public void onWidgetLoaded(final WidgetLoaded event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		widget.onWidgetLoaded(event);
 	}
 
 	@Subscribe
 	public void onVarbitChanged(final VarbitChanged event) {
-		if (!player.isInMotherlode()) return;
+		if (!character.isInMotherlode()) return;
 		hopper.onVarbitChanged(event);
 		motherlode.onVarbitChanged(event);
 	}

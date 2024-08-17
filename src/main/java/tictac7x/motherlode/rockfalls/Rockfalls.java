@@ -8,7 +8,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import tictac7x.motherlode.Player;
+import tictac7x.motherlode.Character;
 import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
 import javax.annotation.Nullable;
@@ -26,14 +26,14 @@ import static tictac7x.motherlode.TicTac7xMotherlodePlugin.getWorldObjectKey;
 
 public class Rockfalls extends Overlay {
     private final TicTac7xMotherlodeConfig config;
-    private final Player player;
+    private final Character character;
 
     private Map<String, Rockfall> rockfalls = new HashMap<>();
     private Set<GameObject> rockfallsGameObjects = new HashSet<>();
 
-    public Rockfalls(final TicTac7xMotherlodeConfig config, final Player player) {
+    public Rockfalls(final TicTac7xMotherlodeConfig config, final Character character) {
         this.config = config;
-        this.player = player;
+        this.character = character;
 
         setPosition(OverlayPosition.DYNAMIC);
         setLayer(OverlayLayer.ABOVE_SCENE);
@@ -84,7 +84,7 @@ public class Rockfalls extends Overlay {
 
         for (final GameObject rockfallGameObject : rockfallsGameObjects) {
             final Rockfall rockfall = getRockfallFromGameObject(rockfallGameObject);
-            if (rockfall == null || !rockfall.isRendering(config, player)) continue;
+            if (rockfall == null || !rockfall.isRendering(config, character)) continue;
 
             renderTile(graphics2D, rockfallGameObject, rockfall.getTileColor(config));
         }

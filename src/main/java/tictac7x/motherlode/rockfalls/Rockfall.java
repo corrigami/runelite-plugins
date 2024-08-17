@@ -2,7 +2,7 @@ package tictac7x.motherlode.rockfalls;
 
 import net.runelite.api.GameObject;
 import tictac7x.motherlode.sectors.Sectors;
-import tictac7x.motherlode.Player;
+import tictac7x.motherlode.Character;
 import tictac7x.motherlode.sectors.Sector;
 import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
@@ -25,12 +25,12 @@ public class Rockfall {
         return config.getRockfallsColor();
     }
 
-    public boolean isRendering(final TicTac7xMotherlodeConfig config, final Player player) {
+    public boolean isRendering(final TicTac7xMotherlodeConfig config, final Character character) {
         if (config.upstairsOnly() && sectors.contains(Sector.DOWNSTAIRS)) {
             return false;
         }
 
-        if (Collections.disjoint(player.getSectors(), sectors)) {
+        if (Collections.disjoint(character.getSectors(), sectors)) {
             return false;
         }
 

@@ -2,8 +2,11 @@ package tictac7x.motherlode.oreveins;
 
 import net.runelite.api.Actor;
 import net.runelite.api.AnimationID;
+import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Player;
 import net.runelite.api.WallObject;
+import net.runelite.api.WorldView;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.WallObjectDespawned;
@@ -13,28 +16,34 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ProgressPieComponent;
 import tictac7x.motherlode.Motherlode;
-import tictac7x.motherlode.Player;
+import tictac7x.motherlode.Character;
 import tictac7x.motherlode.TicTac7xMotherlodeConfig;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static tictac7x.motherlode.TicTac7xMotherlodePlugin.getWorldObjectKey;
 
 public class OreVeins extends Overlay {
+    private final Client client;
     private final TicTac7xMotherlodeConfig config;
-    private final Player player;
+    private final Character character;
     private final Motherlode motherlode;
 
-    public OreVeins(final TicTac7xMotherlodeConfig config, final Player player, final Motherlode motherlode) {
+    public OreVeins(final Client client, final TicTac7xMotherlodeConfig config, final Character character, final Motherlode motherlode) {
+        this.client = client;
         this.config = config;
-        this.player = player;
+        this.character = character;
         this.motherlode = motherlode;
 
         setPosition(OverlayPosition.DYNAMIC);
@@ -75,7 +84,10 @@ public class OreVeins extends Overlay {
     }
 
     public void onGameTick() {
+        final List<Player> players = getPlayers();
+
         for (final OreVein oreVein : oreVeins.values()) {
+            checkIfOreVeinIsRegenerating(oreVein, players);
             oreVein.onGameTick();
         }
     }
@@ -95,7 +107,7 @@ public class OreVeins extends Overlay {
     }
 
     private void setOreVeinMinedFromAnimation(final AnimationChanged event) {
-        if (!isMiningAnimation(event)) return;
+        if (!isMiningAnimation(event.getActor().getAnimation())) return;
 
         final Actor actor = event.getActor();
         final int x = actor.getWorldLocation().getX();
@@ -114,9 +126,34 @@ public class OreVeins extends Overlay {
                 // Facing east.
                 orientation == 1536 && x == oreVein.x - 1 && y == oreVein.y
             ) {
-                oreVein.setMined();
+                oreVein.setIsDepleting(true);
             }
         }
+    }
+
+    private void checkIfOreVeinIsRegenerating(final OreVein oreVein, final List<Player> players) {
+        for (final Player player : players) {
+            if (!isMiningAnimation(player.getAnimation())) continue;
+            final int playerX = player.getWorldLocation().getX();
+            final int playerY = player.getWorldLocation().getY();
+            final int playerOrientation = player.getOrientation();
+
+            if (
+                // Facing south.
+                playerOrientation == 0 && playerX == oreVein.x && playerY == oreVein.y + 1 ||
+                // Facing west.
+                playerOrientation == 512 && playerX == oreVein.x + 1 && playerY == oreVein.y ||
+                // Facing north.
+                playerOrientation == 1024 && playerX == oreVein.x && playerY == oreVein.y - 1 ||
+                // Facing east.
+                playerOrientation == 1536 && playerX == oreVein.x - 1 && playerY == oreVein.y
+            ) {
+                oreVein.setIsDepleting(true);
+                return;
+            }
+        }
+
+        oreVein.setIsDepleting(false);
     }
 
     @Nullable
@@ -128,7 +165,7 @@ public class OreVeins extends Overlay {
     public Dimension render(final Graphics2D graphics2D) {
         for (final WallObject wallObject : oreVeinsWallObjects) {
             final OreVein oreVein = getOreVeinFromWallObject(wallObject);
-            if (oreVein == null || !oreVein.isRendering(config, player)) continue;
+            if (oreVein == null || !oreVein.isRendering(config, character)) continue;
 
             renderPie(graphics2D, wallObject, oreVein.getPieColor(config, motherlode), oreVein.getPieProgress());
         }
@@ -153,8 +190,8 @@ public class OreVeins extends Overlay {
         } catch (final Exception ignored) {}
     }
 
-    private boolean isMiningAnimation(final AnimationChanged event) {
-        switch (event.getActor().getAnimation()) {
+    private boolean isMiningAnimation(final int animationId) {
+        switch (animationId) {
             case AnimationID.MINING_MOTHERLODE_BRONZE:
             case AnimationID.MINING_MOTHERLODE_IRON:
             case AnimationID.MINING_MOTHERLODE_STEEL:
@@ -175,5 +212,10 @@ public class OreVeins extends Overlay {
             default:
                 return false;
         }
+    }
+
+    private List<Player> getPlayers() {
+        final WorldView worldView = client.getLocalPlayer().getWorldView();
+        return worldView == null ? Collections.emptyList() : (List)worldView.players().stream().collect(Collectors.toCollection(ArrayList::new));
     }
 }

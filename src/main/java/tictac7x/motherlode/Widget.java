@@ -16,16 +16,16 @@ public class Widget extends OverlayPanel {
     private final Client client;
     private final TicTac7xMotherlodeConfig config;
     private final Motherlode motherlode;
-    private final Player player;
+    private final Character character;
 
     private final int SACK_WIDGET_GROUP = 382;
     private final int SACK_WIDGET_CHILD = 0;
 
-    public Widget(final Client client, final TicTac7xMotherlodeConfig config, final Motherlode motherlode, final Player player) {
+    public Widget(final Client client, final TicTac7xMotherlodeConfig config, final Motherlode motherlode, final Character character) {
         this.client = client;
         this.config = config;
         this.motherlode = motherlode;
-        this.player = player;
+        this.character = character;
 
         setPosition(OverlayPosition.TOP_LEFT);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
@@ -60,7 +60,7 @@ public class Widget extends OverlayPanel {
 
     @Override
     public Dimension render(final Graphics2D graphics2D) {
-        if (!player.isInMotherlode() || !config.showCustomSackWidget()) return null;
+        if (!character.isInMotherlode() || !config.showCustomSackWidget()) return null;
 
         panelComponent.getChildren().clear();
 
