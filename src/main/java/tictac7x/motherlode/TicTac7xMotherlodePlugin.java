@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.Player;
 import net.runelite.api.TileObject;
-import net.runelite.api.WorldView;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameObjectDespawned;
@@ -33,10 +31,6 @@ import tictac7x.motherlode.oreveins.OreVeins;
 import tictac7x.motherlode.rockfalls.Rockfalls;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
@@ -46,7 +40,7 @@ import java.util.stream.Collectors;
 	conflicts = {"Motherlode Mine", "MLM Mining Markers"}
 )
 public class TicTac7xMotherlodePlugin extends Plugin {
-	private final String pluginVersion = "v0.4.1";
+	private final String pluginVersion = "v0.4.2";
 	private final String pluginMessage = "" +
 		"<colHIGHLIGHT>Motherlode Mine Improved " + pluginVersion + ":<br>" +
 		"<colHIGHLIGHT>* Ore veins show depletion and respawn timers.<br>" +
@@ -99,7 +93,7 @@ public class TicTac7xMotherlodePlugin extends Plugin {
 		sack = new Sack(client);
 		motherlode = new Motherlode(client, clientThread, notifier, config, bank, inventory, sack, hopper);
 		widget = new Widget(client, config, motherlode, character);
-		oreVeins = new OreVeins(client, config, character, motherlode);
+		oreVeins = new OreVeins(config, character, motherlode);
 		rockfalls = new Rockfalls(config, character);
 
 		overlayManager.add(oreVeins);
