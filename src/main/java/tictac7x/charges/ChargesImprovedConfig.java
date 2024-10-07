@@ -143,7 +143,7 @@ public interface ChargesImprovedConfig extends Config {
         @ConfigItem(
             keyName = "hide_outside_bank_overlays",
             name = "Show overlays only while in bank",
-            description = "Shows item charges overlays onmly when in bank",
+            description = "Shows item charges overlays only when in bank",
             section = general,
             position = 4
         ) default boolean showOverlaysOnlyInBank() { return false; }
